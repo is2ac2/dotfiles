@@ -5,3 +5,9 @@
 [submodule "vim/bundle/badwolf"]
 	path = vim/bundle/badwolf
 	url = git@github.com:sjl/badwolf.git
+[submodule "zsh/plugins/zsh-completions"]
+	path = zsh/plugins/zsh-completions
+	url = git@github.com:zsh-users/zsh-completions.git
+[submodule "zsh/plugins/zsh-syntax-highlighting"]
+	path = zsh/plugins/zsh-syntax-highlighting
+	url = git@github.com:zsh-users/zsh-syntax-highlighting.git

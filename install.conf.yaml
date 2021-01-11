@@ -16,6 +16,7 @@
     ~/.shell:
     ~/.bash:
     ~/.bashrc:
+    ~/.bash_profile:
     ~/.zsh:
     ~/.zshrc:
 

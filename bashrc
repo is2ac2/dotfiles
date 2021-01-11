@@ -9,9 +9,9 @@ if [ -f ~/.bashrc_local_before ]; then
 fi
 
 source ~/.shell/info.sh
+source ~/.shell/aliases.sh
 source ~/.bash/autocomplete.bash
 source ~/.bash/settings.bash
-source ~/.shell/aliases.sh
 source ~/.bash/prompt.bash
 
 if [ -f ~/.shell_local_after ]; then

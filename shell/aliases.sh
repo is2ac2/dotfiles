@@ -36,10 +36,18 @@ topc() {
 
 # update dotfiles
 dfu() {
+    if [[ $# -ne 0 ]]; then
+        echo "Updates dotfiles. Usage: dfu"
+        exit 1
+    fi
+
     cd ~/.dotfiles
     git pull --ff-only
     ./install -q
 }
+
+# profile directory
+alias prof='du -h -d 4 | sort -h'
 
 # for downloading files from google drive
 function gdrive {

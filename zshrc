@@ -9,8 +9,8 @@ if [ -f ~/.zshrc_local_before ]; then
 fi
 
 source ~/.shell/info.sh
-source ~/.zsh/settings.zsh
 source ~/.shell/aliases.sh
+source ~/.zsh/settings.zsh
 
 if [ -f ~/.shell_local_after ]; then
     source ~/.shell_local_after

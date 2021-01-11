@@ -1,0 +1,3 @@
+slurm_snapshot_code
+*.py[co]
+__pycache__

@@ -3,20 +3,24 @@
       create: true
       relink: true
 
-- clean: ['~', '~/.config']
+- clean: ['~']
 
 - link:
-  ~/.dotfiles: ''
-  # ~/.bash:
-  # ~/.bashrc:
-  # ~/.gitconfig:
-  # ~/.gitignore_global:
-  ~/.shell:
-  # ~/.tmux.conf:
-  ~/.vim:
-  ~/.vimrc:
-  # ~/.zsh:
-  # ~/.zshrc:
+    ~/.dotfiles: ''
+    ~/.tmux.conf:
+    ~/.vim:
+    ~/.vimrc:
+    ~/.gitconfig:
+    ~/.gitignore_global:
+    ~/.condarc:
+    ~/.shell:
+    ~/.bash:
+    ~/.bashrc:
+    ~/.zsh:
+    ~/.zshrc:
+
+- create:
+  - ~/.vim/undo-history
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

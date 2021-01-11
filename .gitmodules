@@ -1,6 +1,7 @@
 [submodule "dotbot"]
 	path = dotbot
 	url = git@github.com:anishathalye/dotbot.git
+	ignore = dirty
 [submodule "vim/bundle/badwolf"]
 	path = vim/bundle/badwolf
 	url = git@github.com:sjl/badwolf.git

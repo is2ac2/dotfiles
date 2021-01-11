@@ -1,3 +1,31 @@
+# .gitignore_global
+
+# Compiled source
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Slurm
 slurm_snapshot_code
+
+# Logs
+*.log
+*.sql
+*.sqlite
+
+# Python
 *.py[co]
 __pycache__
+
+# OS-generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db

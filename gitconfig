@@ -1,6 +1,6 @@
 [user]
   name = Benjamin Bolte
-  email = bkbolte18@gmail.com
+  email = ben@bolte.cc
 
 [alias]
   sl = !git smartlog
@@ -10,4 +10,4 @@
   rebase = true
 
 [core]
-  excludesfile = ~/.gitignore
+  excludesfile = ~/.gitignore_global

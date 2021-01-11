@@ -14,7 +14,6 @@
     ~/.gitignore_global:
     ~/.condarc:
     ~/.scripts:
-    ~/.binaries:
     ~/.shell:
     ~/.bash:
     ~/.bashrc:

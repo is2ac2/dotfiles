@@ -4,7 +4,7 @@ Repo for managing my dotfiles across several environments.
 
 ## Installation
 
-```
+```sh
 git clone git@github.com:codekansas/dotfiles.git && cd dotfiles && ./install
 ```
 

@@ -22,7 +22,7 @@ def iter_sample_fast(iterable: Iterable[str], samplesize: int) -> List[str]:
     return results
 
 
-def get_word_password(num_words: int) -> str:
+def get_word_password(num_words: int, max_length: int) -> str:
     dfile = Path("/usr/share/dict/words")
     if not dfile.exists():
         raise FileNotFoundError("Password generation requires a word dictionary; "
@@ -31,7 +31,9 @@ def get_word_password(num_words: int) -> str:
     with open(dfile, "r") as f:
         def _iter() -> str:
             for l in f:
-                yield l.strip().lower()
+                r = l.strip().lower()
+                if 5 <= len(r) <= max_length:
+                    yield r
         words = iter_sample_fast(_iter(), num_words)
     return " ".join(words)
 
@@ -50,6 +52,8 @@ def main():
     parser = argparse.ArgumentParser(description="Generates unique passwords")
     parser.add_argument("-n", "--num-words", type=int, default=4,
                         help="Number of words to include in password")
+    parser.add_argument("-w", "--max-word-length", type=int, default=10,
+                        help="Maximum word length to include")
     parser.add_argument("-y", "--yubikey-mode", default=False, action="store_true",
                         help="If set, generate a password Yubikey-style")
     parser.add_argument("-l", "--yubikey-length", type=int, default=20,
@@ -59,7 +63,7 @@ def main():
     if args.yubikey_mode:
         password = get_yubikey_password(args.yubikey_length)
     else:
-        password = get_word_password(args.num_words)
+        password = get_word_password(args.num_words, args.max_word_length)
 
     print("Password:", password)
 

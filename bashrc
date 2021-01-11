@@ -11,7 +11,6 @@ fi
 source ~/.shell/info.sh
 source ~/.bash/autocomplete.bash
 source ~/.bash/settings.bash
-source ~/.shell/external.sh
 source ~/.shell/aliases.sh
 source ~/.bash/prompt.bash
 

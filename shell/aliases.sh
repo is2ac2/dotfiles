@@ -18,6 +18,10 @@ alias cl='clear'
 # nvidia
 alias smi='watch -n1 nvidia-smi'
 
+# time
+alias today='date +"%Y-%m-%d'
+alias now='date +"%T"'
+
 # slurm
 alias squeueme='squeue -u $USER'
 alias sshareme='sshare -u $USER'

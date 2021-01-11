@@ -1,6 +1,7 @@
 # conda
 list_conda_envs() {
     if [[ $(ls -1 $1 2> /dev/null) ]]; then
+        export CONDA_ENV_ROOT=$1
         echo -e "\033[1;32m----- Conda Environments -----\033[0m"
         ls -1 $1
         echo -e "\033[1;32m------------------------------\033[0m"

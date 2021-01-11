@@ -10,6 +10,7 @@ fi
 
 source ~/.shell/info.sh
 source ~/.shell/aliases.sh
+source ~/.zsh/aliases.zsh
 source ~/.zsh/settings.zsh
 
 if [ -f ~/.shell_local_after ]; then

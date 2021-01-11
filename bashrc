@@ -10,6 +10,7 @@ fi
 
 source ~/.shell/info.sh
 source ~/.shell/aliases.sh
+source ~/.bash/aliases.bash
 source ~/.bash/autocomplete.bash
 source ~/.bash/settings.bash
 source ~/.bash/prompt.bash

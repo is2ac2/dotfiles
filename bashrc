@@ -10,6 +10,7 @@ fi
 
 source ~/.shell/info.sh
 source ~/.shell/aliases.sh
+source ~/.shell/tools.sh
 source ~/.bash/aliases.bash
 source ~/.bash/autocomplete.bash
 source ~/.bash/settings.bash
@@ -22,3 +23,5 @@ fi
 if [ -f ~/.bashrc_local_after ]; then
     source ~/.bashrc_local_after
 fi
+
+export PATH=$PATH:~/.scripts

@@ -11,6 +11,7 @@ fi
 source ~/.zsh/plugins_before.zsh
 source ~/.shell/info.sh
 source ~/.shell/aliases.sh
+source ~/.shell/tools.sh
 source ~/.zsh/aliases.zsh
 source ~/.zsh/settings.zsh
 source ~/.zsh/autocomplete.zsh
@@ -23,3 +24,5 @@ fi
 if [ -f ~/.zshrc_local_after ]; then
     source ~/.zshrc_local_after
 fi
+
+export PATH=$PATH:~/.scripts

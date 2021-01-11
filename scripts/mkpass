@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+
+import argparse
+import random
+from pathlib import Path
+from typing import Iterable, List
+
+
+def iter_sample_fast(iterable: Iterable[str], samplesize: int) -> List[str]:
+    results = []
+    iterator = iter(iterable)
+    try:
+        for _ in range(samplesize):
+            results.append(next(iterator))
+    except StopIteration:
+        raise ValueError("Sample larger than population.")
+    random.shuffle(results)
+    for i, v in enumerate(iterator, samplesize):
+        r = random.randint(0, i)
+        if r < samplesize:
+            results[r] = v
+    return results
+
+
+def get_word_password(num_words: int) -> str:
+    dfile = Path("/usr/share/dict/words")
+    if not dfile.exists():
+        raise FileNotFoundError("Password generation requires a word dictionary; "
+                                f"dictionary {dfile} not found. Use --yubikey-mode"
+                                "instead to generate a standard password.")
+    with open(dfile, "r") as f:
+        def _iter() -> str:
+            for l in f:
+                yield l.strip().lower()
+        words = iter_sample_fast(_iter(), num_words)
+    return " ".join(words)
+
+
+def get_yubikey_password(length: int) -> str:
+    options = [chr(i) for i in range(48, 58)]  # Numbers
+    options += [chr(i) for i in range(65, 91)]  # Upper case
+    options += [chr(i) for i in range(97, 123)]  # Lower case
+    return "".join([
+        options[random.randint(0, len(options) - 1)]
+        for _ in range(length)
+    ])
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Generates unique passwords")
+    parser.add_argument("-n", "--num-words", type=int, default=4,
+                        help="Number of words to include in password")
+    parser.add_argument("-y", "--yubikey-mode", default=False, action="store_true",
+                        help="If set, generate a password Yubikey-style")
+    parser.add_argument("-l", "--yubikey-length", type=int, default=20,
+                        help="Number of characters in Yubikey-style password")
+    args = parser.parse_args()
+
+    if args.yubikey_mode:
+        password = get_yubikey_password(args.yubikey_length)
+    else:
+        password = get_word_password(args.num_words)
+
+    print("Password:", password)
+
+
+if __name__ == "__main__":
+    main()

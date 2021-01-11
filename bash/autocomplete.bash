@@ -23,3 +23,18 @@ _tmuxc_complete(){
     return 0
 }
 complete -F _tmuxc_complete tmuxc
+
+# tmp-scripts
+_tcomplete() {
+    local cur opts
+
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    opts="$(find $TMP_SCRIPT_ROOT -type f | cut -c$((${#TMP_SCRIPT_ROOT}+2))- | paste -sd " " -)"
+
+    COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    return 0
+}
+complete -F _tcomplete tedit
+complete -F _tcomplete trun
+complete -F _tcomplete tdelete

@@ -22,3 +22,12 @@ _tmuxc() {
 }
 compdef _tmuxc tmuxc
 
+# tmp-scripts
+_tcomplete() {
+    local opts
+    opts="$(find $TMP_SCRIPT_ROOT -type f | cut -c$((${#TMP_SCRIPT_ROOT}+2))- | paste -sd " " -)"
+    compadd ${=opts}
+}
+compdef _tcomplete tedit
+compdef _tcomplete trun
+compdef _tcomplete tdelete

@@ -13,15 +13,14 @@
     ~/.gitconfig:
     ~/.gitignore_global:
     ~/.condarc:
+    ~/.scripts:
+    ~/.binaries:
     ~/.shell:
     ~/.bash:
     ~/.bashrc:
     ~/.bash_profile:
     ~/.zsh:
     ~/.zshrc:
-
-- create:
-  - ~/.vim/undo-history
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

@@ -1,0 +1,13 @@
+[user]
+  name = Benjamin Bolte
+  email = bkbolte18@gmail.com
+
+[alias]
+  sl = !git smartlog
+  smartlog = log --graph --pretty=format:'commit: %C(bold red)%h%Creset %C(red)<%H>%Creset %C(bold magenta)%d %Creset%ndate: %C(bold yellow)%cd %Creset%C(yellow)%cr%Creset%nauthor: %C(bold blue)    %an%Creset %C(blue)<%ae>%Creset%n%C(cyan)%s%n%Creset'
+
+[pull]
+  rebase = true
+
+[core]
+  excludesfile = ~/.gitignore

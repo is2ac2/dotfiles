@@ -12,8 +12,8 @@ source ~/.zsh/plugins_before.zsh
 source ~/.shell/info.sh
 source ~/.shell/aliases.sh
 source ~/.zsh/aliases.zsh
-source ~/.zsh/autocomplete.zsh
 source ~/.zsh/settings.zsh
+source ~/.zsh/autocomplete.zsh
 source ~/.zsh/plugins_after.zsh
 
 if [ -f ~/.shell_local_after ]; then

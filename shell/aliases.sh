@@ -15,9 +15,6 @@ alias mv='mv -i'
 # clear
 alias cl='clear'
 
-# conda
-alias cenv='conda activate'
-
 # nvidia
 alias smi='watch -n1 nvidia-smi'
 

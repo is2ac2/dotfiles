@@ -1,4 +1,5 @@
 # conda
+alias cenv='conda activate'
 _conda_complete() {
     local cur opts
     COMPREPLY=()

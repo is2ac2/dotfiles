@@ -3,7 +3,7 @@ autoload -Uz compinit && compinit -i
 zstyle ':completion:*' menu select=4
 zmodload zsh/complist
 
-# Initialize editing command line (must be donne before bindkey stuff)
+# Initialize editing command line (must be done before bindkey stuff)
 autoload -U edit-command-line && zle -N edit-command-line
 
 # Set automatic cd (typing directory name with no 'cd')

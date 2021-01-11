@@ -1,0 +1,12 @@
+# .gitignore
+
+# Editor
+.vscode
+.DS_Store
+
+# Python
+*.py[co]
+__pycache__
+
+# Misc
+dotfiles/binaries/scripts

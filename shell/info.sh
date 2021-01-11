@@ -1,15 +1,9 @@
 # conda
-list_conda_envs() {
-    if [[ $(ls -1 $1 2> /dev/null) ]]; then
-        export CONDA_ENV_ROOT=$1
-        echo -e "\033[1;32m----- Conda Environments -----\033[0m"
-        ls -1 $1
-        echo -e "\033[1;32m------------------------------\033[0m"
-    fi
-}
-
-list_conda_envs ${HOME}/.conda/envs/ 
-list_conda_envs ${CONDA_PREFIX}/envs/
+if [[ -f ~/.conda/environments.txt ]]; then
+    echo -e "\033[1;32m----- Conda Environments -----\033[0m"
+    cat ~/.conda/environments.txt | xargs -L1 basename
+    echo -e "\033[1;32m------------------------------\033[0m"
+fi
 
 # tmux
 if [[ -n $TMUX ]]; then

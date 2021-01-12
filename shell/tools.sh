@@ -116,3 +116,29 @@ port-scan() {
       echo "port $port is closed"
   done
 }
+
+# --------------------------------
+# Edit conda environment variables
+# --------------------------------
+
+cvars() {
+    if [[ ! -n $CONDA_PREFIX ]]; then
+        echo "Can't edit outside of Conda environment"
+        return 0
+    fi
+
+    ACTIVATE=$CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+    DEACTIVATE=$CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh
+    mkdir -p $(dirname $ACTIVATE) $(dirname $DEACTIVATE)
+
+    if [[ ! -f $ACTIVATE ]]; then
+        echo "#! /bin/sh" >> $ACTIVATE
+        echo "# activate.d/env_vars.sh" >> $ACTIVATE
+    fi
+    if [[ ! -f $DEACTIVATE ]]; then
+        echo "#!/bin/sh" >> $DEACTIVATE
+        echo "# deactivate.d/env_vars.sh" >> $DEACTIVATE
+    fi
+
+    vim $ACTIVATE $DEACTIVATE -p
+}

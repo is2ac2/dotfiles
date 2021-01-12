@@ -18,6 +18,9 @@ alias cl='clear'
 # nvidia
 alias smi='watch -n1 nvidia-smi'
 
+# tmux
+alias tmuxn='tmux new-session -d -s'
+
 # time
 alias today='date +"%Y-%m-%d'
 alias now='date +"%T"'

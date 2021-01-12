@@ -23,4 +23,4 @@
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
-
+  - [~/.zsh/oh-my-zsh.sh, Installing oh-my-zsh]

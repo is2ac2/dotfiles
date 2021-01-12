@@ -3,7 +3,7 @@
       create: true
       relink: true
 
-- clean: ['~']
+- clean: ['~', '~/.config']
 
 - link:
     ~/.dotfiles: ''
@@ -23,3 +23,4 @@
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
+

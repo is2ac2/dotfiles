@@ -54,7 +54,7 @@ topc <regex>
 Edit Conda environment variables:
 
 ```bash
-cvars
+cvars (rm {r}) (rm-activate {ra}) (rm-deactivate {rd}) (activate {a}) (deactivate {d})
 ```
 
 Activate Conda environment (alias for `conda activate`, with tab completion):

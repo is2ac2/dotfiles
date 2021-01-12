@@ -1,4 +1,7 @@
+# -----
 # conda
+# -----
+
 _cenv() {
     local opts
     opts=$(cat ~/.conda/environments.txt | xargs -L1 basename | tr '\n' ' ')
@@ -11,7 +14,15 @@ if [[ -f ~/.conda/environments.txt ]]; then
     compdef _cenv cenv
 fi
 
+_cvars() {
+    compadd rm rm-activate rm-deactivate activate deactivate
+}
+compdef _cvars cvars
+
+# ----
 # tmux
+# ----
+
 tmuxc() {
     tmux -CC a -t $@
 }
@@ -22,7 +33,10 @@ _tmuxc() {
 }
 compdef _tmuxc tmuxc
 
+# -----------
 # tmp-scripts
+# -----------
+
 _tcomplete() {
     local opts
     opts="$(find $TMP_SCRIPT_ROOT -type f | cut -c$((${#TMP_SCRIPT_ROOT}+2))- | paste -sd " " -)"

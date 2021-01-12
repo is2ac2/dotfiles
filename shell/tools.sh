@@ -122,8 +122,12 @@ port-scan() {
 # --------------------------------
 
 cvars() {
-    if [[ ! -n $CONDA_PREFIX ]]; then
+    if [[ ! -n $CONDA_PREFIX ]] || [[ "$CONDA_DEFAULT_ENV" == "base" ]]; then
         echo "Can't edit outside of Conda environment"
+        return 0
+    fi
+    if [[ "$CONDA_DEFAULT_ENV" == "base" ]]; then
+        echo "Can't edit base environment variables"
         return 0
     fi
 
@@ -131,14 +135,78 @@ cvars() {
     DEACTIVATE=$CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh
     mkdir -p $(dirname $ACTIVATE) $(dirname $DEACTIVATE)
 
-    if [[ ! -f $ACTIVATE ]]; then
+    WRITE_ACTIVATE=true
+    WRITE_DEACTIVATE=true
+    [[ -f $ACTIVATE ]] && WRITE_ACTIVATE=false
+    [[ -f $DEACTIVATE ]] && WRITE_DEACTIVATE=false
+
+    EDIT_ACTIVATE=false
+    EDIT_DEACTIVATE=false
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            rm | r)
+                rm $ACTIVATE $DEACTIVATE
+                ;;
+            rm-activate | ra)
+                rm $ACTIVATE
+                ;;
+            rm-deactivate | rd)
+                rm $DEACTIVATE
+                ;;
+            activate | a)
+                EDIT_ACTIVATE=true
+                ;;
+            deactivate | d)
+                EDIT_DEACTIVATE=true
+                ;;
+            *)
+                echo "Invalid option: $1. Expected one of"
+                echo "  - rm {r}"
+                echo "  - rm-activate {ra}"
+                echo "  - rm-deactivate {rd}"
+                echo "  - activate {a}"
+                echo "  - deactivate {d})"
+                return 0
+                ;;
+        esac
+        shift
+    done
+
+    if [[ $WRITE_ACTIVATE == true ]]; then
         echo "#! /bin/sh" >> $ACTIVATE
-        echo "# activate.d/env_vars.sh" >> $ACTIVATE
+        echo "# $ACTIVATE" >> $ACTIVATE
+        echo "" >> $ACTIVATE
+        echo "RED='\033[0;31m'" >> $ACTIVATE
+        echo "GREEN='\033[0;32m'" >> $ACTIVATE
+        echo "ORANGE='\033[0;33m'" >> $ACTIVATE
+        echo "BLUE='\033[0;34m'" >> $ACTIVATE
+        echo "PURPLE='\033[0;35m'" >> $ACTIVATE
+        echo "CYAN='\033[0;35m'" >> $ACTIVATE
+        echo "NC='\033[0m'" >> $ACTIVATE
+        echo "" >> $ACTIVATE
     fi
-    if [[ ! -f $DEACTIVATE ]]; then
+    if [[ $WRITE_DEACTIVATE == true ]]; then
         echo "#!/bin/sh" >> $DEACTIVATE
-        echo "# deactivate.d/env_vars.sh" >> $DEACTIVATE
+        echo "# $ACTIVATE" >> $DEACTIVATE
+        echo "" >> $DEACTIVATE
+        echo "RED='\033[0;31m'" >> $DEACTIVATE
+        echo "GREEN='\033[0;32m'" >> $DEACTIVATE
+        echo "ORANGE='\033[0;33m'" >> $DEACTIVATE
+        echo "BLUE='\033[0;34m'" >> $DEACTIVATE
+        echo "PURPLE='\033[0;35m'" >> $DEACTIVATE
+        echo "CYAN='\033[0;35m'" >> $DEACTIVATE
+        echo "NC='\033[0m'" >> $DEACTIVATE
+        echo "" >> $DEACTIVATE
     fi
 
-    vim $ACTIVATE $DEACTIVATE -p
+    if [[ "$EDITOR" == "vim" ]]; then
+        [[ $EDIT_ACTIVATE == true ]] && vim "+normal G$" +startinsert $ACTIVATE
+        [[ $EDIT_DEACTIVATE == true ]] && vim "+normal G$" +startinsert $DEACTIVATE
+    else
+        [[ $EDIT_ACTIVATE == true ]] && $EDITOR $ACTIVATE
+        [[ $EDIT_DEACTIVATE == true ]] && $EDITOR $DEACTIVATE
+    fi
+
+    echo "Done editing environment variables for $CONDA_PREFIX"
 }

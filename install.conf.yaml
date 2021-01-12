@@ -5,6 +5,9 @@
 
 - clean: ['~', '~/.config']
 
+- create:
+  - ~/.ssh/config.d
+
 - link:
     ~/.dotfiles: ''
     ~/.tmux.conf:
@@ -20,6 +23,7 @@
     ~/.bash_profile:
     ~/.zsh:
     ~/.zshrc:
+    ~/.ssh/config.d/base: ssh/config.d/base
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

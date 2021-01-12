@@ -20,8 +20,12 @@ alias smi='watch -n1 nvidia-smi'
 
 # tmux
 tmuxn() {
-    tmux new-session -d -s $@
-    tmux ls
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: tmuxn <new-session-name>"
+        exit 1
+    fi
+    tmux new-session -d -s $1
+    tmux -CC attach -t $1
 }
 
 # time

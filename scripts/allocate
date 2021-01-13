@@ -1,0 +1,11 @@
+#! /bin/sh
+# Allocates an exclusive node.
+
+sbatch \
+    --gres=gpu:volta:8 \
+    --wrap "sleep 259200" \
+    --constraint volta32gb \
+    --time 1440 \
+    --exclusive \
+    --partition dev \
+    --mem 500G

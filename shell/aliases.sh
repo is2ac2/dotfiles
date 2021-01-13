@@ -61,7 +61,15 @@ dfu() {
 }
 
 # profile directory
-alias prof='du -h -d 4 | sort -h'
+prof() {
+    if [[ $# -ne 0 ]]; then
+        DEPTH=$1
+        shift
+    else
+        DEPTH=4
+    fi
+    du -h -d $DEPTH | sort -h
+}
 
 # for downloading files from google drive
 function gdrive {

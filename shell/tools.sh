@@ -117,6 +117,31 @@ port-scan() {
   done
 }
 
+
+# --------------------------------
+# Download files from Google Drive
+# --------------------------------
+
+gdrive() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: gdrive <fid> <fpath>"
+        return 1
+    fi
+    FILEID="$1"
+    FILENAME="$2"
+    O=$(wget \
+        --quiet \
+        --save-cookies /tmp/cookies.txt \
+        --keep-session-cookies \
+        --no-check-certificate \
+        "https://docs.google.com/uc?export=download&id=${FILEID}" -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')
+    wget \
+        --load-cookies /tmp/cookies.txt \
+        "https://docs.google.com/uc?export=download&confirm=${O}&id=${FILEID}" -O $FILENAME
+    rm -rf /tmp/cookies.txt
+    return 0
+}
+
 # --------------------------------
 # Edit conda environment variables
 # --------------------------------

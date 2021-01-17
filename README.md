@@ -33,6 +33,14 @@ Profile directory (useful for finding large files):
 prof (<dir-name>)
 ```
 
+### mkcd
+
+Make directory, then `cd` to that directory
+
+```bash
+mkcd <dir-name>
+```
+
 ### gdrive
 
 Download file from Google drive:

@@ -1,4 +1,7 @@
-# slurm
+# -----
+# Slurm
+# -----
+
 scancelme() {
     read "reply?Really cancel all your runs? [N/y] "
     echo

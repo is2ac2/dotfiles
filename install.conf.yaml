@@ -18,6 +18,7 @@
     ~/.condarc:
     ~/.scripts:
     ~/.shell:
+    ~/.slurm:
     ~/.bash:
     ~/.bashrc:
     ~/.bash_profile:

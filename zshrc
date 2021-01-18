@@ -1,5 +1,13 @@
 # .zshrc
 
+# ---------------------------------
+# Return for non-interactive shells
+# ---------------------------------
+
+if [ -z "$PS1" ]; then
+    return
+fi
+
 # ---------
 # oh-my-zsh
 # ---------

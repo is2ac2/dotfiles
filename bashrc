@@ -1,5 +1,17 @@
 # .bashrc
 
+# ---------------------------------
+# Return for non-interactive shells
+# ---------------------------------
+
+if [ -z "$PS1" ]; then
+    return
+fi
+
+# ------------------
+# Main Bash commands
+# ------------------
+
 if [ -f ~/.shell_local_before ]; then
     source ~/.shell_local_before
 fi

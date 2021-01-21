@@ -129,6 +129,12 @@ Safely cancel all my current Slurm jobs:
 scancelme
 ```
 
+Allocate an empty node in Slurm for testing:
+
+```bash
+slurm-allocate
+```
+
 ### nvidia
 
 Track NVIDIA GPU usage:

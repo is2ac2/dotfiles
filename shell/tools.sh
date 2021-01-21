@@ -257,3 +257,27 @@ cvars() {
 
     echo "Done editing environment variables for $CONDA_PREFIX"
 }
+
+# ---------------
+# Tools for Slurm
+# ---------------
+
+slurm-allocate() {
+    if [ $# -ne 0 ]; then
+        echo "Usage: allocate"
+        echo "  Allocates an empty cluster in SLURM"
+        return 1
+    fi
+
+    sbatch \
+        --gres=gpu:volta:8 \
+        --wrap "sleep 259200" \
+        --constraint volta32gb \
+        --time 1440 \
+        --exclusive \
+        --partition dev \
+        --mem 500G
+    return 0
+}
+
+alias allocate=slurm-allocate

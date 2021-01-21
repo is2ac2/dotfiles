@@ -26,6 +26,9 @@ alias now='date +"%T"'
 alias squeueme='squeue -u $USER'
 alias sshareme='sshare -u $USER'
 
+# jupyter
+alias jpn='jupyter notebook'
+
 # cuda
 export TORCH_CUDA_ARCH_LIST="6.0;7.0"
 

@@ -97,6 +97,18 @@ Delete a script (with tab completion):
 tdelete <script-name>
 ```
 
+Backup scripts to permanent location:
+
+```bash
+tbackup (<script-loc>)
+```
+
+Restore scripts from permanent location:
+
+```bash
+trestore (<script-loc>)
+```
+
 ### slurm
 
 Show all my current Slurm jobs:

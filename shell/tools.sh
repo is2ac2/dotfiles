@@ -5,6 +5,7 @@
 # -------------------
 
 export TMP_SCRIPT_ROOT=/tmp/scripts/
+export TMP_SCRIPT_BACKUP=$HOME/.tmp-scripts/
 
 mkdir -p $TMP_SCRIPT_ROOT
 
@@ -21,7 +22,7 @@ tdelete() {
     filepath=$TMP_SCRIPT_ROOT/$filename
     if [[ ! -f "${filepath}" ]]; then
         echo "[ ${filename} ] doesn't exist! Available:"
-        _print_available_scripts $filename
+        _print_available_scripts
     else
         rm "${filepath}"
     fi
@@ -36,7 +37,7 @@ tedit() {
     filepath=$TMP_SCRIPT_ROOT/$filename
     if [[ ! -f "${filepath}" ]]; then
         echo "[ ${filename} ] doesn't exist! Available:"
-        _print_available_scripts $filename
+        _print_available_scripts
     else
         $EDITOR "${filepath}"
     fi
@@ -53,7 +54,7 @@ tinit() {
 
     if [[ -f "${filepath}" ]]; then
         echo "[ ${filename} ] already exist! Existing files:"
-        _print_available_scripts $filename
+        _print_available_scripts
     else
         touch ${filepath}
         chmod +x "${filepath}"
@@ -70,10 +71,31 @@ trun() {
     filepath=$TMP_SCRIPT_ROOT/$filename
     if [[ ! -f "${filepath}" ]]; then
         echo "[ ${filename} ] doesn't exist! Available:"
-        _print_available_scripts $filename
+        _print_available_scripts
     else
         ${filepath} $@
     fi
+}
+
+tbackup() {
+    if [[ $# -ne 0 ]]; then
+        BACKUP_DIR=$1
+    else
+        BACKUP_DIR=$TMP_SCRIPT_BACKUP
+    fi
+    echo "Backing up tmp-scripts to $BACKUP_DIR"
+    mkdir -p $BACKUP_DIR
+    cp -r $TMP_SCRIPT_ROOT $BACKUP_DIR
+}
+
+trestore() {
+    if [[ $# -ne 0 ]]; then
+        BACKUP_DIR=$1
+    else
+        BACKUP_DIR=$TMP_SCRIPT_BACKUP
+    fi
+    echo "Restoring tmp-scripts from $BACKUP_DIR"
+    cp -r $BACKUP_DIR $TMP_SCRIPT_ROOT
 }
 
 # -----––-------

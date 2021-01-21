@@ -65,6 +65,7 @@ dfu() {
     cd ~/.dotfiles
     git pull --ff-only
     ./install -q
+    cd -
     return 0
 }
 

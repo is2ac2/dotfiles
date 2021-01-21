@@ -20,6 +20,9 @@ slurm_snapshot_code
 *.py[co]
 __pycache__
 
+# Jupyter
+migrated
+
 # OS-generated
 .DS_Store
 .DS_Store?

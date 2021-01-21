@@ -15,6 +15,7 @@
     ~/.vimrc:
     ~/.gitconfig:
     ~/.gitignore_global:
+    ~/.jupyter:
     ~/.condarc:
     ~/.scripts:
     ~/.shell:

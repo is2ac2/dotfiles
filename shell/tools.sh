@@ -146,21 +146,21 @@ port-scan() {
 
 gdrive() {
     if [[ $# -ne 2 ]]; then
-        echo "Usage: gdrive <fid> <fpath>"
+        echo "Usage: gdrive <google-fid> <output-path>"
         return 1
     fi
     FILEID="$1"
     FILENAME="$2"
     O=$(wget \
         --quiet \
-        --save-cookies /tmp/cookies.txt \
+        --save-cookies /tmp/gdrive-cookies.txt \
         --keep-session-cookies \
         --no-check-certificate \
         "https://docs.google.com/uc?export=download&id=${FILEID}" -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')
     wget \
-        --load-cookies /tmp/cookies.txt \
+        --load-cookies /tmp/gdrive-cookies.txt \
         "https://docs.google.com/uc?export=download&confirm=${O}&id=${FILEID}" -O $FILENAME
-    rm -rf /tmp/cookies.txt
+    rm -f /tmp/gdrive-cookies.txt
     return 0
 }
 

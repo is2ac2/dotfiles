@@ -46,7 +46,7 @@ mkcd <dir-name>
 Download file from Google drive:
 
 ```bash
-gdrive <fid> <fpath>
+gdrive <google-fid> <output-path>
 ```
 
 ### topc

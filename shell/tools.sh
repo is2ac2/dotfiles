@@ -10,7 +10,7 @@ export TMP_SCRIPT_BACKUP=$HOME/.tmp-scripts/
 mkdir -p $TMP_SCRIPT_ROOT
 
 _print_available_scripts() {
-    find $TMP_SCRIPT_ROOT -type f | cut -c$((${#TMP_SCRIPT_ROOT}+2))-
+    find $TMP_SCRIPT_ROOT -type f | cut -c$((${#TMP_SCRIPT_ROOT} + 2))-
 }
 
 tdelete() {
@@ -103,30 +103,30 @@ trestore() {
 # --------------
 
 port-scan() {
-  if [[ -z $1 || -z $2 ]]; then
-    echo "Usage: $0 <host> <port, ports, or port-range>"
-    return
-  fi
-  
-  local host=$1
-  local ports=()
-  case $2 in
+    if [[ -z $1 || -z $2 ]]; then
+        echo "Usage: $0 <host> <port, ports, or port-range>"
+        return
+    fi
+
+    local host=$1
+    local ports=()
+    case $2 in
     *-*)
-      IFS=- read start end <<< "$2"
-      for ((port=start; port <= end; port++)); do
-        ports+=($port)
-      done
-      ;;
+        IFS=- read start end <<<"$2"
+        for ((port = start; port <= end; port++)); do
+            ports+=($port)
+        done
+        ;;
     *,*)
-      IFS=, read -ra ports <<< "$2"
-      ;;
+        IFS=, read -ra ports <<<"$2"
+        ;;
     *)
-      ports+=($2)
-      ;;
-  esac
-  
-  for port in "${ports[@]}"; do
-    perl -e '
+        ports+=($2)
+        ;;
+    esac
+
+    for port in "${ports[@]}"; do
+        perl -e '
         eval {
         $SIG{ALRM} = sub { die };
         alarm shift;
@@ -134,11 +134,10 @@ port-scan() {
         };
         if ($@) { exit 1 }
     ' 1 "echo >/dev/tcp/$host/$port" &&
-      echo "port $port is open" ||
-      echo "port $port is closed"
-  done
+            echo "port $port is open" ||
+            echo "port $port is closed"
+    done
 }
-
 
 # --------------------------------
 # Download files from Google Drive
@@ -192,59 +191,59 @@ cvars() {
 
     while [[ $# -gt 0 ]]; do
         case $1 in
-            rm | r)
-                rm $ACTIVATE $DEACTIVATE
-                ;;
-            rm-activate | ra)
-                rm $ACTIVATE
-                ;;
-            rm-deactivate | rd)
-                rm $DEACTIVATE
-                ;;
-            activate | a)
-                EDIT_ACTIVATE=true
-                ;;
-            deactivate | d)
-                EDIT_DEACTIVATE=true
-                ;;
-            *)
-                echo "Invalid option: $1. Expected one of"
-                echo "  - rm {r}"
-                echo "  - rm-activate {ra}"
-                echo "  - rm-deactivate {rd}"
-                echo "  - activate {a}"
-                echo "  - deactivate {d})"
-                return 0
-                ;;
+        rm | r)
+            rm $ACTIVATE $DEACTIVATE
+            ;;
+        rm-activate | ra)
+            rm $ACTIVATE
+            ;;
+        rm-deactivate | rd)
+            rm $DEACTIVATE
+            ;;
+        activate | a)
+            EDIT_ACTIVATE=true
+            ;;
+        deactivate | d)
+            EDIT_DEACTIVATE=true
+            ;;
+        *)
+            echo "Invalid option: $1. Expected one of"
+            echo "  - rm {r}"
+            echo "  - rm-activate {ra}"
+            echo "  - rm-deactivate {rd}"
+            echo "  - activate {a}"
+            echo "  - deactivate {d})"
+            return 0
+            ;;
         esac
         shift
     done
 
     if [[ $WRITE_ACTIVATE == true ]]; then
-        echo "#! /bin/sh" >> $ACTIVATE
-        echo "# $ACTIVATE" >> $ACTIVATE
-        echo "" >> $ACTIVATE
-        echo "RED='\033[0;31m'" >> $ACTIVATE
-        echo "GREEN='\033[0;32m'" >> $ACTIVATE
-        echo "ORANGE='\033[0;33m'" >> $ACTIVATE
-        echo "BLUE='\033[0;34m'" >> $ACTIVATE
-        echo "PURPLE='\033[0;35m'" >> $ACTIVATE
-        echo "CYAN='\033[0;35m'" >> $ACTIVATE
-        echo "NC='\033[0m'" >> $ACTIVATE
-        echo "" >> $ACTIVATE
+        echo "#! /bin/sh" >>$ACTIVATE
+        echo "# $ACTIVATE" >>$ACTIVATE
+        echo "" >>$ACTIVATE
+        echo "RED='\033[0;31m'" >>$ACTIVATE
+        echo "GREEN='\033[0;32m'" >>$ACTIVATE
+        echo "ORANGE='\033[0;33m'" >>$ACTIVATE
+        echo "BLUE='\033[0;34m'" >>$ACTIVATE
+        echo "PURPLE='\033[0;35m'" >>$ACTIVATE
+        echo "CYAN='\033[0;35m'" >>$ACTIVATE
+        echo "NC='\033[0m'" >>$ACTIVATE
+        echo "" >>$ACTIVATE
     fi
     if [[ $WRITE_DEACTIVATE == true ]]; then
-        echo "#!/bin/sh" >> $DEACTIVATE
-        echo "# $ACTIVATE" >> $DEACTIVATE
-        echo "" >> $DEACTIVATE
-        echo "RED='\033[0;31m'" >> $DEACTIVATE
-        echo "GREEN='\033[0;32m'" >> $DEACTIVATE
-        echo "ORANGE='\033[0;33m'" >> $DEACTIVATE
-        echo "BLUE='\033[0;34m'" >> $DEACTIVATE
-        echo "PURPLE='\033[0;35m'" >> $DEACTIVATE
-        echo "CYAN='\033[0;35m'" >> $DEACTIVATE
-        echo "NC='\033[0m'" >> $DEACTIVATE
-        echo "" >> $DEACTIVATE
+        echo "#!/bin/sh" >>$DEACTIVATE
+        echo "# $ACTIVATE" >>$DEACTIVATE
+        echo "" >>$DEACTIVATE
+        echo "RED='\033[0;31m'" >>$DEACTIVATE
+        echo "GREEN='\033[0;32m'" >>$DEACTIVATE
+        echo "ORANGE='\033[0;33m'" >>$DEACTIVATE
+        echo "BLUE='\033[0;34m'" >>$DEACTIVATE
+        echo "PURPLE='\033[0;35m'" >>$DEACTIVATE
+        echo "CYAN='\033[0;35m'" >>$DEACTIVATE
+        echo "NC='\033[0m'" >>$DEACTIVATE
+        echo "" >>$DEACTIVATE
     fi
 
     if [[ "$EDITOR" == "vim" ]]; then

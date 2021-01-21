@@ -1,23 +1,45 @@
 # Configuration file for ipython-notebook.
 
-c = get_config()
-
-# Don't open browser by default (usually SSH'ing in).
-c.NotebookApp.open_browser = False
-
-# Set path to notebooks directory.
 import platform
 from pathlib import Path
 
+
+# ----------------
+# Helper functions
+# ----------------
+
+
+def set_notebook_directory(directory: str) -> None:
+    path = Path(directory).expanduser()
+    path.mkdir(exist_ok=True)
+    c.NotebookManager.notebook_dir = c.NotebookApp.notebook_dir = str(path)
+
+
+# -----
+# MacOS
+# -----
+
+
+def jupyter_notebook_config_macos() -> None:
+    set_notebook_directory("~/Notebooks")
+    c.NotebookApp.port = 9905
+
+
+# -----
+# Linux
+# -----
+
+
+def jupyter_notebook_config_linux() -> None:
+    set_notebook_directory("~/notebooks")
+    c.NotebookApp.open_browser = False
+    c.NotebookApp.port = 9906
+
+
 system = platform.system()
 if system == "Linux":
-    path = Path("~/notebooks").expanduser()
+    jupyter_notebook_config_linux()
+elif system == "Darwin":
+    jupyter_notebook_config_macos()
 else:
-    path = Path("~/Notebooks").expanduser()
-path.mkdir(exist_ok=True)
-
-c.NotebookManager.notebook_dir = c.NotebookApp.notebook_dir = str(path)
-
-# Avoid colliding with common port numbers, and fail if occupied.
-c.NotebookApp.port = 9906
-c.NotebookApp.port_retries = 0
+    raise RuntimeError(f"System config not supported: {system}")

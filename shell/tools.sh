@@ -275,7 +275,7 @@ slurm-allocate() {
         --time 1440 \
         --exclusive \
         --partition dev \
-        --mem 500G
+        --mem 480G
     return 0
 }
 

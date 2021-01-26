@@ -14,6 +14,7 @@ alias mv='mv -i'
 
 # clear
 alias cl='clear'
+alias reload='exec $SHELL'
 
 # nvidia
 alias smi='watch -n1 nvidia-smi'
@@ -66,6 +67,7 @@ dfu() {
     git pull --ff-only
     ./install -q
     cd -
+    echo "Updated dotfiles; run `reload` to refresh environment"
     return 0
 }
 

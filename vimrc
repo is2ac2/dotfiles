@@ -5,7 +5,7 @@ colorscheme badwolf
 syntax enable
 
 " use spaces not tabs
-set tabstop=8 softtabstop=0 expandtab shiftwidth=2 smarttab
+set tabstop=8 softtabstop=0 expandtab shiftwidth=4 smarttab
 
 " show line numbers
 set relativenumber

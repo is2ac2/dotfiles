@@ -275,7 +275,9 @@ slurm-allocate() {
         --time 1440 \
         --exclusive \
         --partition dev \
-        --mem 480G
+        --mem 480G \
+        --output /tmp/slurm-%j.out \
+        --error /tmp/slurm-%j.err
     return 0
 }
 

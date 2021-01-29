@@ -12,7 +12,10 @@ from pathlib import Path
 def set_notebook_directory(directory: str) -> None:
     path = Path(directory).expanduser()
     path.mkdir(exist_ok=True)
-    c.NotebookManager.notebook_dir = c.ServerApp.notebook_dir = str(path)
+    path = str(path)
+    c.NotebookManager.notebook_dir = path
+    c.NotebookApp.notebook_dir = path
+    c.ServerApp.notebook_dir = path
 
 
 # -----
@@ -22,6 +25,7 @@ def set_notebook_directory(directory: str) -> None:
 
 def jupyter_notebook_config_macos() -> None:
     set_notebook_directory("~/Notebooks")
+    c.NotebookApp.port = 9905
     c.ServerApp.port = 9905
 
 
@@ -33,6 +37,7 @@ def jupyter_notebook_config_macos() -> None:
 def jupyter_notebook_config_linux() -> None:
     set_notebook_directory("~/notebooks")
     c.NotebookApp.open_browser = False
+    c.NotebookApp.port = 9906
     c.ServerApp.port = 9906
 
 

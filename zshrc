@@ -54,3 +54,4 @@ if [ -f ~/.zshrc_local_after ]; then
 fi
 
 export PATH=$PATH:~/.scripts
+

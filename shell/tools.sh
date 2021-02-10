@@ -329,6 +329,7 @@ brun() {
             ;;
         cu)
             nvcc $base.$ext -o $base && ./$base $@
+            ;;
         *)
             echo "Extension not supported: $ext"
             ;;

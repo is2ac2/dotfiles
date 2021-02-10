@@ -9,6 +9,14 @@ export TMP_SCRIPT_BACKUP=$HOME/.tmp-scripts/
 
 mkdir -p $TMP_SCRIPT_ROOT
 
+export RED='\033[0;31m'
+export GREEN='\033[0;32m'
+export ORANGE='\033[0;33m'
+export BLUE='\033[0;34m'
+export PURPLE='\033[0;35m'
+export CYAN='\033[0;35m'
+export NC='\033[0m'
+
 _print_available_scripts() {
     find $TMP_SCRIPT_ROOT -type f | cut -c$((${#TMP_SCRIPT_ROOT} + 2))-
 }
@@ -18,8 +26,8 @@ tdelete() {
         echo "Usage: bdelete <script>"
         return 0
     fi
-    filename=$1
-    filepath=$TMP_SCRIPT_ROOT/$filename
+    local filename=$1
+    local filepath=$TMP_SCRIPT_ROOT/$filename
     if [[ ! -f "${filepath}" ]]; then
         echo "[ ${filename} ] doesn't exist! Available:"
         _print_available_scripts
@@ -33,8 +41,8 @@ tedit() {
         echo "Usage: bedit <script>"
         return 0
     fi
-    filename=$1
-    filepath=$TMP_SCRIPT_ROOT/$filename
+    local filename=$1
+    local filepath=$TMP_SCRIPT_ROOT/$filename
     if [[ ! -f "${filepath}" ]]; then
         echo "[ ${filename} ] doesn't exist! Available:"
         _print_available_scripts
@@ -48,8 +56,8 @@ tinit() {
         echo "Usage: bedit <script>"
         return 0
     fi
-    filename=$1
-    filepath=$TMP_SCRIPT_ROOT/$filename
+    local filename=$1
+    local filepath=$TMP_SCRIPT_ROOT/$filename
     mkdir -p $(dirname "$filepath")
 
     if [[ -f "${filepath}" ]]; then
@@ -67,8 +75,8 @@ trun() {
         echo "Usage: bedit <script>"
         return 0
     fi
-    filename=$1
-    filepath=$TMP_SCRIPT_ROOT/$filename
+    local filename=$1
+    local filepath=$TMP_SCRIPT_ROOT/$filename
     if [[ ! -f "${filepath}" ]]; then
         echo "[ ${filename} ] doesn't exist! Available:"
         _print_available_scripts
@@ -78,6 +86,7 @@ trun() {
 }
 
 tbackup() {
+    local BACKUP_DIR
     if [[ $# -ne 0 ]]; then
         BACKUP_DIR=$1
     else
@@ -110,6 +119,7 @@ port-scan() {
 
     local host=$1
     local ports=()
+    local IFS
     case $2 in
     *-*)
         IFS=- read start end <<<"$2"
@@ -148,8 +158,8 @@ gdrive() {
         echo "Usage: gdrive <google-fid> <output-path>"
         return 1
     fi
-    FILEID="$1"
-    FILENAME="$2"
+    local FILEID="$1"
+    local FILENAME="$2"
     O=$(wget \
         --quiet \
         --save-cookies /tmp/gdrive-cookies.txt \
@@ -177,17 +187,17 @@ cvars() {
         return 0
     fi
 
-    ACTIVATE=$CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
-    DEACTIVATE=$CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh
+    local ACTIVATE=$CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+    local DEACTIVATE=$CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh
     mkdir -p $(dirname $ACTIVATE) $(dirname $DEACTIVATE)
 
-    WRITE_ACTIVATE=true
-    WRITE_DEACTIVATE=true
+    local WRITE_ACTIVATE=true
+    local WRITE_DEACTIVATE=true
     [[ -f $ACTIVATE ]] && WRITE_ACTIVATE=false
     [[ -f $DEACTIVATE ]] && WRITE_DEACTIVATE=false
 
-    EDIT_ACTIVATE=false
-    EDIT_DEACTIVATE=false
+    local EDIT_ACTIVATE=false
+    local EDIT_DEACTIVATE=false
 
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -282,3 +292,47 @@ slurm-allocate() {
 }
 
 alias allocate=slurm-allocate
+
+# ----------------
+# Tools for `make`
+# ----------------
+
+brun() {
+    if [ $# -lt 1 ]; then
+        echo "Usage: brun <fpath> (runtime-args)"
+        echo "  Make a file (if not up-to-date), then run it if make succeeds"
+        return 1
+    fi
+
+    local fpath=$1
+    shift
+
+    local fname=$(basename "$fpath")
+    local dname=$(dirname "$fpath")
+    cd $dname
+
+    local extname=$(find $dname -type f -name "$fname.*" | head -1)
+    if [[ -n ${extname} ]]; then
+        echo "${CYAN}Assuming you meant ${GREEN}${extname}${NC}"
+        fname=$extname
+    fi
+
+    local base="${fname%.*}"
+    local ext=$(echo "${fname##*.}" | awk '{print tolower($0)}')
+
+    case $ext in
+        $base)
+            echo "No extension found"
+            ;;
+        cc|cpp|c)
+            make $base && ./$base $@
+            ;;
+        cu)
+            nvcc $base.$ext -o $base && ./$base $@
+        *)
+            echo "Extension not supported: $ext"
+            ;;
+    esac
+
+    cd -
+}

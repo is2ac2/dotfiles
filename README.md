@@ -171,3 +171,10 @@ By default, Jupyter notebooks will be served on port 9906. Therefore, it's a goo
 LocalForward 9906 localhost:9906
 ```
 
+### make
+
+Build a file, and if make succeeds, run it (currently NVCC and C / C++). Useful for programming competitions, test scripts, etc.
+
+```bash
+brun <fname> (runtime-args)
+```

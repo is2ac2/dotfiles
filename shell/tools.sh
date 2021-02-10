@@ -233,26 +233,10 @@ cvars() {
         echo "#! /bin/sh" >>$ACTIVATE
         echo "# $ACTIVATE" >>$ACTIVATE
         echo "" >>$ACTIVATE
-        echo "RED='\033[0;31m'" >>$ACTIVATE
-        echo "GREEN='\033[0;32m'" >>$ACTIVATE
-        echo "ORANGE='\033[0;33m'" >>$ACTIVATE
-        echo "BLUE='\033[0;34m'" >>$ACTIVATE
-        echo "PURPLE='\033[0;35m'" >>$ACTIVATE
-        echo "CYAN='\033[0;35m'" >>$ACTIVATE
-        echo "NC='\033[0m'" >>$ACTIVATE
-        echo "" >>$ACTIVATE
     fi
     if [[ $WRITE_DEACTIVATE == true ]]; then
         echo "#!/bin/sh" >>$DEACTIVATE
-        echo "# $ACTIVATE" >>$DEACTIVATE
-        echo "" >>$DEACTIVATE
-        echo "RED='\033[0;31m'" >>$DEACTIVATE
-        echo "GREEN='\033[0;32m'" >>$DEACTIVATE
-        echo "ORANGE='\033[0;33m'" >>$DEACTIVATE
-        echo "BLUE='\033[0;34m'" >>$DEACTIVATE
-        echo "PURPLE='\033[0;35m'" >>$DEACTIVATE
-        echo "CYAN='\033[0;35m'" >>$DEACTIVATE
-        echo "NC='\033[0m'" >>$DEACTIVATE
+        echo "# $DEACTIVATE" >>$DEACTIVATE
         echo "" >>$DEACTIVATE
     fi
 

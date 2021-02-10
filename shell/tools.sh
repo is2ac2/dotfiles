@@ -13,14 +13,30 @@ mkdir -p $TMP_SCRIPT_ROOT
 # Color aliases
 # -------------
 
-red() { tput setaf 1 }
-green() { tput setaf 2 }
-yellow() { tput setaf 3 }
-blue() { tput setaf 4 }
-magenta() { tput setaf 5 }
-cyan() { tput setaf 6 }
-white() { tput setaf 7 }
-nc() { tput sgr 0 }
+red() {
+    tput setaf 1
+}
+green() {
+    tput setaf 2
+}
+yellow() {
+    tput setaf 3
+}
+blue() {
+    tput setaf 4
+}
+magenta() {
+    tput setaf 5
+}
+cyan() {
+    tput setaf 6
+}
+white() {
+    tput setaf 7
+}
+nc() {
+    tput sgr 0
+}
 
 _print_available_scripts() {
     find $TMP_SCRIPT_ROOT -type f | cut -c$((${#TMP_SCRIPT_ROOT} + 2))-
@@ -227,7 +243,7 @@ cvars() {
             echo "  - rm-activate {ra}"
             echo "  - rm-deactivate {rd}"
             echo "  - activate {a}"
-            echo "  - deactivate {d})"
+            echo "  - deactivate {d}"
             return 0
             ;;
         esac
@@ -330,3 +346,4 @@ brun() {
 
     cd -
 }
+

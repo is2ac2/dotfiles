@@ -347,3 +347,41 @@ brun() {
     cd -
 }
 
+# -----------------
+# Tools for hosting
+# -----------------
+
+serve() {
+    # Helper alias for http-server.
+    # Install server with `nmp install --global http-server`
+
+    local help_str="Usage: serve <local|shared>"
+
+    if [[ $# -ne 1 ]]; then
+        echo $help_str
+        return 1
+    fi
+
+    case $1 in
+        "local")
+            http-server \
+                -a localhost \
+                -p 8082
+            ;;
+        "shared")
+            local username=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo '')
+            local password=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo '')
+            echo "Username: $username"
+            echo "Password: $password"
+            http-server \
+                -p 8082 \
+                --username $username \
+                --password $password
+            ;;
+        *)
+            echo "Invalid argument: $1"
+            echo $help_str
+            ;;
+    esac
+}
+

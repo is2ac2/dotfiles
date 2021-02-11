@@ -13,5 +13,5 @@
   excludesfile = ~/.gitignore_global
 
 [push]
-	default = simple
+  default = simple
 

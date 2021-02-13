@@ -2,5 +2,6 @@ channels:
   - conda-forge
   - pytorch
   - defaults
-always_yes: True
-update_dependencies: True
+always_yes: true
+update_dependencies: true
+auto_activate_base: false

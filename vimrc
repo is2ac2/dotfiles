@@ -1,5 +1,21 @@
-execute pathogen#infect()
-colorscheme badwolf
+" required
+set nocompatible
+filetype off
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin('~/.vim/plugins')
+
+" let Vundle manage Vundle, required
+Plugin 'gmarik/Vundle.vim'
+
+" required
+call vundle#end()
+filetype plugin indent on
+
+" color scheme
+Bundle 'desert-warm-256'
+colorscheme desert-warm-256
 
 " turns of syntax highlighting
 syntax enable
@@ -28,3 +44,4 @@ set hlsearch
 
 " turn of highlighting
 nnoremap <leader><space> :nohlsearch<CR>
+

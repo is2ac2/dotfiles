@@ -4,6 +4,9 @@
 .vscode
 .DS_Store
 
+# vim
+vim/plugins
+
 # Python
 *.py[co]
 __pycache__

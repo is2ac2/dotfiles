@@ -178,3 +178,12 @@ Build a file, and if make succeeds, run it (currently NVCC and C / C++). Useful 
 ```bash
 brun <fname> (runtime-args)
 ```
+
+### vim
+
+You have to install a number of plugins for the vim config to work properly. These can be installed using the command:
+
+```vim
+:PluginInstall
+```
+

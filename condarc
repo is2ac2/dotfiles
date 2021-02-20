@@ -5,3 +5,4 @@ channels:
 always_yes: true
 update_dependencies: true
 auto_activate_base: false
+ssl_verify: true

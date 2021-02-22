@@ -33,6 +33,9 @@ alias jpn='jupyter notebook'
 # cuda
 export TORCH_CUDA_ARCH_LIST="6.0;7.0"
 
+# fixing vimrc colors inside tmux
+export TERM=screen-256color
+
 # tmux
 tmuxn() {
     if [[ $# -ne 1 ]]; then

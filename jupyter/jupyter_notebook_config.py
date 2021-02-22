@@ -18,6 +18,13 @@ def set_notebook_directory(directory: str) -> None:
     c.ServerApp.notebook_dir = path
 
 
+def general_config() -> None:
+    c.NotebookApp.answer_yes = True  # Answer yes to any prompts.
+    c.JupyterApp.answer_yes = True
+    c.InteractiveShellApp.extensions = ['autoreload']
+    c.InteractiveShellApp.exec_lines = ['%autoreload 2']
+
+
 # -----
 # MacOS
 # -----

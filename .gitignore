@@ -11,5 +11,8 @@ vim/plugins
 *.py[co]
 __pycache__
 
+# Jupyter
+jupyter/jupyter_notebook_config.json
+
 # Misc
 dotfiles/binaries/scripts

@@ -1,5 +1,6 @@
 # Configuration file for ipython-notebook.
 
+import os
 import platform
 from pathlib import Path
 
@@ -48,10 +49,14 @@ def jupyter_notebook_config_linux() -> None:
     c.ServerApp.port = 9906
 
 
-system = platform.system()
-if system == "Linux":
-    jupyter_notebook_config_linux()
-elif system == "Darwin":
-    jupyter_notebook_config_macos()
-else:
-    raise RuntimeError(f"System config not supported: {system}")
+# Hiding this behind an environment variable because other Jupyter
+# sessions might not want to use these configurations.
+if os.environ.get("USE_JUPYTER_CONF"):
+    system = platform.system()
+    if system == "Linux":
+        jupyter_notebook_config_linux()
+    elif system == "Darwin":
+        jupyter_notebook_config_macos()
+    else:
+        raise RuntimeError(f"System config not supported: {system}")
+

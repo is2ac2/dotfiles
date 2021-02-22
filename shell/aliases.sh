@@ -28,7 +28,7 @@ alias squeueme='squeue -u $USER'
 alias sshareme='sshare -u $USER'
 
 # jupyter
-alias jpn='jupyter notebook'
+alias jpn='USE_JUPYTER_CONF=1 jupyter notebook'
 
 # cuda
 export TORCH_CUDA_ARCH_LIST="6.0;7.0"

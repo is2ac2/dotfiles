@@ -18,6 +18,7 @@
     ~/.jupyter:
     ~/.condarc:
     ~/.scripts:
+    ~/.pdbrc:
     ~/.shell:
     ~/.slurm:
     ~/.bash:

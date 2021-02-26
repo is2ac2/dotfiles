@@ -20,7 +20,13 @@ if [ -f ~/.bashrc_local_before ]; then
     source ~/.bashrc_local_before
 fi
 
-source ~/.bash_profile
+source ~/.shell/info.sh
+source ~/.shell/aliases.sh
+source ~/.shell/tools.sh
+source ~/.bash/aliases.bash
+source ~/.bash/autocomplete.bash
+source ~/.bash/settings.bash
+source ~/.bash/prompt.bash
 
 if [ -f ~/.shell_local_after ]; then
     source ~/.shell_local_after

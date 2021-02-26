@@ -3,6 +3,7 @@
   email = ben@bolte.cc
 
 [alias]
+  ss = log --graph --pretty=format:'%C(bold red)%h%Creset %C(bold magenta)%d %Creset%n%C(bold blue)%an%Creset %C(cyan)%s%Creset'
   sl = !git smartlog
   smartlog = log --graph --pretty=format:'commit: %C(bold red)%h%Creset %C(red)<%H>%Creset %C(bold magenta)%d %Creset%ndate: %C(bold yellow)%cd %Creset%C(yellow)%cr%Creset%nauthor: %C(bold blue)    %an%Creset %C(blue)<%ae>%Creset%n%C(cyan)%s%n%Creset'
 
@@ -14,4 +15,3 @@
 
 [push]
   default = simple
-

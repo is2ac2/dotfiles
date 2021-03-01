@@ -12,7 +12,7 @@
     ~/.dotfiles: ''
     ~/.tmux.conf:
     ~/.vim:
-    ~/.vimrc:
+    ~/.vim_runtime:
     ~/.gitconfig:
     ~/.gitignore_global:
     ~/.jupyter:
@@ -31,3 +31,4 @@
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
   - [~/.zsh/oh-my-zsh.sh, Installing oh-my-zsh]
+  - [sh ~/.vim_runtime/install_awesome_vimrc.sh, Installing vimrc]

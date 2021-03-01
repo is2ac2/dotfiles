@@ -122,12 +122,9 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
 " scrollbar
-set mouse=a
+set mouse=r
 set ttymouse=xterm2
 
 " remove whitespace on write
 autocmd FileType c,cpp,java,php,cu,py autocmd BufWritePre <buffer> %s/\s\+$//e
-
-" underscores as word boundaries
-set iskeyword-=_
 

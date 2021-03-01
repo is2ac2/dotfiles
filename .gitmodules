@@ -17,3 +17,6 @@
 [submodule "vim/bundle/Vundle.vim"]
 	path = vim/bundle/Vundle.vim
 	url = git@github.com:VundleVim/Vundle.vim.git
+[submodule "vim_runtime"]
+	path = vim_runtime
+	url = git@github.com:amix/vimrc.git

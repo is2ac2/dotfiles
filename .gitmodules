@@ -2,9 +2,6 @@
 	path = dotbot
 	url = git@github.com:anishathalye/dotbot.git
 	ignore = dirty
-[submodule "vim/bundle/badwolf"]
-	path = vim/bundle/badwolf
-	url = git@github.com:sjl/badwolf.git
 [submodule "zsh/plugins/zsh-completions"]
 	path = zsh/plugins/zsh-completions
 	url = git@github.com:zsh-users/zsh-completions.git
@@ -14,9 +11,9 @@
 [submodule "zsh/plugins/conda-zsh-completion"]
 	path = zsh/plugins/conda-zsh-completion
 	url = git@github.com:esc/conda-zsh-completion.git
-[submodule "vim/bundle/Vundle.vim"]
-	path = vim/bundle/Vundle.vim
-	url = git@github.com:VundleVim/Vundle.vim.git
 [submodule "vim_runtime"]
 	path = vim_runtime
 	url = git@github.com:amix/vimrc.git
+[submodule "vim/bundle/Vundle.vim"]
+	path = vim/bundle/Vundle.vim
+	url = git@github.com:VundleVim/Vundle.vim.git

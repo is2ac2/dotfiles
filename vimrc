@@ -128,3 +128,5 @@ set ttymouse=xterm2
 " remove whitespace on write
 autocmd FileType c,cpp,java,php,cu,py autocmd BufWritePre <buffer> %s/\s\+$//e
 
+" colorscheme
+set background=dark

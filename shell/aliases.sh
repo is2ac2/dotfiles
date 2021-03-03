@@ -73,7 +73,7 @@ dfu() {
     git pull --ff-only
     ./install -q
     cd -
-    echo "Updated dotfiles; run `reload` to refresh environment"
+    echo "Updated dotfiles; run 'reload' to refresh environment"
     return 0
 }
 

@@ -1,6 +1,35 @@
 # C++ flags for programming competitions.
 export CXXFLAGS="-Wall -Wextra -O2 -pedantic -std=c++11"
 
+# -------------
+# Color aliases
+# -------------
+
+red() {
+    tput setaf 1
+}
+green() {
+    tput setaf 2
+}
+yellow() {
+    tput setaf 3
+}
+blue() {
+    tput setaf 4
+}
+magenta() {
+    tput setaf 5
+}
+cyan() {
+    tput setaf 6
+}
+white() {
+    tput setaf 7
+}
+no-color() {
+    tput sgr 0
+}
+
 # grep
 alias grep='grep --color'
 
@@ -26,6 +55,31 @@ alias now='date +"%T"'
 # slurm
 alias squeueme='squeue -u $USER'
 alias sshareme='sshare -u $USER'
+
+export SLURM_TIME_FORMAT='%a %D, %T'
+
+sdate() {
+    if [[ $# -ne 1  ]]; then
+        echo "Usage: sdate <time-string>"
+        return 1
+    else
+        echo $(date +"%Y-%m-%d-%T" -d "$1")
+        return 0
+    fi
+}
+
+shelp() {
+    echo "Example slurm commands:
+
+    $(blue)shist$(no-color) --state=$(green)COMPLETED$(no-color)
+    $(blue)shist$(no-color) --starttime=\$(sdate '$(green)24 hours ago$(no-color)') --endtime=\$(sdate '$(red)1 hour ago$(no-color)')
+    $(blue)shist$(no-color) --starttime=\$(sdate '$(green)1 hour ago$(no-color)') -endtime=\$(sdate '$(red)now$(no-color)')
+"
+}
+
+shist() {
+    sacct --format='JobID,JobName%30,Partition,State,Start%25,End%25' --user $USER $@ | less
+}
 
 # jupyter
 alias jpn='USE_JUPYTER_CONF=1 jupyter notebook'

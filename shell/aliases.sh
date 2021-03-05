@@ -71,9 +71,8 @@ sdate() {
 shelp() {
     echo "Example slurm commands:
 
-    $(blue)shist$(no-color) --state=$(green)COMPLETED$(no-color)
     $(blue)shist$(no-color) --starttime=\$(sdate '$(green)24 hours ago$(no-color)') --endtime=\$(sdate '$(red)1 hour ago$(no-color)')
-    $(blue)shist$(no-color) --starttime=\$(sdate '$(green)1 hour ago$(no-color)') -endtime=\$(sdate '$(red)now$(no-color)')
+    $(blue)shist$(no-color) --starttime=\$(sdate '$(green)1 hour ago$(no-color)') --endtime=\$(sdate '$(red)now$(no-color)')
 "
 }
 

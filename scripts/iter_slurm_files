@@ -47,6 +47,7 @@ def main() -> None:
             glob_str = str(slurm_dir / args.job_format)
             print(f"Listing files here: {glob_str}", file=sys.stderr)
             files = glob.glob(str(glob_str))
+            files = sorted(files, reverse=True)
             for fname in files:
                 fsize = Path(fname).stat().st_size
                 print(f"{fname}\t{fsize}", file=f)

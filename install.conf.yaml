@@ -34,9 +34,6 @@
   - time: 0 5 * * *
     command: brew update && brew upgrade
     platform: darwin
-  - time: 0 5 * * *
-    command: apt update && apt upgrade
-    platform: linux
   - time: 0 * * * *
     command: '[[ -f "${HOME}/scripts" ]] && chmod -R 744 $HOME/scripts'
   - time: 0 * * * *

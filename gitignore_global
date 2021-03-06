@@ -19,6 +19,7 @@ slurm_snapshot_code
 # Python
 *.py[co]
 __pycache__
+.mypy_cache/
 
 # Jupyter
 migrated
@@ -35,4 +36,3 @@ Thumbs.db
 
 # IDE
 .netrwhist
-

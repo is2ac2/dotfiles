@@ -33,23 +33,17 @@
   - time: 0 5 * * *
     command: brew update && brew upgrade
     platform: darwin
-    comment: Update Brew nightly
   - time: 0 5 * * *
     command: apt update && apt upgrade
     platform: linux
-    comment: Update APT nightly
   - time: 0 * * * *
     command: '[[ -f "${HOME}/scripts" ]] && chmod -R 744 $HOME/scripts'
-    comment: Set script permissions
   - time: 0 * * * *
     command: '[[ -f "${HOME}/.scripts" ]] && chmod -R 744 $HOME/.scripts'
-    comment: Set script permissions
   - time: 0 5 * * *
     command: '[[ -f "${HOME}/slurm_logs" ]] && find $HOME/slurm_logs/* -mtime +7 -exec rm {} \;'
-    comment: Remove slurm logs that haven't been written in over a week
   - time: 0 5 * * *
     command: '[[ -f "${HOME}/runs" ]] && find $HOME/runs/* -atime +7 -exec rm {} \;'
-    comment: Remove runs that haven't been touched in over a week
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

@@ -80,6 +80,10 @@ shist() {
     sacct --format='JobID,JobName%30,Partition,State,Start%25,End%25' --user $USER $@ | less
 }
 
+# python
+export PYTHONSTARTUPBASE=$PYTHONSTARTUP
+export PYTHONSTARTUP=$HOME/.python/startup.py
+
 # jupyter
 alias jpn='USE_JUPYTER_CONF=1 jupyter notebook'
 

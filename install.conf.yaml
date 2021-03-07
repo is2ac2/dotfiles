@@ -19,6 +19,7 @@
     ~/.jupyter:
     ~/.condarc:
     ~/.muttrc:
+    ~/.python:
     ~/.scripts:
     ~/.pdbrc:
     ~/.shell:

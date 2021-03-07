@@ -83,6 +83,7 @@ shist() {
 # python
 export PYTHONSTARTUPBASE=$PYTHONSTARTUP
 export PYTHONSTARTUP=$HOME/.python/startup.py
+export PYTHONHASHSEED=1337  # For making experiments repeatable
 
 # jupyter
 alias jpn='USE_JUPYTER_CONF=1 jupyter notebook'

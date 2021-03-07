@@ -31,9 +31,6 @@
     ~/.ssh/config.d/base: ssh/config.d/base
 
 - crontab:
-  - time: 0 5 * * *
-    command: brew update && brew upgrade
-    platform: darwin
   - time: 0 * * * *
     command: '[[ -f "${HOME}/scripts" ]] && chmod -R 744 $HOME/scripts'
   - time: 0 * * * *

@@ -33,13 +33,13 @@
 
 - crontab:
   - time: 0 * * * *
-    command: '[[ -f "${HOME}/scripts" ]] && chmod -R 744 $HOME/scripts'
+    command: '[ -d "${HOME}/scripts" ] && chmod -R 744 $HOME/scripts'
   - time: 0 * * * *
-    command: '[[ -f "${HOME}/.scripts" ]] && chmod -R 744 $HOME/.scripts'
+    command: '[ -d "${HOME}/.scripts" ] && chmod -R 744 $HOME/.scripts'
   - time: 0 5 * * *
-    command: '[[ -f "${HOME}/slurm_logs" ]] && find $HOME/slurm_logs/* -mtime +7 -exec rm {} \;'
+    command: '[ -d "${HOME}/slurm_logs" ] && find $HOME/slurm_logs/* -mtime +7 -exec rm {} \;'
   - time: 0 5 * * *
-    command: '[[ -f "${HOME}/runs" ]] && find $HOME/runs/* -atime +7 -exec rm {} \;'
+    command: '[ -d "${HOME}/runs" ] && find $HOME/runs/* -atime +7 -exec rm {} \;'
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

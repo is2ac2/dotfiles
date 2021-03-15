@@ -4,6 +4,7 @@ import argparse
 import datetime
 import re
 import shutil
+from collections import defaultdict
 from pathlib import Path
 
 # Matches dates like "2021-03-15"
@@ -13,7 +14,7 @@ DATE_REGEX = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Manages files organized by date")
     parser.add_argument("path", help="Path to the root directory")
-    parser.add_argument("-a", "--action", choices=["delete", "list"],
+    parser.add_argument("-a", "--action", choices=["delete", "list", "sweep"],
                         help="Action to take", default="list")
     parser.add_argument("-s", "--start-date", type=str, help="Start date")
     parser.add_argument("-e", "--end-date", type=str, help="End date")
@@ -35,23 +36,30 @@ def main() -> None:
     assert is_date(start_date), start_date
     assert is_date(end_date), end_date
 
-    fpaths = []
+    fpaths = defaultdict(list)
     for fpath in files:
         if not re.match(r"\d{4}-\d{2}-\d{2}", fpath.stem):
-            continue
-        if fpath.stem < start_date:
-            continue
-        if fpath.stem > end_date:
-            continue
-        fpaths.append(fpath)
+            fpaths["not-date"].append(fpath)
+        elif fpath.stem < start_date:
+            fpaths["early"].append(fpath)
+        elif fpath.stem > end_date:
+            fpaths["late"].append(fpath)
+        else:
+            fpaths["valid"].append(fpath)
 
     if args.action == "list":
-        for fpath in fpaths:
+        for fpath in fpaths["valid"]:
             print(fpath)
     elif args.action == "delete":
-        for fpath in fpaths:
+        for fpath in fpaths["valid"]:
             print(f"Deleting {fpath}")
             shutil.rmtree(fpath)
+    elif args.action == "sweep":
+        for fpath in fpaths["not-date"]:
+            dpath = root / today / fpath.name
+            dpath.parent.mkdir(exist_ok=True)
+            print(f"Moving {fpath} to {dpath}")
+            shutil.move(fpath, dpath)
     else:
         raise NotImplementedError(f"Invalid action: {args.action}")
 

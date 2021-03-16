@@ -37,9 +37,9 @@
   - time: 0 * * * *
     command: '[ -d "${HOME}/.scripts" ] && chmod -R 744 $HOME/.scripts'
   - time: 0 5 * * *
-    command: '[ -d "${HOME}/slurm_logs" ] && find $HOME/slurm_logs/* -mtime +7 -exec rm {} \;'
+    command: '[ -d "${HOME}/slurm_logs" ] && find $HOME/slurm_logs/* -type d -mtime +21 -exec rm -rf {} \;'
   - time: 0 5 * * *
-    command: '[ -d "${HOME}/runs" ] && find $HOME/runs/* -atime +7 -exec rm {} \;'
+    command: '[ -d "${HOME}/runs" ] && find $HOME/runs/* -type d -mtime +21 -exec rm -rf {} \;'
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

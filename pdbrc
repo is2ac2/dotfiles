@@ -12,6 +12,7 @@ termios_echo[3] = termios_echo[3] | termios.ECHO
 termios_result = termios.tcsetattr(termios_fd, termios.TCSADRAIN, termios_echo)
 
 # Interact in IPython
+import IPython
 alias interacti IPython.embed()
 
 # Use `traceback` command to print full error logs.

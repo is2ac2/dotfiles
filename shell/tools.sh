@@ -356,3 +356,40 @@ serve() {
     esac
 }
 
+# ---------------------
+# Query GPU Utilization
+# ---------------------
+
+smiq() {
+    local options outf query_str
+
+    options=(
+        timestamp
+        name
+        driver_version
+        pstate
+        pcie.link.gen.max
+        pcie.link.gen.current
+        temperature.gpu
+        utilization.gpu
+        utilization.memory
+        memory.total
+        memory.free
+        memory.used
+    )
+
+    outf=/tmp/gpu-usage-$HOSTNAME.csv
+    echo "Writing to $outf"
+
+    query_str=$(printf ",%s" "${options[@]}")
+    query_str=${query_str:1}
+
+    nvidia-smi \
+        --query-gpu=$query_str \
+        --format=csv \
+        --loop-ms=500 \
+        --filename=$outf \
+
+    return 0
+}
+

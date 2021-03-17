@@ -96,6 +96,9 @@ export TERM=screen-256color
 # tensorboard
 alias tbd='tensorboard serve --logdir . --port 6006'
 
+# pwd without symlinks
+alias pwd='pwd -P'
+
 # tmux
 tmuxn() {
     if [[ $# -ne 1 ]]; then

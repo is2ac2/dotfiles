@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+
+import argparse
+import subprocess
+import sys
+import threading
+from io import StringIO
+from typing import List
+
+import pandas as pd
+
+
+def get_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Benchmarks GPU usage")
+    parser.add_argument("-t", "--timeout", type=int, default=10,
+                        help="Number of seconds to aggregate benchmarks")
+    parser.add_argument("-l", "--loop-ms", type=int, default=500,
+                        help="Number of milliseconds per loop")
+    return parser.parse_args()
+
+
+def run_command(cmd: List[str], timeout: int) -> str:
+    kill = lambda process: process.kill()
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    timer = threading.Timer(timeout, kill, [process])
+
+    try:
+        timer.start()
+        stdout, stderr = process.communicate()
+        sys.stderr.buffer.write(stderr)
+    finally:
+        timer.cancel()
+
+    return stdout
+
+
+def main() -> None:
+    args = get_args()
+
+    query_str = ",".join([
+        "temperature.gpu",
+        "utilization.gpu",
+        "utilization.memory",
+    ])
+
+    cmd = [
+        "nvidia-smi",
+        f"--query-gpu={query_str}",
+        "--format=csv",
+        f"--loop-ms={args.loop_ms}",
+    ]
+
+    # Runs profiler.
+    result = run_command(cmd, timeout=args.timeout)
+
+    # Reads and aggregates profile results.
+    stats = pd.read_csv(StringIO(result.decode("utf-8")), sep=", ", engine="python")
+    stats["utilization.gpu"] = stats["utilization.gpu [%]"].apply(lambda x: float(x.strip()[:2]) / 100)
+    stats["utilization.memory"] = stats["utilization.memory [%]"].apply(lambda x: float(x.strip()[:2]) / 100)
+
+    print("\n" + "-" * 27)
+    print(stats.mean(0))
+    print("-" * 27 + "\n")
+
+
+if __name__ == "__main__":
+    main()
+

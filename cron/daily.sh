@@ -9,10 +9,10 @@ fi
 find ${HOME}/logs -maxdepth 2 -empty -type d -mtime +1 -exec rm -r {} \;
 
 # Updates daily symlinks.
-/bin/sh update_symlinks.sh
+/bin/sh ${HOME}/.cron/update_symlinks.sh
 
 # Updates old dates.
-/bin/sh delete_old_dates.sh
+/bin/sh ${HOME}/.cron/delete_old_dates.sh
 
 # Removes old slurm log directories.
 [ -d "${HOME}/slurm_logs"  ] && find $HOME/slurm_logs/* -type d -mtime +45 | xargs -I {} -P 8 rm -r {} \;

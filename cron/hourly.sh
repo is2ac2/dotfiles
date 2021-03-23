@@ -10,7 +10,7 @@ fi
 [ -d "${HOME}/.scripts"  ] && chmod -R 744 $HOME/.scripts
 
 # Sweeps dates files.
-/bin/sh sweep_dates.sh
+/bin/sh ${HOME}/.cron/sweep_dates.sh
 
 # Runs local cron script, if found.
 if [[ -f ${HOME}/.cron-local/hourly.sh ]]; then

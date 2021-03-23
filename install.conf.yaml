@@ -27,19 +27,16 @@
     ~/.bash:
     ~/.bashrc:
     ~/.bash_profile:
+    ~/.cron:
     ~/.zsh:
     ~/.zshrc:
     ~/.ssh/config.d/base: ssh/config.d/base
 
 - crontab:
   - time: 0 * * * *
-    command: '[ -d "${HOME}/scripts" ] && chmod -R 744 $HOME/scripts'
-  - time: 0 * * * *
-    command: '[ -d "${HOME}/.scripts" ] && chmod -R 744 $HOME/.scripts'
-  - time: 0 5 * * *
-    command: '[ -d "${HOME}/slurm_logs" ] && find $HOME/slurm_logs/* -type d -mtime +45 | xargs -I {} -P 8 rm -r {} \;'
-  - time: 0 5 * * *
-    command: '[ -d "${HOME}/runs" ] && find $HOME/runs/* -type d -mtime +45 | xargs -I {} -P 8 rm -r {} \;'
+    command: '/bin/sh ${HOME}/.cron/hourly.sh'
+  - time: 0 0 * * *
+    command: '/bin/sh ${HOME}/.cron/daily.sh'
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

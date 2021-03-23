@@ -4,8 +4,7 @@
 # Manage temp scripts
 # -------------------
 
-export TMP_SCRIPT_ROOT=/tmp/scripts/
-export TMP_SCRIPT_BACKUP=$HOME/.tmp-scripts/
+export TMP_SCRIPT_ROOT=$HOME/.tmp-scripts/
 
 mkdir -p $TMP_SCRIPT_ROOT
 
@@ -75,28 +74,6 @@ trun() {
     else
         ${filepath} $@
     fi
-}
-
-tbackup() {
-    local BACKUP_DIR
-    if [[ $# -ne 0 ]]; then
-        BACKUP_DIR=$1
-    else
-        BACKUP_DIR=$TMP_SCRIPT_BACKUP
-    fi
-    echo "Backing up tmp-scripts to $BACKUP_DIR"
-    mkdir -p $BACKUP_DIR
-    cp -r $TMP_SCRIPT_ROOT $BACKUP_DIR
-}
-
-trestore() {
-    if [[ $# -ne 0 ]]; then
-        BACKUP_DIR=$1
-    else
-        BACKUP_DIR=$TMP_SCRIPT_BACKUP
-    fi
-    echo "Restoring tmp-scripts from $BACKUP_DIR"
-    cp -r $BACKUP_DIR $TMP_SCRIPT_ROOT
 }
 
 # -----––-------

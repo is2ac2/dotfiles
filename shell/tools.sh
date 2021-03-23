@@ -14,7 +14,7 @@ _print_available_scripts() {
 
 tdelete() {
     if [[ $# -ne 1 ]]; then
-        echo "Usage: bdelete <script>"
+        echo "Usage: tdelete <script>"
         return 0
     fi
     local filename=$1
@@ -29,7 +29,7 @@ tdelete() {
 
 tedit() {
     if [[ $# -ne 1 ]]; then
-        echo "Usage: bedit <script>"
+        echo "Usage: tedit <script>"
         return 0
     fi
     local filename=$1
@@ -44,7 +44,7 @@ tedit() {
 
 tinit() {
     if [[ $# -ne 1 ]]; then
-        echo "Usage: bedit <script>"
+        echo "Usage: tinit <script>"
         return 0
     fi
     local filename=$1
@@ -62,11 +62,12 @@ tinit() {
 }
 
 trun() {
-    if [[ $# -ne 1 ]]; then
-        echo "Usage: bedit <script>"
+    if [[ $# -lt 1 ]]; then
+        echo "Usage: trun <script>"
         return 0
     fi
     local filename=$1
+    shift
     local filepath=$TMP_SCRIPT_ROOT/$filename
     if [[ ! -f "${filepath}" ]]; then
         echo "[ ${filename} ] doesn't exist! Available:"

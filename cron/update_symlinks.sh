@@ -11,14 +11,14 @@ mkdir -p $logs_today
 mkdir -p $eval_today
 
 # Updates log directory for today.
-if [[ -d ${HOME}/logs-today ]]; then
-    unlink ${HOME}/logs-today
+if [[ -L ${HOME}/logs/today ]]; then
+    unlink ${HOME}/logs/today
 fi
-ln -s $logs_today ${HOME}/logs-today
+ln -s $logs_today ${HOME}/logs/today
 
 # Update eval directory for today.
-if [[ -d ${HOME}/eval-today ]]; then
-    unlink ${HOME}/eval-today
+if [[ -L ${HOME}/eval/today ]]; then
+    unlink ${HOME}/eval/today
 fi
-ln -s $eval_today ${HOME}/eval-today
+ln -s $eval_today ${HOME}/eval/today
 

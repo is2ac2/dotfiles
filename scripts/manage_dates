@@ -10,6 +10,12 @@ from pathlib import Path
 # Matches dates like "2021-03-15"
 DATE_REGEX = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
+SPECIAL_DATES = {
+    "today",
+    "tomorrow",
+    "yesterday",
+}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Manages files organized by date")
@@ -38,7 +44,9 @@ def main() -> None:
 
     fpaths = defaultdict(list)
     for fpath in files:
-        if not re.match(r"\d{4}-\d{2}-\d{2}", fpath.stem):
+        if fpath.stem in SPECIAL_DATES:
+            fpaths["special"].append(fpath)
+        elif not re.match(r"\d{4}-\d{2}-\d{2}", fpath.stem):
             fpaths["not-date"].append(fpath)
         elif fpath.stem < start_date:
             fpaths["early"].append(fpath)

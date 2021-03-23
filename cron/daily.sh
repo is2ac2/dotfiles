@@ -6,7 +6,7 @@ if [[ -f ${HOME}/.bashrc ]]; then
 fi
 
 # Removes empty log directories.
-find ${HOME}/logs -maxdepth 2 -empty -type d -mtime +1 -exec rm -r {} \;
+find ${HOME}/logs -maxdepth 2 -empty -type d -mtime +1 | xargs -I {} -P 8 rm -r rm -r {}
 
 # Updates daily symlinks.
 /bin/sh ${HOME}/.cron/update_symlinks.sh
@@ -15,10 +15,13 @@ find ${HOME}/logs -maxdepth 2 -empty -type d -mtime +1 -exec rm -r {} \;
 /bin/sh ${HOME}/.cron/delete_old_dates.sh
 
 # Removes old slurm log directories.
-[ -d "${HOME}/slurm_logs"  ] && find $HOME/slurm_logs/* -type d -mtime +45 | xargs -I {} -P 8 rm -r {} \;
+[ -d "${HOME}/slurm_logs"  ] && find $HOME/slurm_logs/* -type d -mtime +45 | xargs -I {} -P 8 rm -r {}
 
 # Removes old run directories.
-[ -d "${HOME}/runs"  ] && find $HOME/runs/* -type d -mtime +45 | xargs -I {} -P 8 rm -r {} \;
+[ -d "${HOME}/runs"  ] && find $HOME/runs/* -type d -mtime +45 | xargs -I {} -P 8 rm -r {}
+
+# Removes old local runs.
+find $HOME/logs -maxdepth 2 -name local.* -type d -mtime +1 | xargs -I {} -P 8 rm -r {}
 
 # Runs local cron script, if found.
 if [[ -f ${HOME}/.cron-local/daily.sh ]]; then

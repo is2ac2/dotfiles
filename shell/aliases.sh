@@ -30,11 +30,27 @@ no-color() {
     tput sgr 0
 }
 
+# -----------
+# OS-Specific
+# -----------
+
+case $OSTYPE in
+    "darwin"*)
+        alias ls='ls -G'
+        ;;
+    "linux-gnu"*)
+        alias ls='ls --color=always'
+        ;;
+    *)
+        echo "OS type not supported: $OSTYPE"
+        return
+        ;;
+esac
+
 # grep
 alias grep='grep --color=always'
 
 # ls
-alias ls='ls --color=always'
 alias ll='ls -lah'
 alias la='ls -A'
 

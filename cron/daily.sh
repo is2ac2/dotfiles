@@ -21,7 +21,7 @@ fi
 [ -d "${HOME}/runs"  ] && find ${HOME}/runs/* -type d -mtime +45 | xargs -I {} -P 8 rm -r {}
 
 # Removes old local runs.
-[-d "${HOME}/logs" ] && find ${HOME}/logs -maxdepth 2 -name local.* -type d -mtime +1 | xargs -I {} -P 8 rm -r {}
+[ -d "${HOME}/logs" ] && find ${HOME}/logs -maxdepth 2 -name local.* -type d -mtime +1 | xargs -I {} -P 8 rm -r {}
 
 # Runs local cron script, if found.
 if [[ -f ${HOME}/.cron-local/daily.sh ]]; then

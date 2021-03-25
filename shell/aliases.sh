@@ -31,9 +31,10 @@ no-color() {
 }
 
 # grep
-alias grep='grep --color'
+alias grep='grep --color=always'
 
 # ls
+alias ls='ls --color=always'
 alias ll='ls -lah'
 alias la='ls -A'
 
@@ -80,6 +81,10 @@ shelp() {
 shist() {
     sacct --format='JobID,JobName%30,Partition,State%20,Start%25,End%25' --user $USER $@ | less
 }
+
+# less
+export LESS="-R"
+alias lesc='LESSOPEN="|pygmentize -g %s" less'
 
 # python
 export PYTHONSTARTUP=$HOME/.python/startup.py

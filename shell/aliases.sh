@@ -78,7 +78,7 @@ shelp() {
 }
 
 shist() {
-    sacct --format='JobID,JobName%30,Partition,State,Start%25,End%25' --user $USER $@ | less
+    sacct --format='JobID,JobName%30,Partition,State%20,Start%25,End%25' --user $USER $@ | less
 }
 
 # python

@@ -105,7 +105,8 @@ alias now='date +"%T"'
 alias squeueme='squeue -u $USER'
 alias sshareme='sshare -u $USER'
 
-export SLURM_TIME_FORMAT='%a %D, %T'
+# sortable time format
+export SLURM_TIME_FORMAT='%D (%a) %T'
 
 sdate() {
     if [[ $# -ne 1  ]]; then
@@ -127,7 +128,7 @@ shelp() {
 }
 
 shist() {
-    sacct --format='JobID,JobName%30,Partition,State%20,Start%25,End%25' --user $USER $@ | less
+    sacct --format='Start%25,End%25,JobID,JobName%30,Partition,State%20' --user $USER $@ | awk 'NR<3{print $0;next}{print$0| "sort -r"}'| less
 }
 
 # less

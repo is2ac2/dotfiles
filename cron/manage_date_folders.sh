@@ -1,33 +1,20 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
+# ddate (Delta Date) is defined in shell/aliases.sh.
+source ~/.shell/aliases.sh
+start_date=$(ddate 90 +'%Y-%m-%d')
+end_date=$(ddate 30 +'%Y-%m-%d')
+yesterday=$(ddate 1 +'%Y-%m-%d')
 today=$(date +"%Y-%m-%d")
-
-# Get date range, handling different operating systems.
-case $OSTYPE in
-    "darwin"*)
-        start_date=$(date -v-90d +'%Y-%m-%d')
-        end_date=$(date -v-30d +'%Y-%m-%d')
-        yesterday=$(date -v-1d +'%Y-%m-%d')
-        ;;
-    "linux-gnu"*)
-        start_date=$(date --date '90 days ago' +'%Y-%m-%d')
-        end_date=$(date --date '30 days ago' +'%Y-%m-%d')
-        yesterday=$(date --date '1 day ago' +'%Y-%m-%d')
-        ;;
-    *)
-        echo "OS type not supported: $OSTYPE"
-        return
-        ;;
-esac
 
 # Deletes any date folders older than 30 days.
 __delete_old_dates() {
     root=$1
 
     python3 ${HOME}/.scripts/manage_dates \
-        ${HOME}/logs/ \
+        $root \
         -s $start_date \
         -e $end_date \
         -a delete
@@ -61,14 +48,12 @@ manage_date_folders() {
     fi
     root=$1
     shift
-    if ! [ -d $root ]; then
-        return 0
-    fi
+    mkdir -p $root
 
     __update_symlinks $root
     __delete_old_dates $root
 }
 
-manage_date_folders ${HOME}/logs
-manage_date_folders ${HOME}/eval
+manage_date_folders $LOG_DIR
+manage_date_folders $EVAL_DIR
 

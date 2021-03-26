@@ -26,7 +26,7 @@ cyan() {
 white() {
     tput setaf 7
 }
-no-color() {
+no_color() {
     tput sgr 0
 }
 
@@ -37,9 +37,41 @@ no-color() {
 case $OSTYPE in
     "darwin"*)
         alias ls='ls -G'
+
+        export SLURM_DIR=${HOME}/Experiments/.Slurm\ Logs
+        export RUN_DIR=${HOME}/Experiments/Runs
+        export LOG_DIR=${HOME}/Experiments/Logs
+        export EVAL_DIR=${HOME}/Experiments/Evaluation
+
+        ddate() {
+            if [[ $# -lt 1 ]]; then
+                echo "Usage: ddate <num-dates-past> (other-args)"
+                return 1
+            fi
+            local delta=$1
+            shift
+            date -v-${delta}d $@
+            return 0
+        }
         ;;
     "linux-gnu"*)
         alias ls='ls --color=always'
+
+        export SLURM_LOG_DIR=${HOME}/slurm_logs
+        export RUN_DIR=${HOME}/runs
+        export LOG_DIR=${HOME}/logs
+        export EVAL_DIR=${HOME}/eval
+
+        ddate() {
+            if [[ $# -lt 1 ]]; then
+                echo "Usage: ddate <num-dates-past> (other-args)"
+                return 1
+            fi
+            local delta=$1
+            shift
+            date --date "${delta} days ago" $@
+            return 0
+        }
         ;;
     *)
         echo "OS type not supported: $OSTYPE"
@@ -88,9 +120,9 @@ sdate() {
 shelp() {
     echo "Example slurm commands:
 
-    $(blue)shist$(no-color) --starttime=\$(sdate '$(green)7 days ago$(no-color)') --endtime=\$(sdate '$(red)1 hour ago$(no-color)')
-    $(blue)shist$(no-color) --starttime=\$(sdate '$(green)24 hours ago$(no-color)') --endtime=\$(sdate '$(red)1 hour ago$(no-color)')
-    $(blue)shist$(no-color) --starttime=\$(sdate '$(green)1 hour ago$(no-color)') --endtime=\$(sdate '$(red)now$(no-color)')
+    $(blue)shist$(no_color) --starttime=\$(sdate '$(green)7 days ago$(no_color)') --endtime=\$(sdate '$(red)1 hour ago$(no_color)')
+    $(blue)shist$(no_color) --starttime=\$(sdate '$(green)24 hours ago$(no_color)') --endtime=\$(sdate '$(red)1 hour ago$(no_color)')
+    $(blue)shist$(no_color) --starttime=\$(sdate '$(green)1 hour ago$(no_color)') --endtime=\$(sdate '$(red)now$(no_color)')
 "
 }
 

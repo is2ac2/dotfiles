@@ -8,6 +8,7 @@ fi
 # Ensures that scripts folders are only executable by user.
 [ -d "${HOME}/scripts"  ] && chmod -R 744 ${HOME}/scripts
 [ -d "${HOME}/.scripts"  ] && chmod -R 744 ${HOME}/.scripts
+[ -d "${HOME}/.tmp-scripts" ] && chmod -R 744 ${HOME}/.tmp-scripts
 
 # Sweeps dates files.
 /bin/sh ${HOME}/.cron/sweep_dates.sh

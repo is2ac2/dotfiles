@@ -1,0 +1,6 @@
+# Plot settings
+backend: Agg
+
+# Image settings
+image.cmap: magma
+

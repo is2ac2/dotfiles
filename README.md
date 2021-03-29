@@ -97,18 +97,6 @@ Delete a script (with tab completion):
 tdelete <script-name>
 ```
 
-Backup scripts to permanent location:
-
-```bash
-tbackup (<script-loc>)
-```
-
-Restore scripts from permanent location:
-
-```bash
-trestore (<script-loc>)
-```
-
 ### slurm
 
 Show all my current Slurm jobs:
@@ -117,22 +105,10 @@ Show all my current Slurm jobs:
 squeueme
 ```
 
-Show my current Slurm share:
-
-```bash
-sshareme
-```
-
 Safely cancel all my current Slurm jobs:
 
 ```bash
 scancelme
-```
-
-Allocate an empty node in Slurm for testing:
-
-```bash
-slurm-allocate
 ```
 
 ### nvidia
@@ -159,7 +135,7 @@ tmuxc <name>
 
 ### ssh
 
-Add this in your `~/.ssh/config` file to prevent having to re-authenticate when SSH'ing:
+Add this in your `~/.ssh/config` file to prevent having to re-authenticate when SSH'ing (useful for 2FA):
 
 ```bash
 Include config.d/base
@@ -178,12 +154,3 @@ Build a file, and if make succeeds, run it (currently NVCC and C / C++). Useful 
 ```bash
 brun <fname> (runtime-args)
 ```
-
-### vim
-
-You have to install a number of plugins for the vim config to work properly. These can be installed using the command:
-
-```vim
-:PluginInstall
-```
-

@@ -131,6 +131,45 @@ shist() {
     sacct --format='Start%25,End%25,JobID,JobName%30,Partition,State%20' --user $USER $@ | awk 'NR<3{print $0;next}{print$0| "sort -r"}'| less
 }
 
+# speed test
+speed-test() {
+    echo "Runs speed test against remote server
+
+    $(green)speed-test$(no_color) local <machine-name>  $(blue)# Run on the local machine$(no_color)
+    $(green)speed-test$(no_color) remote                $(blue)# Run on the remote machine$(no_color)
+"
+
+    if [[ $# -eq 0 ]]; then
+        echo "Mode required (must be one of [remote|local])"
+        return 1
+    fi
+
+    local mode=$1
+    shift
+
+    case $mode in
+        local)
+            if [[ $# -lt 1 ]]; then
+                echo "Must pass host name"
+                return 1
+            else
+                machine_name=$1
+                shift
+                iperf -c $machine_name $@
+            fi
+            ;;
+        remote)
+            iperf -s $@
+            ;;
+        *)
+            echo "Invalid mode: ${mode} (must be one of [remote|local])"
+            return 1
+            ;;
+    esac
+
+    return 0
+}
+
 # less
 export LESS="-R"
 alias lesc='LESSOPEN="|pygmentize -g %s" less'

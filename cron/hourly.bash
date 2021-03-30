@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 # Sources bashrc to make sure Python is set correctly.
-if [[ -f ${HOME}/.bashrc ]]; then
-    source ${HOME}/.bashrc
+if [ -f ${HOME}/.bashrc ]; then
+    . ${HOME}/.bashrc
 fi
 
 # Ensures that scripts folders are only executable by user.
@@ -11,10 +11,10 @@ fi
 [ -d "${HOME}/.tmp-scripts" ] && chmod -R 744 ${HOME}/.tmp-scripts
 
 # Sweeps dates files.
-/bin/sh ${HOME}/.cron/sweep_dates.sh
+${HOME}/.cron/sweep_dates.bash
 
 # Runs local cron script, if found.
-if [[ -f ${HOME}/.cron-local/hourly.sh ]]; then
-    source ${HOME}/.cron-local/hourly.sh
+if [ -f ${HOME}/.cron-local/hourly.bash ]; then
+    . ${HOME}/.cron-local/hourly.bash
 fi
 

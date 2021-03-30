@@ -74,7 +74,7 @@ case $OSTYPE in
         }
         ;;
     *)
-        echo "OS type not supported: $OSTYPE"
+        echo "OS type not supported: '$OSTYPE'"
         return
         ;;
 esac

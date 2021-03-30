@@ -37,9 +37,9 @@
 
 - crontab:
   - time: 0 * * * *
-    command: '/bin/sh ${HOME}/.cron/hourly.sh'
+    command: '/bin/bash ${HOME}/.cron/hourly.bash'
   - time: 0 0 * * *
-    command: '/bin/sh ${HOME}/.cron/daily.sh'
+    command: '/bin/bash ${HOME}/.cron/daily.bash'
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

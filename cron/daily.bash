@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
 # Sources bashrc to make sure Python is set correctly.
 if [ -f ${HOME}/.bashrc ]; then
-    source ${HOME}/.bashrc
+    . ${HOME}/.bashrc
 fi
 
 # Updates old dates.
-/bin/sh ${HOME}/.cron/manage_date_folders.sh
+${HOME}/.cron/manage_date_folders.bash
 
 # Removes old slurm log directories.
 [ -d "$SLURM_DIR" ] && find $SLURM_DIR -type d -mtime +45 | xargs -I {} -P 8 rm -r {}
@@ -22,6 +22,6 @@ fi
 
 # Runs local cron script, if found.
 if [ -f ${HOME}/.cron-local/daily.bash ]; then
-    source ${HOME}/.cron-local/daily.bash
+    . ${HOME}/.cron-local/daily.bash
 fi
 

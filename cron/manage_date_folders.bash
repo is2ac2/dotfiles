@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
 # ddate (Delta Date) is defined in shell/aliases.sh.
-source ~/.shell/aliases.sh
+. ~/.shell/aliases.sh
 start_date=$(ddate 90 +'%Y-%m-%d')
 end_date=$(ddate 30 +'%Y-%m-%d')
 yesterday=$(ddate 1 +'%Y-%m-%d')

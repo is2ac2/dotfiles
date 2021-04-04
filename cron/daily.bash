@@ -9,7 +9,7 @@ fi
 ${HOME}/.cron/manage_date_folders.bash
 
 # Removes old slurm log directories.
-[ -d "$SLURM_DIR" ] && find $SLURM_DIR -type d -mtime +45 | xargs -I {} -P 8 rm -r {}
+[ -d "$SLURM_LOG_DIR" ] && find $SLURM_LOG_DIR -type d -mtime +45 | xargs -I {} -P 8 rm -r {}
 
 # Removes old run directories.
 [ -d "$RUN_DIR" ] && find $RUN_DIR -type d -mtime +45 | xargs -I {} -P 8 rm -r {}

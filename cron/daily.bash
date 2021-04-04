@@ -17,6 +17,9 @@ ${HOME}/.cron/manage_date_folders.bash
 # Removes empty log directories.
 [ -d "$LOG_DIR" ] && find $LOG_DIR -maxdepth 2 -empty -type d -mtime +2 | xargs -I {} -P 8 rm -r {}
 
+# Removes empty eval directories.
+[ -d "$EVAL_DIR" ] && find $EVAL_DIR -maxdepth 2 -empty -type d -mtime +2 | xargs -I {} -P 8 rm -r {}
+
 # Removes old local runs.
 [ -d "$LOG_DIR" ] && find $LOG_DIR -maxdepth 2 -name local.* -type d -mtime +1 | xargs -I {} -P 8 rm -r {}
 

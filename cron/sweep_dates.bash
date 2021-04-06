@@ -1,11 +1,16 @@
 #!/bin/bash
 
-# Sweeps dates in these directories.
-if [ -d ${HOME}/logs ]; then
-    python3 ${HOME}/.scripts/manage_dates ${HOME}/logs/ -a sweep
+# Sweeps dates in log directory.
+if [ -d $LOG_DIR ]; then
+    python3 ${HOME}/.scripts/manage_dates $LOG_DIR -a sweep
+else
+    echo "Missing log directory: $LOG_DIR"
 fi
 
-if [ -d ${HOME}/eval ]; then
-    python3 ${HOME}/.scripts/manage_dates ${HOME}/eval/ -a sweep
+# Sweep dates in eval directory.
+if [ -d $EVAL_DIR ]; then
+    python3 ${HOME}/.scripts/manage_dates $EVAL_DIR -a sweep
+else
+    echo "Missing eval directory: $EVAL_DIR"
 fi
 

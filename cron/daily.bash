@@ -7,7 +7,7 @@ source ${HOME}/.shell/aliases.sh
 ${HOME}/.cron/manage_date_folders.bash
 
 # Cleans up old folders.
-${HOME}/.cron/cleanup.bas
+${HOME}/.cron/cleanup.bash
 
 # Computes storage space.
 du -h -d 4 | sort -h > ${HOME}/storage

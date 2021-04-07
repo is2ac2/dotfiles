@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # Sources bashrc to make sure Python is set correctly.
-if [ -f ${HOME}/.bashrc ]; then
-    . ${HOME}/.bashrc
-fi
+source ${HOME}/.shell/aliases.sh
 
 # Ensures that scripts folders are only executable by user.
 [ -d "${HOME}/scripts"  ] && chmod -R 744 ${HOME}/scripts

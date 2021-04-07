@@ -49,7 +49,7 @@ _tcomplete() {
 
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
-    opts="$(find $TMP_SCRIPT_ROOT -type f | cut -c$((${#TMP_SCRIPT_ROOT}+1))- | paste -sd " " -)"
+    opts="$(find $TMP_SCRIPT_ROOT -type f | cut -c${#TMP_SCRIPT_ROOT}- | sed 's:/*::' | paste -sd " " -)"
 
     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
     return 0

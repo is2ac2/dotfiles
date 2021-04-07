@@ -39,7 +39,7 @@ compdef _tmuxc tmuxc
 
 _tcomplete() {
     local opts
-    opts="$(find $TMP_SCRIPT_ROOT -type f | cut -c$((${#TMP_SCRIPT_ROOT}+2))- | paste -sd " " -)"
+    opts="$(find $TMP_SCRIPT_ROOT -type f | cut -c${#TMP_SCRIPT_ROOT}- | sed 's:/*::' | paste -sd " " -)"
     compadd ${=opts}
 }
 compdef _tcomplete tedit

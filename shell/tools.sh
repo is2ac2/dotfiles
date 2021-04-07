@@ -9,7 +9,7 @@ export TMP_SCRIPT_ROOT=$HOME/.tmp-scripts/
 mkdir -p $TMP_SCRIPT_ROOT
 
 _print_available_scripts() {
-    find $TMP_SCRIPT_ROOT -type f | cut -c$((${#TMP_SCRIPT_ROOT} + 2))-
+    find $TMP_SCRIPT_ROOT -type f | cut -c${#TMP_SCRIPT_ROOT}- | sed 's:/*::'
 }
 
 tdelete() {
@@ -24,6 +24,7 @@ tdelete() {
         _print_available_scripts
     else
         rm "${filepath}"
+        find $TMP_SCRIPT_ROOT -type d -empty -delete
     fi
 }
 

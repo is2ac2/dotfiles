@@ -10,5 +10,5 @@ ${HOME}/.cron/manage_date_folders.bash
 ${HOME}/.cron/cleanup.bash
 
 # Computes storage space.
-du -h -d 4 | sort -h > ${HOME}/storage
+cd ${HOME} && du -h -d 4 | sort -h > ${HOME}/storage
 

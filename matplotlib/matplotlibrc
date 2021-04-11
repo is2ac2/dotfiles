@@ -1,5 +1,5 @@
 # Plot settings
-backend: Agg
+backend: TkAgg
 
 # Image settings
 image.cmap: magma

@@ -10,7 +10,8 @@ ${HOME}/.cron/manage_date_folders.bash
 ${HOME}/.cron/cleanup.bash
 
 # Computes storage space.
-cd ${HOME} && du -h -d 4 2> /tmp/storage.err | sort -r -h > ${HOME}/storage
+cd ${HOME} && df 2> /tmp/df.err > ${HOME}/storage
+cd ${HOME} && du -h -d 4 2> /tmp/du.err | sort -r -h >> ${HOME}/storage
 
 # Runs local cron script, if found.
 if [ -f ${HOME}/.cron-local/daily.bash ]; then

@@ -12,3 +12,8 @@ ${HOME}/.cron/cleanup.bash
 # Computes storage space.
 cd ${HOME} && du -h -d 4 2> /tmp/storage.err | sort -r -h > ${HOME}/storage
 
+# Runs local cron script, if found.
+if [ -f ${HOME}/.cron-local/daily.bash ]; then
+    . ${HOME}/.cron-local/daily.bash
+fi
+

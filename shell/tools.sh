@@ -319,7 +319,7 @@ serve() {
                 -p 8082
             ;;
         "shared")
-            local username=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo '')
+            local username="dart"  # local username=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo '')
             local password=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo '')
             echo "Username: $username"
             echo "Password: $password"

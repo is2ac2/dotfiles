@@ -38,7 +38,7 @@ case $OSTYPE in
     "darwin"*)
         alias ls='ls -G'
 
-        export SLURM_LOG_DIR=${HOME}/Experiments/.Slurm\ Logs
+        export SLURM_LOG_DIR=${HOME}/Experiments/.Slurm
         export RUN_DIR=${HOME}/Experiments/Runs
         export LOG_DIR=${HOME}/Experiments/Logs
         export EVAL_DIR=${HOME}/Experiments/Evaluation

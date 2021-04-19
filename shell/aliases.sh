@@ -108,6 +108,16 @@ alias sshareme='sshare -u $USER'
 # sortable time format
 export SLURM_TIME_FORMAT='%D (%a) %T'
 
+port-ps() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: port-ps <port-num>"
+        return 1
+    else
+        lsof -nP "-i4TCP:$1"
+        return 0
+    fi
+}
+
 sdate() {
     if [[ $# -ne 1  ]]; then
         echo "Usage: sdate <time-string>"

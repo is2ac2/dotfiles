@@ -174,6 +174,9 @@ speed-test() {
 export LESS="-R"
 alias lesc='LESSOPEN="|pygmentize -O style=emacs -g %s" less'
 
+# top
+alias top='htop'
+
 # python
 export PYTHONSTARTUP=$HOME/.python/startup.py
 export PYTHONHASHSEED=1337  # For making experiments repeatable

@@ -141,10 +141,10 @@ Add this in your `~/.ssh/config` file to prevent having to re-authenticate when 
 Include config.d/base
 ```
 
-By default, Jupyter notebooks will be served on port 9906. Therefore, it's a good idea to add this port forwarding to your SSH config file:
+By default, Jupyter notebooks will be served on port 16012. Therefore, it's a good idea to add this port forwarding to your SSH config file:
 
 ```bash
-LocalForward 9906 localhost:9906
+LocalForward 16012 localhost:16012
 ```
 
 ### make

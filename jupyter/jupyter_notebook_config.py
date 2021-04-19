@@ -33,8 +33,8 @@ def general_config() -> None:
 
 def jupyter_notebook_config_macos() -> None:
     set_notebook_directory("~/Notebooks")
-    c.NotebookApp.port = 9905
-    c.ServerApp.port = 9905
+    c.NotebookApp.port = 16011
+    c.ServerApp.port = 16011
 
 
 # -----
@@ -45,8 +45,8 @@ def jupyter_notebook_config_macos() -> None:
 def jupyter_notebook_config_linux() -> None:
     set_notebook_directory("~/notebooks")
     c.NotebookApp.open_browser = False
-    c.NotebookApp.port = 9906
-    c.ServerApp.port = 9906
+    c.NotebookApp.port = 16012
+    c.ServerApp.port = 16012
 
 
 # Hiding this behind an environment variable because other Jupyter

@@ -201,7 +201,9 @@ export LESS="-R"
 alias lesc='LESSOPEN="|pygmentize -O style=emacs -g %s" less'
 
 # top
-alias top='htop'
+if command -v htop &> /dev/null; then
+    alias top='htop'
+fi
 
 # python
 export PYTHONSTARTUP=$HOME/.python/startup.py

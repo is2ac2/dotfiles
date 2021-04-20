@@ -43,6 +43,8 @@ case $OSTYPE in
         export LOG_DIR=${HOME}/Experiments/Logs
         export EVAL_DIR=${HOME}/Experiments/Evaluation
 
+        export NLTK_DATA=${HOME}/Software/NLTK/data
+
         ddate() {
             if [[ $# -lt 1 ]]; then
                 echo "Usage: ddate <num-dates-past> (other-args)"
@@ -62,6 +64,8 @@ case $OSTYPE in
         export LOG_DIR=${HOME}/logs
         export EVAL_DIR=${HOME}/eval
 
+        export NLTK_DATA=${HOME}/software/nltk/data
+
         ddate() {
             if [[ $# -lt 1 ]]; then
                 echo "Usage: ddate <num-dates-past> (other-args)"
@@ -78,6 +82,8 @@ case $OSTYPE in
         return
         ;;
 esac
+
+mkdir -p $NLTK_DATA
 
 # grep
 alias grep='grep --color=always'

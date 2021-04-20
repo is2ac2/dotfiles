@@ -290,22 +290,22 @@ mkcd() {
 
 # kill vscode
 kill-vscode() {
-    local nprocs=$(pgrep -f vscode -u $USER -c)
-    while true; do
-        read -p "Kill all ${nprocs} processes? [y/n] " yn
-        case $yn in
-            [Yy]* )
-                pkill -15 -u $USER -f vscode
-                return 0
-                ;;
-            [Nn]* )
-                return 1
-                ;;
-            * )
-                echo "Please enter yes or no."
-                ;;
-        esac
-    done
+    local nprocs=$(pgrep -u $USER -f vscode | wc -l | awk '{ print $1 }')
+    echo "($1) Killing ${nprocs} processes"
+    case $1 in
+        dry)
+            pgrep -u $USER -f vscode | xargs ps p
+            ;;
+        run)
+            pkill -15 -u $USER -f vscode
+            ;;
+        * )
+            echo "Unexpected or missing argument: $1"
+            echo "Usage: kill-vscode <run|dry>"
+            return 1
+            ;;
+    esac
+    return 0
 }
 
 # clean vscode (useful for when some extensions freeze up)
@@ -329,7 +329,7 @@ clean-vscode() {
                     rm -rf $vscode_dir
                     ;;
                 *)
-                    echo "Unexpected argument: $1"
+                    echo "Unexpected or missing argument: $1"
                     echo "Usage: clean-vscode <run|dry>"
                     return 1
                     ;;
@@ -339,7 +339,31 @@ clean-vscode() {
     return 0
 }
 
-# pgrep with tree
+vsc() {
+    if [ $# -lt 1 ]; then
+        echo "Usage: vsc <clean|kill>"
+        return 1
+    fi
+
+    local cmd=$1
+    shift
+
+    case $cmd in
+        clean)
+            clean-vscode $@
+            ;;
+        kill)
+            kill-vscode $@
+            ;;
+        *)
+            echo "Usage: vsc <clean|kill>"
+            return 1
+            ;;
+    esac
+    return 0
+}
+
+# pgrep with tree (only in bash)
 ppgrep() {
     pgrep "$@" | xargs --no-run-if-empty ps fp;
     return 0

@@ -276,3 +276,23 @@ mkcd() {
     return 0
 }
 
+# kill vscode
+kill-vscode() {
+    local nprocs=$(pgrep -f vscode -u $USER -c)
+    while true; do
+        read -p "Kill all ${nprocs} processes? [y/n] " yn
+        case $yn in
+            [Yy]* )
+                pkill -15 -u $USER -f vscode
+                return 0
+                ;;
+            [Nn]* )
+                return 1
+                ;;
+            * )
+                echo "Please enter yes or no."
+                ;;
+        esac
+    done
+}
+

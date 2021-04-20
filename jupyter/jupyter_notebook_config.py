@@ -24,6 +24,8 @@ def general_config() -> None:
     c.JupyterApp.answer_yes = True
     c.InteractiveShellApp.extensions = ['autoreload']
     c.InteractiveShellApp.exec_lines = ['%autoreload 2']
+    c.NotebookApp.port = int(os.environ['JUPYTER_NOTEBOOK_PORT'])
+    c.ServerApp.port = int(os.environ['JUPYTER_NOTEBOOK_PORT'])
 
 
 # -----
@@ -32,9 +34,8 @@ def general_config() -> None:
 
 
 def jupyter_notebook_config_macos() -> None:
+    general_config()
     set_notebook_directory("~/Notebooks")
-    c.NotebookApp.port = 16011
-    c.ServerApp.port = 16011
 
 
 # -----
@@ -43,10 +44,9 @@ def jupyter_notebook_config_macos() -> None:
 
 
 def jupyter_notebook_config_linux() -> None:
+    general_config()
     set_notebook_directory("~/notebooks")
     c.NotebookApp.open_browser = False
-    c.NotebookApp.port = 16012
-    c.ServerApp.port = 16012
 
 
 # Hiding this behind an environment variable because other Jupyter

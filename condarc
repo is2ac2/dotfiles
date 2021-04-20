@@ -2,7 +2,10 @@ channels:
   - conda-forge
   - pytorch
   - defaults
+envs_dirs:
+  - ~/.conda/envs
 always_yes: true
 update_dependencies: true
 auto_activate_base: true
 ssl_verify: true
+default_threads: 16

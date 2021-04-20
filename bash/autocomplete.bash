@@ -30,7 +30,7 @@ complete -F _cvars_complete 'cvars'
 # ----
 
 alias tmuxc='tmux -CC a -t'
-_tmuxc_complete(){
+_tmux_complete(){
     local cur opts
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
@@ -38,7 +38,8 @@ _tmuxc_complete(){
     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
     return 0
 }
-complete -F _tmuxc_complete tmuxc
+complete -F _tmux_complete tmuxc
+complete -F _tmux_complete tmuxn
 
 # -----------
 # tmp-scripts

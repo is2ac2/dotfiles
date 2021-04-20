@@ -26,12 +26,13 @@ compdef _cvars cvars
 tmuxc() {
     tmux -CC a -t $@
 }
-_tmuxc() {
+_tmux() {
     local opts
     opts="$(tmux list-sessions -F '#S' | tr '\n' ' ')"
     compadd ${=opts}
 }
-compdef _tmuxc tmuxc
+compdef _tmux tmuxc
+compdef _tmux tmuxn
 
 # -----------
 # tmp-scripts

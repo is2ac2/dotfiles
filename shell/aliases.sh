@@ -336,6 +336,24 @@ clean-vscode() {
             esac
         fi
     done
+
+    local num_tmp=$(find /tmp/ -maxdepth 1 -user $USER -name "*vscode*" 2> /dev/null | wc -l)
+    echo "($1) Removing $num_tmp temp files"
+
+    case $1 in
+        dry)
+            echo "SKIPPING ACTION"
+            ;;
+        run)
+            find /tmp/ -maxdepth 1 -user $USER -name "*vscode*" -exec rm -rf {} \; 2> /dev/null
+            ;;
+        *)
+            echo "Unexpected or missing argument: $1"
+            echo "Usage: clean-vscode <run|dry>"
+            return 1
+            ;;
+    esac
+
     return 0
 }
 

@@ -85,6 +85,16 @@ esac
 
 mkdir -p $NLTK_DATA
 
+# Some extra bit that seems to be necessary for VSCode.
+if [ -d /etc/profile.d ]; then
+    for i in /etc/profile.d/*.sh; do
+        if [ -r $i ]; then
+            . $i
+        fi
+    done
+    unset i
+fi
+
 # grep
 alias grep='grep --color=always'
 
@@ -294,5 +304,11 @@ kill-vscode() {
                 ;;
         esac
     done
+}
+
+# pgrep with tree
+ppgrep() {
+    pgrep "$@" | xargs --no-run-if-empty ps fp;
+    return 0
 }
 

@@ -200,23 +200,23 @@ cvars() {
         shift
     done
 
-    if [[ $WRITE_ACTIVATE == true ]]; then
+    if [[ $WRITE_ACTIVATE ]]; then
         echo "#! /bin/sh" >>$ACTIVATE
         echo "# $ACTIVATE" >>$ACTIVATE
         echo "" >>$ACTIVATE
     fi
-    if [[ $WRITE_DEACTIVATE == true ]]; then
+    if [[ $WRITE_DEACTIVATE ]]; then
         echo "#!/bin/sh" >>$DEACTIVATE
         echo "# $DEACTIVATE" >>$DEACTIVATE
         echo "" >>$DEACTIVATE
     fi
 
     if [[ "$EDITOR" == "vim" ]]; then
-        [[ $EDIT_ACTIVATE == true ]] && vim "+normal G$" +startinsert $ACTIVATE
-        [[ $EDIT_DEACTIVATE == true ]] && vim "+normal G$" +startinsert $DEACTIVATE
+        [[ $EDIT_ACTIVATE ]] && vim "+normal G$" +startinsert $ACTIVATE
+        [[ $EDIT_DEACTIVATE ]] && vim "+normal G$" +startinsert $DEACTIVATE
     else
-        [[ $EDIT_ACTIVATE == true ]] && $EDITOR $ACTIVATE
-        [[ $EDIT_DEACTIVATE == true ]] && $EDITOR $DEACTIVATE
+        [[ $EDIT_ACTIVATE ]] && $EDITOR $ACTIVATE
+        [[ $EDIT_DEACTIVATE ]] && $EDITOR $DEACTIVATE
     fi
 
     echo "Done editing environment variables for $CONDA_PREFIX"

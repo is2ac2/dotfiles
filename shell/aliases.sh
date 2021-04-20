@@ -337,7 +337,7 @@ clean-vscode() {
         fi
     done
 
-    local num_tmp=$(find /tmp/ -maxdepth 1 -user $USER -name "*vscode*" 2> /dev/null | wc -l)
+    local num_tmp=$(find /tmp/ -maxdepth 1 -user $USER -name "*vscode*" 2> /dev/null | wc -l | awk '{ print $1 }')
     echo "($1) Removing $num_tmp temp files"
 
     case $1 in

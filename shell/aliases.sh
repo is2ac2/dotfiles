@@ -308,6 +308,37 @@ kill-vscode() {
     done
 }
 
+# clean vscode (useful for when some extensions freeze up)
+clean-vscode() {
+    local vscode_dirs=(
+        ${HOME}/.vscode/
+        ${HOME}/.vscode-insiders/
+        ${HOME}/.vscode-server/
+        ${HOME}/.vscode-server-insiders/
+        ${HOME}/Library/Application\ Support/Code/
+        ${HOME}/Library/Application\ Support/Code\ -\ Insiders/
+    )
+    for vscode_dir in ${vscode_dirs[@]}; do
+        if [ -d $vscode_dir ]; then
+            echo "($1) Removing $vscode_dir"
+            case $1 in
+                dry)
+                    echo "SKIPPING ACTION"
+                    ;;
+                run)
+                    rm -rf $vscode_dir
+                    ;;
+                *)
+                    echo "Unexpected argument: $1"
+                    echo "Usage: clean-vscode <run|dry>"
+                    return 1
+                    ;;
+            esac
+        fi
+    done
+    return 0
+}
+
 # pgrep with tree
 ppgrep() {
     pgrep "$@" | xargs --no-run-if-empty ps fp;

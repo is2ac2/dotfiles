@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+import argparse
+from notebook import notebookapp
+
+class C:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+def print_urls(args: argparse.Namespace) -> None:
+    for server in notebookapp.list_running_servers():
+        print(f"{C.HEADER}{C.UNDERLINE}{server['notebook_dir']}{C.ENDC}")
+        print(f" - {C.OKGREEN}URL{C.ENDC}: {C.UNDERLINE}{server['url']}?token={server['token']}{C.ENDC}")
+        if args.pid:
+            print(f" - {C.OKGREEN}PID{C.ENDC}: {server['pid']}")
+        if args.port:
+            print(f" - {C.OKGREEN}Port{C.ENDC}: {server['port']}")
+        if args.secure:
+            if server['secure']:
+                print(f" - {C.OKGREEN}SECURE{C.ENDC}")
+            else:
+                print(f" - {C.FAIL}** UNSECURE **{C.ENDC}")
+
+
+def get_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Prints active Jupyter notebooks")
+    parser.add_argument("-i", "--pid", action="store_true",
+                        help="If set, print the notebook process ID")
+    parser.add_argument("-o", "--port", action="store_true",
+                        help="If set, print the notebook port")
+    parser.add_argument("-s", "--secure", action="store_true",
+                        help="If set, print whether or not the notebook is secure")
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = get_args()
+    print_urls(args)
+
+
+if __name__ == "__main__":
+    main()
+

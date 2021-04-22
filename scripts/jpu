@@ -19,11 +19,11 @@ def print_urls(args: argparse.Namespace) -> None:
     for server in notebookapp.list_running_servers():
         print(f"{C.HEADER}{C.UNDERLINE}{server['notebook_dir']}{C.ENDC}")
         print(f" - {C.OKGREEN}URL{C.ENDC}: {C.UNDERLINE}{server['url']}?token={server['token']}{C.ENDC}")
-        if args.pid:
+        if args.pid or args.all:
             print(f" - {C.OKGREEN}PID{C.ENDC}: {server['pid']}")
-        if args.port:
+        if args.port or args.all:
             print(f" - {C.OKGREEN}Port{C.ENDC}: {server['port']}")
-        if args.secure:
+        if args.secure or args.all:
             if server['secure']:
                 print(f" - {C.OKGREEN}SECURE{C.ENDC}")
             else:
@@ -38,6 +38,8 @@ def get_args() -> argparse.Namespace:
                         help="If set, print the notebook port")
     parser.add_argument("-s", "--secure", action="store_true",
                         help="If set, print whether or not the notebook is secure")
+    parser.add_argument("-a", "--all", action="store_true",
+                        help="If set, print everything")
     return parser.parse_args()
 
 

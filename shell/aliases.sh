@@ -124,7 +124,7 @@ alias sshareme='sshare -u $USER'
 # sortable time format
 export SLURM_TIME_FORMAT='%D (%a) %T'
 
-port-ps() {
+portps() {
     if [[ $# -ne 1 ]]; then
         echo "Usage: port-ps <port-num>"
         return 1
@@ -158,7 +158,7 @@ shist() {
 }
 
 # speed test
-speed-test() {
+speedtest() {
     echo "Runs speed test against remote server
 
     $(green)speed-test$(no_color) local <machine-name>  $(blue)# Run on the local machine$(no_color)
@@ -289,7 +289,7 @@ mkcd() {
 }
 
 # kill vscode
-kill-vscode() {
+__kill_vscode() {
     local nprocs=$(pgrep -u $USER -f vscode | wc -l | awk '{ print $1 }')
     echo "($1) Killing ${nprocs} processes"
     case $1 in
@@ -301,7 +301,7 @@ kill-vscode() {
             ;;
         * )
             echo "Unexpected or missing argument: $1"
-            echo "Usage: kill-vscode <run|dry>"
+            echo "Usage: vsc kill <run|dry>"
             return 1
             ;;
     esac
@@ -309,15 +309,14 @@ kill-vscode() {
 }
 
 # clean vscode (useful for when some extensions freeze up)
-clean-vscode() {
-    local vscode_dirs=(
-        ${HOME}/.vscode/
-        ${HOME}/.vscode-insiders/
-        ${HOME}/.vscode-server/
-        ${HOME}/.vscode-server-insiders/
-        ${HOME}/Library/Application\ Support/Code/
-        ${HOME}/Library/Application\ Support/Code\ -\ Insiders/
-    )
+__clean_vscode() {
+    local vscode_dirs
+    vscode_dirs[0]=${HOME}/.vscode/
+    vscode_dirs[1]=${HOME}/.vscode-insiders/
+    vscode_dirs[2]=${HOME}/.vscode-server/
+    vscode_dirs[3]=${HOME}/.vscode-server-insiders/
+    vscode_dirs[4]=${HOME}/Library/Application\ Support/Code/
+    vscode_dirs[5]=${HOME}/Library/Application\ Support/Code\ -\ Insiders/
     for vscode_dir in ${vscode_dirs[@]}; do
         if [ -d $vscode_dir ]; then
             echo "($1) Removing $vscode_dir"
@@ -330,7 +329,7 @@ clean-vscode() {
                     ;;
                 *)
                     echo "Unexpected or missing argument: $1"
-                    echo "Usage: clean-vscode <run|dry>"
+                    echo "Usage: vsc clean <run|dry>"
                     return 1
                     ;;
             esac
@@ -349,7 +348,7 @@ clean-vscode() {
             ;;
         *)
             echo "Unexpected or missing argument: $1"
-            echo "Usage: clean-vscode <run|dry>"
+            echo "Usage: vsc clean <run|dry>"
             return 1
             ;;
     esac
@@ -368,10 +367,10 @@ vsc() {
 
     case $cmd in
         clean)
-            clean-vscode $@
+            __clean_vscode $@
             ;;
         kill)
-            kill-vscode $@
+            __kill_vscode $@
             ;;
         *)
             echo "Usage: vsc <clean|kill>"
@@ -385,5 +384,13 @@ vsc() {
 ppgrep() {
     pgrep "$@" | xargs --no-run-if-empty ps fp;
     return 0
+}
+
+
+# ubuntu: combine apt update && upgrade
+aptu() {
+    apt update
+    apt upgrade
+    apt autoremove
 }
 

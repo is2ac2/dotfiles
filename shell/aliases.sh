@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # Show an error if this fails for some reason.
-err_report() {
-    echo "Error on line $1"
-}
-trap 'err_report $LINENO' ERR
+# err_report() {
+#     echo "Error on line $1"
+# }
+# trap 'err_report $LINENO' ERR
 
 # C++ flags for programming competitions.
 export CXXFLAGS="-Wall -Wextra -O2 -pedantic -std=c++11"

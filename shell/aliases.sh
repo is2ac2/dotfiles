@@ -169,8 +169,8 @@ shist() {
 speedtest() {
     echo "Runs speed test against remote server
 
-    $(green)speed-test$(no_color) local <machine-name>  $(blue)# Run on the local machine$(no_color)
-    $(green)speed-test$(no_color) remote                $(blue)# Run on the remote machine$(no_color)
+    $(green)speedtest$(no_color) local <machine-name>  $(blue)# Run on the local machine$(no_color)
+    $(green)speedtest$(no_color) remote                $(blue)# Run on the remote machine$(no_color)
 "
 
     if [[ $# -eq 0 ]]; then

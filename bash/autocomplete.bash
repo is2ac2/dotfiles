@@ -30,6 +30,7 @@ complete -F _cvars_complete 'cvars'
 # ----
 
 alias tmuxc='tmux -CC a -t'
+alias tmuxa='tmux a -t'
 _tmux_complete(){
     local cur opts
     COMPREPLY=()
@@ -40,6 +41,7 @@ _tmux_complete(){
 }
 complete -F _tmux_complete tmuxc
 complete -F _tmux_complete tmuxn
+complete -F _tmux_complete tmuxa
 
 # -----------
 # tmp-scripts

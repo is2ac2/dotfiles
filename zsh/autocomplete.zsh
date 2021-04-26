@@ -37,6 +37,7 @@ _tmux() {
 compdef _tmux tmuxc
 compdef _tmux tmuxn
 compdef _tmux tmuxa
+compdef _tmux tmuxd
 
 # -----------
 # tmp-scripts

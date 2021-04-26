@@ -11,6 +11,7 @@
 - link:
     ~/.dotfiles: ''
     ~/.tmux.conf:
+    ~/.tmux/plugins/tpm: tmux/plugins/tpm
     ~/.vim:
     ~/.vimrc:
     ~/.vim_runtime:
@@ -46,3 +47,4 @@
   - [git submodule update --init --recursive, Installing submodules]
   - [~/.zsh/oh-my-zsh.sh, Installing oh-my-zsh]
   - [mkdir -p ~/.ssh/sockets && chmod 700 ~/.ssh/sockets, Creating sockets folder]
+  - [~/.tmux/plugins/tpm/bin/install_plugins]

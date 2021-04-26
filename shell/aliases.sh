@@ -241,7 +241,18 @@ tmuxn() {
     fi
 
     tmux new-session -d -s $1
-    tmux -CC attach -t $1
+    echo "Created session $1"
+    return 0
+}
+
+tmuxd() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: tmuxd <session-to-close>"
+        return 1
+    fi
+
+    tmux kill-session -t $1
+    echo "Closed session $1"
     return 0
 }
 

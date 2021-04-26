@@ -42,6 +42,7 @@ _tmux_complete(){
 complete -F _tmux_complete tmuxc
 complete -F _tmux_complete tmuxn
 complete -F _tmux_complete tmuxa
+complete -F _tmux_complete tmuxd
 
 # -----------
 # tmp-scripts

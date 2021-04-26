@@ -305,18 +305,24 @@ serve() {
     # Helper alias for http-server.
     # Install server with `nmp install --global http-server`
 
-    local help_str="Usage: serve <local|shared>"
+    local help_str="Usage: serve <local|shared> (<port>)"
 
-    if [[ $# -ne 1 ]]; then
+    # Parses command line arguments.
+    mode='local'
+    port=8082
+    [ $# -gt 0 ] && mode=$1 ; shift
+    [ $# -gt 0 ] && port=$1 ; shift
+    if [ $# -ne 0 ]; then
+        echo "Found $# unused arguments: $@"
         echo $help_str
         return 1
     fi
 
-    case $1 in
+    case $mode in
         "local")
             http-server \
                 -a localhost \
-                -p 8082
+                -p $port
             ;;
         "shared")
             local username="dart"  # local username=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo '')
@@ -324,7 +330,7 @@ serve() {
             echo "Username: $username"
             echo "Password: $password"
             http-server \
-                -p 8082 \
+                -p $port \
                 --username $username \
                 --password $password
             ;;

@@ -48,4 +48,5 @@
   - [git submodule update --init --recursive, Installing submodules]
   - [~/.zsh/oh-my-zsh.sh, Installing oh-my-zsh]
   - [mkdir -p ~/.ssh/sockets && chmod 700 ~/.ssh/sockets, Creating sockets folder]
-  - [tmux source ~/.tmux.conf && ~/.tmux/plugins/tpm/bin/install_plugins, Installing Tmux]
+  - [if command -v tmux ; then tmux source ~/.tmux.conf && ~/.tmux/plugins/tpm/bin/install_plugins ; fi, Installing Tmux]
+

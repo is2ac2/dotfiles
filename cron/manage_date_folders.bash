@@ -13,7 +13,7 @@ today=$(date +"%Y-%m-%d")
 __delete_old_dates() {
     root=$1
 
-    python3 ${HOME}/.scripts/manage_dates \
+    ${HOME}/.scripts/manage_dates \
         $root \
         -s $start_date \
         -e $end_date \

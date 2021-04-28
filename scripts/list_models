@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+
+from collections import defaultdict
+import json
+from pathlib import Path
+import re
+import sys
+from typing import Iterator
+
+depths = [1, 2, 3, 4, 5]
+root = Path("~/logs").expanduser()
+
+
+def do_glob(root: Path, depth: int) -> Iterator[Path]:
+    try:
+        yield from root.glob("/".join(["*"] * depth + ["ckpt*.pt"]))
+    except Exception as e:
+        print(e, file=sys.stderr)
+        yield from []
+
+
+paths = {
+    path.resolve().parent
+    for depth in depths
+    for path in do_glob(root, depth)
+}
+
+experiments = []
+prev_date = None
+for path in sorted(paths, reverse=True):
+    s = str(path)
+    date = re.findall(r"\d{4}-\d{2}-\d{2}", s)[0]
+    if date != prev_date:
+        if prev_date is not None:
+            experiments.append("")
+        experiments.append(f"# {date}")
+        prev_date = date
+    experiments.append(s)
+
+
+experiment_paths = "".join(f"\n    {s}" for s in experiments)
+print(f"""#!/bin/sh
+
+# Models
+models=({experiment_paths}
+)
+""")
+

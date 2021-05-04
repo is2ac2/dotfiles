@@ -14,7 +14,7 @@
     co = checkout
     di = diff
     uncommit = reset HEAD~1
-    last-change = diff HEAD^
+    last = diff HEAD^
 
 [pull]
     rebase = true

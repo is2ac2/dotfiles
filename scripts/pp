@@ -2,11 +2,24 @@
 
 import argparse
 import ast
-from collections import OrderedDict
 import json
 import re
 from pathlib import Path
 import sys
+
+# These are special objects required for eval.
+from collections import OrderedDict
+
+
+def strip_string(s: str) -> str:
+    def strip_part(s: str, prefix: str, postfix: str) -> str:
+        s = s.strip()
+        if s.startswith(prefix) and s.endswith(postfix):
+            return strip_string(s[len(prefix):-len(postfix)])
+        return s
+
+    s = strip_part(s, "dict_keys(", ")")
+    return s
 
 
 class C:
@@ -65,6 +78,7 @@ def main() -> None:
             text = f.read()
 
     text_flat = re.sub(r"\s+", " ", text, flags=re.MULTILINE)
+    text_flat = strip_string(text_flat)
 
     # Methods to try pretty-printing text.
     if print_json(text):

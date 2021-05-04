@@ -42,8 +42,9 @@ def get_args() -> argparse.Namespace:
 
 def print_json(text: str) -> bool:
     try:
-        json_obj = json.loads(text)
-        print(json.dumps(json_obj, indent=2), file=sys.stdout)
+        obj = json.loads(text)
+        json_str = json.dumps(obj, indent=2, sort_keys=True)
+        print(json_str, file=sys.stdout)
         return True
     except json.JSONDecodeError:
         return False
@@ -52,7 +53,8 @@ def print_json(text: str) -> bool:
 def print_pyobj(text: str) -> bool:
     try:
         obj = ast.literal_eval(text)
-        print(json.dumps(obj, indent=2), file=sys.stdout)
+        json_str = json.dumps(obj, indent=2, sort_keys=True)
+        print(json_str, file=sys.stdout)
         return True
     except (SyntaxError, ValueError):
         return False
@@ -61,7 +63,8 @@ def print_pyobj(text: str) -> bool:
 def print_eval(text: str) -> bool:
     try:
         obj = eval(text)
-        print(json.dumps(obj, indent=2), file=sys.stdout)
+        json_str = json.dumps(obj, indent=2, sort_keys=True)
+        print(json_str, file=sys.stdout)
         return True
     except Exception as e:
         return False

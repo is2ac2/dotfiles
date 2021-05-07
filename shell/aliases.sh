@@ -336,6 +336,8 @@ __clean_vscode() {
     vscode_dirs[3]=${HOME}/.vscode-server-insiders/
     vscode_dirs[4]=${HOME}/Library/Application\ Support/Code/
     vscode_dirs[5]=${HOME}/Library/Application\ Support/Code\ -\ Insiders/
+    vscode_dirs[6]=${HOME}/.config/Code/
+    vscode_dirs[7]=${HOME}/.config/Code\ -\ Insiders/
     for vscode_dir in ${vscode_dirs[@]}; do
         if [ -d $vscode_dir ]; then
             echo "($1) Removing $vscode_dir"
@@ -373,6 +375,22 @@ __clean_vscode() {
     esac
 
     return 0
+}
+
+__clean_cache_vscode() {
+    local vscode_dirs
+    vscode_dirs[0]=${HOME}/Library/Application\ Support/Code/
+    vscode_dirs[1]=${HOME}/Library/Application\ Support/Code\ -\ Insiders/
+    vscode_dirs[2]=${HOME}/.config/Code/
+    vscode_dirs[3]=${HOME}/.config/Code\ -\ Insiders/
+    for vscode_dir in ${vscode_dirs[@]}; do
+        state_db=$vscode_dir/User/globalStorage/state.vscdb
+
+        # Deletes cache of Python interpreters.
+        if [ -d $state_db ]; then
+            sqlite3 $state_db "DELETE FROM ItemTable WHERE key = 'ms-python.python';"
+        fi
+    done
 }
 
 vsc() {

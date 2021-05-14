@@ -232,7 +232,7 @@ alias jpn='USE_JUPYTER_CONF=1 jupyter notebook'
 export JUPYTER_NOTEBOOK_PORT=${JUPYTER_NOTEBOOK_PORT:-44638}
 
 # cuda
-export TORCH_CUDA_ARCH_LIST="6.0;7.0"
+export TORCH_CUDA_ARCH_LIST="6.0;6.1;6.2;7.0;7.5;8.0"
 
 # fixing vimrc colors inside tmux
 export TERM=screen-256color

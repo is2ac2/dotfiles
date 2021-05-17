@@ -132,6 +132,20 @@ alias sshareme='sshare -u $USER'
 # sortable time format
 export SLURM_TIME_FORMAT='%D (%a) %T'
 
+spartme() {
+    if [[ $# -ne 1 ]]; then
+        echo "Changes all existing jobs to a partition"
+        echo "Usage: spartme <partition>"
+    fi
+    partition=$1
+    jobids=$(squeue -u $USER -h -t PD -o %i)
+    numjobs=$(echo $jobids | wc -w)
+    echo "Upgrading $numjobs jobs to $partition"
+    for i in ${jobids[@]}; do
+        scontrol update jobid=$i partition=$partition
+    done
+}
+
 portps() {
     if [[ $# -ne 1 ]]; then
         echo "Usage: port-ps <port-num>"

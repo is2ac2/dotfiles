@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # -------------------
 # Manage temp scripts
@@ -78,48 +78,6 @@ trun() {
     fi
 }
 
-# -----––-------
-# Run port scans
-# --------------
-
-port-scan() {
-    if [[ -z $1 || -z $2 ]]; then
-        echo "Usage: $0 <host> <port, ports, or port-range>"
-        return
-    fi
-
-    local host=$1
-    local ports=()
-    local IFS
-    case $2 in
-    *-*)
-        IFS=- read start end <<<"$2"
-        for ((port = start; port <= end; port++)); do
-            ports+=($port)
-        done
-        ;;
-    *,*)
-        IFS=, read -ra ports <<<"$2"
-        ;;
-    *)
-        ports+=($2)
-        ;;
-    esac
-
-    for port in "${ports[@]}"; do
-        perl -e '
-        eval {
-        $SIG{ALRM} = sub { die };
-        alarm shift;
-        system(@ARGV);
-        };
-        if ($@) { exit 1 }
-    ' 1 "echo >/dev/tcp/$host/$port" &&
-            echo "port $port is open" ||
-            echo "port $port is closed"
-    done
-}
-
 # --------------------------------
 # Download files from Google Drive
 # --------------------------------
@@ -153,22 +111,18 @@ cvars() {
         echo "Can't edit outside of Conda environment"
         return 0
     fi
-    if [[ "$CONDA_DEFAULT_ENV" == "base" ]]; then
-        echo "Can't edit base environment variables"
-        return 0
-    fi
 
     local ACTIVATE=$CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
     local DEACTIVATE=$CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh
     mkdir -p $(dirname $ACTIVATE) $(dirname $DEACTIVATE)
 
-    local WRITE_ACTIVATE=true
-    local WRITE_DEACTIVATE=true
+    local WRITE_ACTIVATE=1
+    local WRITE_DEACTIVATE=1
     [[ -f $ACTIVATE ]] && WRITE_ACTIVATE=false
     [[ -f $DEACTIVATE ]] && WRITE_DEACTIVATE=false
 
-    local EDIT_ACTIVATE=false
-    local EDIT_DEACTIVATE=false
+    local EDIT_ACTIVATE=0
+    local EDIT_DEACTIVATE=0
 
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -182,10 +136,10 @@ cvars() {
             rm $DEACTIVATE
             ;;
         activate | a)
-            EDIT_ACTIVATE=true
+            EDIT_ACTIVATE=1
             ;;
         deactivate | d)
-            EDIT_DEACTIVATE=true
+            EDIT_DEACTIVATE=1
             ;;
         *)
             echo "Invalid option: $1. Expected one of"
@@ -200,23 +154,23 @@ cvars() {
         shift
     done
 
-    if [[ $WRITE_ACTIVATE ]]; then
+    if [[ $WRITE_ACTIVATE == 1 ]]; then
         echo "#! /bin/sh" >>$ACTIVATE
         echo "# $ACTIVATE" >>$ACTIVATE
         echo "" >>$ACTIVATE
     fi
-    if [[ $WRITE_DEACTIVATE ]]; then
+    if [[ $WRITE_DEACTIVATE == 1 ]]; then
         echo "#!/bin/sh" >>$DEACTIVATE
         echo "# $DEACTIVATE" >>$DEACTIVATE
         echo "" >>$DEACTIVATE
     fi
 
     if [[ "$EDITOR" == "vim" ]]; then
-        [[ $EDIT_ACTIVATE ]] && vim "+normal G$" +startinsert $ACTIVATE
-        [[ $EDIT_DEACTIVATE ]] && vim "+normal G$" +startinsert $DEACTIVATE
+        [[ $EDIT_ACTIVATE == 1 ]] && vim "+normal G$" +startinsert $ACTIVATE
+        [[ $EDIT_DEACTIVATE == 1 ]] && vim "+normal G$" +startinsert $DEACTIVATE
     else
-        [[ $EDIT_ACTIVATE ]] && $EDITOR $ACTIVATE
-        [[ $EDIT_DEACTIVATE ]] && $EDITOR $DEACTIVATE
+        [[ $EDIT_ACTIVATE == 1 ]] && $EDITOR $ACTIVATE
+        [[ $EDIT_DEACTIVATE == 1 ]] && $EDITOR $DEACTIVATE
     fi
 
     echo "Done editing environment variables for $CONDA_PREFIX"

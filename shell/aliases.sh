@@ -247,6 +247,9 @@ alias tbd='tensorboard serve --logdir . --port 6006'
 # pwd without symlinks
 alias pwd='pwd -P'
 
+# conda
+alias cdenv='conda deactivate'
+
 # tmux
 tmuxn() {
     if [[ $# -ne 1 ]]; then

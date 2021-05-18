@@ -140,7 +140,7 @@ spartme() {
     partition=$1
     jobids=$(squeue -u $USER -h -t PD -o %i)
     numjobs=$(echo $jobids | wc -w)
-    echo "Upgrading $numjobs jobs to $partition"
+    echo "Changing $numjobs jobs to $partition partition"
     for i in ${jobids[@]}; do
         scontrol update jobid=$i partition=$partition
     done

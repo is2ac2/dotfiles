@@ -30,7 +30,6 @@
     ~/.cron:
     ~/.zsh:
     ~/.zshrc:
-    ~/.clang-format:
     ~/.imwheelrc:
     ~/.matplotlib/matplotlibrc: matplotlib/matplotlibrc
     ~/.config/matplotlib/matplotlibrc: config/matplotlib/matplotlibrc

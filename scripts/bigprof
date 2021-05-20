@@ -1,0 +1,249 @@
+#!/usr/bin/env python
+"""Script for profiling really big dire
+
+Run the command below to kill all processes:
+    pkill -f bigprof
+"""
+
+import argparse
+import enum
+import multiprocessing as mp
+import time
+from abc import ABC, abstractmethod
+from pathlib import Path
+from queue import Empty, Queue
+from typing import Any, Dict, List, Optional, Set, Type
+
+
+class ProfileType(enum.Enum):
+    USER = "user"
+    GROUP = "group"
+
+
+def sizeof_fmt(num: float, suffix: str = 'B') -> str:
+    for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f%s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f%s%s" % (num, 'Yi', suffix)
+
+
+class BaseProfile(ABC):
+    """Defines base profiler object."""
+
+    @staticmethod
+    @abstractmethod
+    def map(path: Path) -> Dict[str, Any]:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def reduce(dicts: List[Dict[str, Any]]) -> Dict[str, Any]:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def render(result: Dict[str, Any]) -> str:
+        pass
+
+
+class UserProfile(BaseProfile):
+    """Returns amount of storage space owned by each user."""
+
+    @staticmethod
+    def map(path: Path) -> Dict[str, Any]:
+        if not path.is_file():
+            return {}
+        return {path.owner(): path.stat().st_size}
+
+    @staticmethod
+    def reduce(dicts: List[Dict[str, Any]]) -> Dict[str, Any]:
+        result: Dict[str, Any] = {}
+        for d in dicts:
+            for k, v in d.items():
+                if k in result:
+                    result[k] += v
+                else:
+                    result[k] = v
+        return result
+
+    @staticmethod
+    def render(result: Dict[str, Any]) -> str:
+        result_sorted = sorted(result.items(), key=lambda x: x[1], reverse=True)
+        result_string = "\n".join(f"{k}: {sizeof_fmt(v)}" for k, v in result_sorted)
+        return result_string
+
+
+class GroupProfile(BaseProfile):
+    """Returns amount of storage space owned by each group."""
+
+    @staticmethod
+    def map(path: Path) -> Dict[str, Any]:
+        if not path.is_file():
+            return {}
+        return {path.group(): path.stat().st_size}
+
+    @staticmethod
+    def reduce(dicts: List[Dict[str, Any]]) -> Dict[str, Any]:
+        result: Dict[str, Any] = {}
+        for d in dicts:
+            for k, v in d.items():
+                if k in result:
+                    result[k] += v
+                else:
+                    result[k] = v
+        return result
+
+    @staticmethod
+    def render(result: Dict[str, Any]) -> str:
+        result_sorted = sorted(result.items(), key=lambda x: x[1], reverse=True)
+        result_string = "\n".join(f"{k}: {sizeof_fmt(v)}" for k, v in result_sorted)
+        return result_string
+
+
+def get_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Runs profiling")
+    parser.add_argument("-t", "--types", nargs="+", choices=[t.value for t in ProfileType],
+                        default=["user", "group"], help="Types of profiling to do")
+    parser.add_argument("-b", "--base-path", default="~", help="Base profile path")
+    parser.add_argument("-w", "--workers", type=int, default=100,
+                        help="Number of worker processes")
+    parser.add_argument("--silent", default=False, action="store_true",
+                        help="If set, run silently")
+    return parser.parse_args()
+
+
+def get_profile_func(profile: ProfileType) -> Type[BaseProfile]:
+    if profile == ProfileType.USER:
+        return UserProfile
+    if profile == ProfileType.GROUP:
+        return GroupProfile
+    raise NotImplementedError(profile)
+
+
+def worker(
+    path_queue: mp.Queue,
+    result_queues: Dict[ProfileType, mp.Queue],
+    num_workers: int,
+    counter: Optional[Any],
+) -> None:
+    profiles: Dict[ProfileType, Type[BaseProfile]] = {
+        profile_type: get_profile_func(profile_type)
+        for profile_type in result_queues.keys()
+    }
+    results: Dict[ProfileType, Dict[str, Any]] = {}
+    my_queue: Queue = Queue()
+    total_processed: int = 0
+
+    def run(path: Path) -> None:
+        for profile_type, profile in profiles.items():
+            try:
+                result = profile.map(path)
+            except (PermissionError, KeyError, FileNotFoundError):
+                continue
+            if profile_type in results:
+                results[profile_type] = profile.reduce([
+                    result,
+                    results[profile_type],
+                ])
+            else:
+                results[profile_type] = result
+
+    def can_add_subpaths(path: Path) -> bool:
+        try:
+            return path.is_dir() and not path.is_symlink()
+        except PermissionError:
+            return False
+
+    def add_subpaths(path: Path) -> None:
+        if can_add_subpaths(path):
+            try:
+                for subpath in path.iterdir():
+                    if path_queue.qsize() < num_workers * 2:
+                        path_queue.put(subpath)
+                    else:
+                        my_queue.put(subpath)
+            except PermissionError:
+                pass
+
+    while True:
+        try:
+            path: Path
+            if my_queue.empty():
+                path = path_queue.get(timeout=1)
+            else:
+                path = my_queue.get()
+            run(path)
+            add_subpaths(path)
+
+            # Logs the total number of processed paths.
+            total_processed += 1
+            if counter is not None and total_processed > 1000:
+                with counter.get_lock():
+                    counter.value += total_processed
+                total_processed = 0
+        except Empty:
+            for profile_type, result in results.items():
+                result_queues[profile_type].put(result)
+            return
+
+
+def get_all_items(result_queue: mp.Queue) -> List[Dict[str, Any]]:
+    results = []
+    while True:
+        try:
+            results.append(result_queue.get(block=False))
+        except Empty:
+            return results
+
+
+def main() -> None:
+    args = get_args()
+
+    # Gets profiles.
+    profiles: Set[ProfileType] = {ProfileType(t) for t in args.types}
+
+    # Runs profiling.
+    root = Path(args.base_path).expanduser().absolute()
+    assert root.exists(), root
+
+    # Creates queues
+    result_queues: Dict[ProfileType, mp.Queue] = {
+        p: mp.Queue() for p in profiles
+    }
+    path_queue: mp.Queue = mp.Queue()
+
+    counter: Optional[Any] = None
+    if not args.silent:
+        counter = mp.Value('i', 0)
+
+    # Creates worker processes.
+    worker_args = (path_queue, result_queues, args.workers, counter)
+    processes: List[mp.Process] = [
+        mp.Process(target=worker, args=worker_args)
+        for _ in range(args.workers)
+    ]
+    for process in processes:
+        process.start()
+    path_queue.put(root)
+
+    if counter is not None:
+        time.sleep(0.1)
+        while not path_queue.empty():
+            time.sleep(0.1)
+            print(f" Processed {counter.value} ".center(40, "-"), end="\r")
+
+    for process in processes:
+        process.join()
+
+    for queue_type, queue in result_queues.items():
+        profile = get_profile_func(queue_type)
+        print(f" {queue_type.value} ".upper().center(30, "-"))
+        all_items = get_all_items(queue)
+        result = profile.reduce(all_items)
+        rendered_result = profile.render(result)
+        print(rendered_result)
+
+
+if __name__ == "__main__":
+    main()

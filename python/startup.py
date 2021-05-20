@@ -17,7 +17,7 @@ def print_bold(s):
 # Don't run IPython when in the debugger.
 in_debugger = False
 for frame in inspect.stack():
-    if frame[1].endswith("ipdb/__main__.py"):
+    if len(frame) > 1 and frame[1].endswith("ipdb/__main__.py"):
         in_debugger = True
         break
 

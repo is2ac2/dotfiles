@@ -38,15 +38,15 @@
     ~/.jupyter/jupyter_notebook_config.py: jupyter/jupyter_notebook_config.py
     ~/.ssh/config.d/base: ssh/config.d/base
 
-- crontab:
-  - time: 30 * * * *
-    command: '/bin/bash ${HOME}/.cron/hourly.bash'
-  - time: 0 0 * * *
-    command: '/bin/bash ${HOME}/.cron/daily.bash'
-
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
   - [~/.zsh/oh-my-zsh.sh, Installing oh-my-zsh]
   - [mkdir -p ~/.ssh/sockets && chmod 700 ~/.ssh/sockets, Creating sockets folder]
   - [if command -v tmux && tmux info &> /dev/null ; then tmux source ~/.tmux.conf && ~/.tmux/plugins/tpm/bin/install_plugins ; fi, Installing Tmux]
+
+- crontab:
+  - time: 30 * * * *
+    command: '/bin/bash ${HOME}/.cron/hourly.bash'
+  - time: 0 0 * * *
+    command: '/bin/bash ${HOME}/.cron/daily.bash'
 

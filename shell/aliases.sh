@@ -221,6 +221,7 @@ speedtest() {
 # less
 export LESS="-R"
 alias lesc='LESSOPEN="|pygmentize -O style=emacs -g %s" less'
+alias lesg='less ++G'  # Automatically jump to end
 
 # python
 export PYTHONSTARTUP=$HOME/.python/startup.py

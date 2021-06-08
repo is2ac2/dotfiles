@@ -13,6 +13,7 @@
     ci = commit
     co = checkout
     di = diff
+    cp = cherry-pick
     uncommit = reset HEAD~1
     last = diff HEAD^
 

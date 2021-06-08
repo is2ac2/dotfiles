@@ -3,16 +3,27 @@
 
 Run the command below to kill all processes:
     pkill -f bigprof
+
+This program basically creates a bunch of processes that start scanning through
+various file trees. Each process creates it's own queue or stack, depending on
+if you're using BFS or DFS for file traversal. If this program is cancelled,
+it prints out the intermediate profiling results that it's collected so far.
 """
 
 import argparse
 import enum
 import multiprocessing as mp
+import signal
+import sys
 import time
 from abc import ABC, abstractmethod
+from collections import deque
+from multiprocessing.synchronize import Event
 from pathlib import Path
-from queue import Empty, Queue
-from typing import Any, Dict, List, Optional, Set, Type
+from queue import Empty
+from signal import Signals  # pylint: disable=no-name-in-module
+from types import FrameType
+from typing import Any, Callable, Deque, Dict, List, Optional, Set, Type
 
 
 class ProfileType(enum.Enum):
@@ -105,11 +116,14 @@ def get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Runs profiling")
     parser.add_argument("-t", "--types", nargs="+", choices=[t.value for t in ProfileType],
                         default=["user", "group"], help="Types of profiling to do")
-    parser.add_argument("-b", "--base-path", default="~", help="Base profile path")
+    parser.add_argument("-b", "--base-paths", nargs="+", default=["~"],
+                        help="Base profile path")
     parser.add_argument("-w", "--workers", type=int, default=100,
                         help="Number of worker processes")
     parser.add_argument("--silent", default=False, action="store_true",
                         help="If set, run silently")
+    parser.add_argument("--use-bfs", default=False, action="store_true",
+                        help="Use BFS instead of DFS for file traversal")
     return parser.parse_args()
 
 
@@ -121,25 +135,50 @@ def get_profile_func(profile: ProfileType) -> Type[BaseProfile]:
     raise NotImplementedError(profile)
 
 
+class Synchronizer:
+    def __init__(self, event: Event, set_func: Callable[[], None]) -> None:
+        self.event = event
+        self.set_func = set_func
+        signal.signal(signal.SIGINT, self.handle_term)
+
+    def handle_term(self, signum: Signals, frame: FrameType) -> None:
+        self.set()
+
+    @property
+    def is_set(self) -> bool:
+        return self.event.is_set()
+
+    def set(self) -> None:
+        self.event.set()
+        self.set_func()
+
+
 def worker(
     path_queue: mp.Queue,
+    error_queue: mp.Queue,
     result_queues: Dict[ProfileType, mp.Queue],
     num_workers: int,
     counter: Optional[Any],
+    event: Event,
+    use_bfs: bool,
 ) -> None:
     profiles: Dict[ProfileType, Type[BaseProfile]] = {
         profile_type: get_profile_func(profile_type)
         for profile_type in result_queues.keys()
     }
     results: Dict[ProfileType, Dict[str, Any]] = {}
-    my_queue: Queue = Queue()
+    my_stack: Deque[Path] = deque()
     total_processed: int = 0
+
+    def cleanup() -> None:
+        for profile_type, result in results.items():
+            result_queues[profile_type].put(result)
 
     def run(path: Path) -> None:
         for profile_type, profile in profiles.items():
             try:
                 result = profile.map(path)
-            except (PermissionError, KeyError, FileNotFoundError):
+            except (PermissionError, KeyError, FileNotFoundError, OSError):
                 continue
             if profile_type in results:
                 results[profile_type] = profile.reduce([
@@ -152,7 +191,7 @@ def worker(
     def can_add_subpaths(path: Path) -> bool:
         try:
             return path.is_dir() and not path.is_symlink()
-        except PermissionError:
+        except (PermissionError, OSError):
             return False
 
     def add_subpaths(path: Path) -> None:
@@ -162,19 +201,41 @@ def worker(
                     if path_queue.qsize() < num_workers * 2:
                         path_queue.put(subpath)
                     else:
-                        my_queue.put(subpath)
-            except PermissionError:
+                        my_stack.append(subpath)
+            except (PermissionError, OSError):
                 pass
 
+    def process_path(path: Path) -> None:
+        run(path)
+        add_subpaths(path)
+
+    # def handle_alarm(signum: Signals, frame: FrameType) -> None:
+    #     raise Exception("Timeout")
+
+    # signal.signal(signal.SIGALRM, handle_alarm)
+
+    synchronizer: Synchronizer = Synchronizer(event, cleanup)
+
     while True:
+        if synchronizer.is_set:
+            return
+
         try:
             path: Path
-            if my_queue.empty():
-                path = path_queue.get(timeout=1)
+            if my_stack:
+                if use_bfs:
+                    path = my_stack.popleft()
+                else:
+                    path = my_stack.pop()
             else:
-                path = my_queue.get()
-            run(path)
-            add_subpaths(path)
+                path = path_queue.get(timeout=1)
+
+            # signal.alarm(10)
+            # try:
+            process_path(path)
+            # except Exception as err:
+            #     error_queue.put(err)
+            #     continue
 
             # Logs the total number of processed paths.
             total_processed += 1
@@ -183,9 +244,12 @@ def worker(
                     counter.value += total_processed
                 total_processed = 0
         except Empty:
-            for profile_type, result in results.items():
-                result_queues[profile_type].put(result)
+            if not synchronizer.is_set:
+                cleanup()
             return
+        # except Exception as err:
+        #     error_queue.put(err)
+        #     return
 
 
 def get_all_items(result_queue: mp.Queue) -> List[Dict[str, Any]]:
@@ -204,45 +268,67 @@ def main() -> None:
     profiles: Set[ProfileType] = {ProfileType(t) for t in args.types}
 
     # Runs profiling.
-    root = Path(args.base_path).expanduser().absolute()
-    assert root.exists(), root
+    roots = [
+        Path(base_path).expanduser().absolute()
+        for base_path in args.base_paths
+    ]
+    for root in roots:
+        assert root.exists(), root
 
     # Creates queues
     result_queues: Dict[ProfileType, mp.Queue] = {
         p: mp.Queue() for p in profiles
     }
     path_queue: mp.Queue = mp.Queue()
+    error_queue: mp.Queue = mp.Queue()
+    event: Event = mp.Event()
 
     counter: Optional[Any] = None
     if not args.silent:
         counter = mp.Value('i', 0)
 
+    def cleanup() -> None:
+
+        while True:
+            try:
+                err = error_queue.get()
+                print(f"Error: {err}")
+            except Empty:
+                break
+
+        for queue_type, queue in result_queues.items():
+            profile = get_profile_func(queue_type)
+            print(f" {queue_type.value} ".upper().center(30, "-"))
+            all_items = get_all_items(queue)
+            result = profile.reduce(all_items)
+            rendered_result = profile.render(result)
+            print(rendered_result)
+
+    synchronizer: Synchronizer = Synchronizer(event, cleanup)
+
     # Creates worker processes.
-    worker_args = (path_queue, result_queues, args.workers, counter)
+    worker_args = (path_queue, error_queue, result_queues, args.workers, counter, event, args.use_bfs)
     processes: List[mp.Process] = [
         mp.Process(target=worker, args=worker_args)
         for _ in range(args.workers)
     ]
     for process in processes:
         process.start()
-    path_queue.put(root)
+    for root in roots:
+        path_queue.put(root)
 
     if counter is not None:
         time.sleep(0.1)
-        while not path_queue.empty():
+        while not path_queue.empty() and not synchronizer.is_set:
             time.sleep(0.1)
             print(f" Processed {counter.value} ".center(40, "-"), end="\r")
 
     for process in processes:
         process.join()
 
-    for queue_type, queue in result_queues.items():
-        profile = get_profile_func(queue_type)
-        print(f" {queue_type.value} ".upper().center(30, "-"))
-        all_items = get_all_items(queue)
-        result = profile.reduce(all_items)
-        rendered_result = profile.render(result)
-        print(rendered_result)
+    # Calls cleanup function if it hasn't been called yet.
+    if not synchronizer.is_set:
+        synchronizer.set()
 
 
 if __name__ == "__main__":

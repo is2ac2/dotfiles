@@ -20,6 +20,7 @@
     wt = worktree
     uncommit = reset HEAD~1
     last = diff HEAD^
+    rh = reset --hard
 
 [pull]
     rebase = true

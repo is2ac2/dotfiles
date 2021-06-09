@@ -1,0 +1,238 @@
+#!/usr/bin/env python
+
+import argparse
+import functools
+import os
+from pathlib import Path
+import sqlite3 as sql
+from typing import List, Tuple
+
+DEFAULT_SQLITE_PATH = Path("~").expanduser() / ".cache" / "wut.db"
+
+
+class C:
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
+
+def get_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser("Tool for looking up what acronyms mean")
+    parser.add_argument("term", help="The term to look up")
+    parser.add_argument("--sqlite-path",
+                        default=str(DEFAULT_SQLITE_PATH),
+                        help="Path to the SQLite of acronyms")
+    parser.add_argument("-s", "--show", action="store_true",
+                        help="Show definition for a term (default)")
+    parser.add_argument("-t", "--all-terms", action="store_true",
+                        help="Show all terms in the dictionary")
+    parser.add_argument("-a", "--add", action="store_true",
+                        help="Add a definition for the term")
+    parser.add_argument("-d", "--delete", action="store_true",
+                        help="Delete a definition for the term")
+    parser.add_argument("-q", "--quiet", action="store_true",
+                        help="Don't include verbose information")
+    return parser.parse_args()
+
+
+def init(sqlite_path: str) -> Tuple[sql.Connection, sql.Cursor]:
+    """Initializes the SQLite table.
+
+    Args:
+        sqlite_path: Path to the existing or created SQLite table.
+
+    Returns:
+        The connection and cursor.
+    """
+
+    path = Path(sqlite_path)
+    path.parent.mkdir(exist_ok=True, parents=True)
+
+    conn = sql.connect(sqlite_path)
+    c = conn.cursor()
+
+    # Creates terms table.
+    c.execute("""CREATE TABLE IF NOT EXISTS terms (
+        term text PRIMARY KEY
+    )""")
+    conn.commit()
+
+    # Creates documents table.
+    c.execute("""CREATE TABLE IF NOT EXISTS definitions (
+        definition text NOT NULL,
+        term TEXT NOT NULL,
+        FOREIGN KEY (term) REFERENCES terms (term)
+    )""")
+    conn.commit()
+
+    return conn, c
+
+
+def term_exists(c: sql.Cursor, term: str) -> bool:
+    query = """
+        SELECT exists(
+            SELECT 1
+            FROM terms
+            WHERE term = ?
+            COLLATE nocase
+        ) LIMIT 1
+    """
+    check = c.execute(query, (term,))
+    return check.fetchone()[0] == 1
+
+
+def get_all_terms(c: sql.Cursor) -> List[str]:
+    query = "SELECT term FROM terms"
+    check = c.execute(query)
+    return sorted(r[0] for r in check.fetchall())
+
+
+def get_definitions(c: sql.Cursor, term: str) -> List[str]:
+    query = """
+        SELECT definition
+        FROM definitions
+        WHERE term == ?
+    """
+    check = c.execute(query, (term,))
+    return [r[0] for r in check.fetchall()]
+
+
+def add_definition(
+    c: sql.Cursor,
+    conn: sql.Connection,
+    term: str,
+    definition: str,
+) -> None:
+    query = "INSERT OR IGNORE INTO terms(term) VALUES(?)"
+    c.execute(query, (term,))
+    conn.commit()
+
+    query = "INSERT INTO definitions(definition, term) VALUES(?, ?)"
+    c.execute(query, (definition, term))
+    conn.commit()
+
+
+def delete_definition(
+    c: sql.Cursor,
+    conn: sql.Connection,
+    term: str,
+    definition: str,
+) -> None:
+    query = "DELETE FROM definitions WHERE definition = ? AND term = ?"
+    c.execute(query, (definition, term))
+    conn.commit()
+
+    if len(get_definitions(c, term)) == 0:
+        query = "DELETE FROM terms WHERE term = ?"
+        c.execute(query, (term,))
+        conn.commit()
+
+
+def confirm(query: str, valid_set: Tuple[str, ...] = ("y", "n")) -> str:
+    r = None
+    vset = "/".join(valid_set)
+    while r not in valid_set:
+        r = input(f"{C.BOLD}{query}{C.ENDC} [{vset}] ")
+        if r not in valid_set:
+            print(f"{C.FAIL}Expected one of [{vset}]{C.ENDC}")
+    return r  # type: ignore
+
+
+class Action:
+    """Defines the CLI actions that can be performed."""
+
+    def __init__(
+        self,
+        c: sql.Cursor,
+        conn: sql.Connection,
+        term: str,
+        quiet: bool,
+    ) -> None:
+        self.c = c
+        self.conn = conn
+        self.term = term
+        self.quiet = quiet
+
+    def do_show(self) -> None:
+        if term_exists(self.c, self.term):
+            print(f"{C.UNDERLINE}Definitions:{C.ENDC}")
+            for definition in get_definitions(self.c, self.term):
+                print(f" - {C.BOLD}{definition}{C.ENDC}")
+        else:
+            print(f"{C.FAIL}Term doesn't exist!{C.ENDC}")
+
+    def do_all_terms(self) -> None:
+        terms = get_all_terms(self.c)
+        for term in terms:
+            print(term)
+
+    def do_add(self) -> None:
+        trm = f"{C.OKBLUE}{self.term}{C.ENDC}{C.BOLD}"
+        definition = input("New definition: ")
+        defn = f"{C.OKBLUE}{definition}{C.ENDC}{C.BOLD}"
+        if confirm(f"Add the definition '{defn}' for {trm}?") == "y":
+            add_definition(self.c, self.conn, self.term, definition)
+
+    def do_delete(self) -> None:
+        if not term_exists(self.c, self.term):
+            print(f"{C.FAIL}Term {C.OKBLUE}{self.term}{C.FAIL} not found{C.ENDC}")
+            return
+
+        defs = get_definitions(self.c, self.term)
+        defs = {i: d for i, d in enumerate(defs, 1)}
+        defs[0] = "[No delete]"
+        def_list = [(i, d) for i, d in sorted(defs.items(), key=lambda x: x[0])]
+
+        for i, definition in def_list:
+            print(f"({i}) {C.BOLD}{definition}{C.ENDC}")
+
+        choices = tuple(str(i) for i, _ in def_list)
+        choice = confirm("Select a definition to delete:", valid_set=choices)
+        choice = int(choice)
+        if choice != 0:
+            delete_definition(self.c, self.conn, self.term, defs[choice])
+
+
+def main() -> None:
+    args = get_args()
+    args.term = args.term.lower()
+
+    if not args.quiet:
+        items = {
+            "term": args.term,
+            "db": args.sqlite_path,
+        }
+        for k, v in items.items():
+            print(f"{C.HEADER}{k.upper()}:\t{C.OKBLUE}{v}{C.ENDC}")
+        print()
+
+    conn, c = init(args.sqlite_path)
+
+    action = Action(c, conn, args.term, args.quiet)
+
+    # Show by default.
+    if not (args.all_terms or args.add or args.delete):
+        args.show = True
+
+    if args.show:
+        action.do_show()
+    if args.all_terms:
+        action.do_all_terms()
+    if args.add:
+        action.do_add()
+    if args.delete:
+        action.do_delete()
+
+    c.close()
+    conn.close()
+
+
+if __name__ == "__main__":
+    main()
+

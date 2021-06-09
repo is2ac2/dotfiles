@@ -9,11 +9,14 @@
     unstash = stash pop
     st = status -sb
     su = status -uno
-    br = branch
+    br = checkout -b
+    bd = branch -d
+    bD = branch -D
     ci = commit
     co = checkout
     di = diff
     cp = cherry-pick
+    wt = worktree
     uncommit = reset HEAD~1
     last = diff HEAD^
 

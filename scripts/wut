@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
 import argparse
-import functools
-import os
 from pathlib import Path
 import sqlite3 as sql
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 DEFAULT_SQLITE_PATH = Path("~").expanduser() / ".cache" / "wut.db"
 
@@ -22,12 +20,13 @@ class C:
     UNDERLINE = "\033[4m"
 
 
-def get_args() -> argparse.Namespace:
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser("Tool for looking up what acronyms mean")
-    parser.add_argument("term", help="The term to look up")
+
     parser.add_argument("--sqlite-path",
                         default=str(DEFAULT_SQLITE_PATH),
                         help="Path to the SQLite of acronyms")
+
     parser.add_argument("-s", "--show", action="store_true",
                         help="Show definition for a term (default)")
     parser.add_argument("-t", "--all-terms", action="store_true",
@@ -38,7 +37,8 @@ def get_args() -> argparse.Namespace:
                         help="Delete a definition for the term")
     parser.add_argument("-q", "--quiet", action="store_true",
                         help="Don't include verbose information")
-    return parser.parse_args()
+
+    return parser
 
 
 def init(sqlite_path: str) -> Tuple[sql.Connection, sql.Cursor]:
@@ -134,13 +134,24 @@ def delete_definition(
         conn.commit()
 
 
-def confirm(query: str, valid_set: Tuple[str, ...] = ("y", "n")) -> str:
+def confirm(
+    query: str,
+    valid_set: Tuple[str, ...] = ("y", "n"),
+) -> str:
     r = None
     vset = "/".join(valid_set)
     while r not in valid_set:
-        r = input(f"{C.BOLD}{query}{C.ENDC} [{vset}] ")
-        if r not in valid_set:
-            print(f"{C.FAIL}Expected one of [{vset}]{C.ENDC}")
+        if len(valid_set) < 5:
+            r = input(f"{C.BOLD}{query}{C.ENDC} [{vset}] ")
+            if r not in valid_set:
+                print(f"{C.FAIL}Expected one of [{vset}]{C.ENDC}")
+        else:
+            print(f"{C.UNDERLINE}Choices{C.ENDC}")
+            for choice in valid_set:
+                print(f"- {choice}")
+            r = input(f"{C.BOLD}{query}{C.ENDC} ")
+            if r not in valid_set:
+                print(f"{C.FAIL}Expected one of the above choices{C.ENDC}")
     return r  # type: ignore
 
 
@@ -151,26 +162,41 @@ class Action:
         self,
         c: sql.Cursor,
         conn: sql.Connection,
-        term: str,
+        term: Optional[str],
         quiet: bool,
     ) -> None:
         self.c = c
         self.conn = conn
-        self.term = term
+        self._term = term
         self.quiet = quiet
+
+    @property
+    def term(self) -> str:
+        if self._term is None:
+            terms = get_all_terms(self.c)
+            chosen_term = confirm("Choose a term:", valid_set=terms)
+            self._term = chosen_term
+        return self._term
 
     def do_show(self) -> None:
         if term_exists(self.c, self.term):
-            print(f"{C.UNDERLINE}Definitions:{C.ENDC}")
+            print(f"{C.UNDERLINE}Definitions{C.ENDC}")
             for definition in get_definitions(self.c, self.term):
                 print(f" - {C.BOLD}{definition}{C.ENDC}")
         else:
             print(f"{C.FAIL}Term doesn't exist!{C.ENDC}")
+            if confirm("Add a new definition?") == "y":
+                self.do_add()
 
     def do_all_terms(self) -> None:
         terms = get_all_terms(self.c)
-        for term in terms:
-            print(term)
+        if self.quiet:
+            for term in terms:
+                print(term)
+        else:
+            print(f"{C.UNDERLINE}Terms{C.ENDC}")
+            for term in terms:
+                print(f"- {term}")
 
     def do_add(self) -> None:
         trm = f"{C.OKBLUE}{self.term}{C.ENDC}{C.BOLD}"
@@ -200,25 +226,36 @@ class Action:
 
 
 def main() -> None:
-    args = get_args()
-    args.term = args.term.lower()
+    parser = get_parser()
+    args, unknown_args = parser.parse_known_args()
+
+    conn, c = init(args.sqlite_path)
+
+    # If no term is provided, default to `all_terms`
+    if not any([args.show, args.add,args.delete]) and len(unknown_args) == 0:
+        args.all_terms = True
+
+    # If only a term is provided, show by default.
+    if not any([args.all_terms, args.add, args.delete]):
+        args.show = True
+
+    # Special handling for showing all terms.
+    term = None
+    if len(unknown_args) > 0:
+        parser.add_argument("term")
+        parser.parse_args(unknown_args, namespace=args)
+        term = args.term.lower()
 
     if not args.quiet:
         items = {
-            "term": args.term,
+            "term": term,
             "db": args.sqlite_path,
         }
         for k, v in items.items():
             print(f"{C.HEADER}{k.upper()}:\t{C.OKBLUE}{v}{C.ENDC}")
         print()
 
-    conn, c = init(args.sqlite_path)
-
-    action = Action(c, conn, args.term, args.quiet)
-
-    # Show by default.
-    if not (args.all_terms or args.add or args.delete):
-        args.show = True
+    action = Action(c, conn, term, args.quiet)
 
     if args.show:
         action.do_show()
@@ -235,4 +272,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

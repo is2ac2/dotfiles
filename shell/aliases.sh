@@ -104,7 +104,7 @@ if [ -d /etc/profile.d ]; then
 fi
 
 # grep
-alias grep='grep --color=always'
+alias cgrep='grep --color=always'
 
 # ls
 alias ll='ls -lah'

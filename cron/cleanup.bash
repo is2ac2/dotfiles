@@ -18,7 +18,7 @@ if [ -d "$RUN_DIR" ]; then
     find "$RUN_DIR/" \
         -mindepth 1 \
         -type d \
-        -mtime +7 | xargs -I {} -P 8 rm -r {} 2> /tmp/run_cleanup_$(date +'%Y-%m-%d').log
+        -mtime +14 | xargs -I {} -P 8 rm -r {} 2> /tmp/run_cleanup_$(date +'%Y-%m-%d').log
 else
     echo "Missing run directory: '$RUN_DIR'"
 fi

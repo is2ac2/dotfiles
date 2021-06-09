@@ -3,6 +3,7 @@
     email = ben@bolte.cc
 
 [alias]
+    sync = !git pull && git push
     ss = log --graph --pretty=format:'%C(bold red)%h%Creset %C(bold magenta)%d %Creset%n%C(bold blue)%an%Creset %C(cyan)%s%Creset'
     sl = !git smartlog
     smartlog = log --graph --pretty=format:'commit: %C(bold red)%h%Creset %C(red)<%H>%Creset %C(bold magenta)%d %Creset%ndate: %C(bold yellow)%cd %Creset%C(yellow)%cr%Creset%nauthor: %C(bold blue)    %an%Creset %C(blue)<%ae>%Creset%n%C(cyan)%s%n%Creset'
@@ -10,7 +11,7 @@
     st = status -sb
     su = status -uno
     br = checkout -b
-    bd = branch -d
+    bd = banch -d
     bD = branch -D
     ci = commit
     co = checkout
@@ -27,8 +28,11 @@
     excludesfile = ~/.gitignore_global
 
 [push]
-    default = simple
+    default = matching
 
 [rerere]
     enabled = true
+
+[branch]
+    autoSetupMerge = always
 

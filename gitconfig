@@ -29,6 +29,7 @@
             echo 'Usage: git lastn <n>'; \
         fi }; f"
     rh = reset --hard
+    po = "!git push --set-upstream origin \"$(git rev-parse --abbrev-ref HEAD)\""
 
 [pull]
     rebase = true

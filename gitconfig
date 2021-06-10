@@ -4,6 +4,7 @@
 
 [alias]
     sync = !git pull && git push
+    so = log --oneline
     ss = log --graph --pretty=format:'%C(bold red)%h%Creset %C(bold magenta)%d %Creset%n%C(bold blue)%an%Creset %C(cyan)%s%Creset'
     sl = !git smartlog
     smartlog = log --graph --pretty=format:'commit: %C(bold red)%h%Creset %C(red)<%H>%Creset %C(bold magenta)%d %Creset%ndate: %C(bold yellow)%cd %Creset%C(yellow)%cr%Creset%nauthor: %C(bold blue)    %an%Creset %C(blue)<%ae>%Creset%n%C(cyan)%s%n%Creset'
@@ -11,7 +12,7 @@
     st = status -sb
     su = status -uno
     br = checkout -b
-    bd = banch -d
+    bd = branch -d
     bD = branch -D
     ci = commit
     co = checkout
@@ -20,6 +21,13 @@
     wt = worktree
     uncommit = reset HEAD~1
     last = diff HEAD^
+    lastn = "!f() { \
+        if [[ $# -gt 0 ]]; then \
+            n=$1; shift; \
+            git diff HEAD~$n $@; \
+        else \
+            echo 'Usage: git lastn <n>'; \
+        fi }; f"
     rh = reset --hard
 
 [pull]

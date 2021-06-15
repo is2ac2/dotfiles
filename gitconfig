@@ -21,6 +21,10 @@
     cp = cherry-pick
     wt = worktree
     uncommit = reset HEAD~1
+    rh = reset --hard
+    # Pushes to upstream repo branch with the same name
+    po = "!git push --set-upstream origin \"$(git rev-parse --abbrev-ref HEAD)\""
+    # Shows diff of last commit, or last N commits if provided
     last = "!f() { \
         if [[ $# -gt 0 ]]; then \
             n=$1; shift; \
@@ -28,8 +32,16 @@
         else \
             git diff HEAD^ $@; \
         fi }; f"
-    rh = reset --hard
-    po = "!git push --set-upstream origin \"$(git rev-parse --abbrev-ref HEAD)\""
+    # Prunes worktree, then removes branches with some prefix (default "auto")
+    wt-clean = "!f() { \
+        if [[ $# -gt 0 ]]; then \
+            bp=$1; shift; \
+        else \
+            bp='auto/'; \
+        fi \
+        git worktree prune \
+        git branch | grep $bp | xargs git branch -D; \
+    }; f"
 
 [pull]
     rebase = true

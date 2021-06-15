@@ -242,9 +242,9 @@ def main() -> None:
     # Special handling for showing all terms.
     term = None
     if len(unknown_args) > 0:
-        parser.add_argument("term")
+        parser.add_argument("term", nargs="+")
         parser.parse_args(unknown_args, namespace=args)
-        term = args.term.lower()
+        term = " ".join(args.term).lower()
 
     if not args.quiet:
         items = {

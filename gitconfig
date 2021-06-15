@@ -14,19 +14,19 @@
     br = checkout -b
     bd = branch -d
     bD = branch -D
+    bl = branch --list
     ci = commit
     co = checkout
     di = diff
     cp = cherry-pick
     wt = worktree
     uncommit = reset HEAD~1
-    last = diff HEAD^
-    lastn = "!f() { \
+    last = "!f() { \
         if [[ $# -gt 0 ]]; then \
             n=$1; shift; \
             git diff HEAD~$n $@; \
         else \
-            echo 'Usage: git lastn <n>'; \
+            git diff HEAD^ $@; \
         fi }; f"
     rh = reset --hard
     po = "!git push --set-upstream origin \"$(git rev-parse --abbrev-ref HEAD)\""

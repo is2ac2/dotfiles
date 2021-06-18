@@ -38,8 +38,8 @@
             bp=$1; shift; \
         else \
             bp='auto/'; \
-        fi \
-        git worktree prune \
+        fi; \
+        git worktree prune; \
         git branch | grep $bp | xargs git branch -D; \
     }; f"
 

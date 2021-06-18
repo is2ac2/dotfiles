@@ -37,6 +37,8 @@ def get_parser() -> argparse.ArgumentParser:
                         help="Delete a definition for the term")
     parser.add_argument("-q", "--quiet", action="store_true",
                         help="Don't include verbose information")
+    parser.add_argument("-v", "--verbose", action="store_true",
+                        help="Include extra information")
 
     return parser
 
@@ -164,11 +166,13 @@ class Action:
         conn: sql.Connection,
         term: Optional[str],
         quiet: bool,
+        verbose: bool,
     ) -> None:
         self.c = c
         self.conn = conn
         self._term = term
         self.quiet = quiet
+        self.verbose = verbose
 
     @property
     def term(self) -> str:
@@ -190,13 +194,23 @@ class Action:
 
     def do_all_terms(self) -> None:
         terms = get_all_terms(self.c)
-        if self.quiet:
-            for term in terms:
-                print(term)
-        else:
+        if not self.quiet:
             print(f"{C.UNDERLINE}Terms{C.ENDC}")
-            for term in terms:
-                print(f"- {term}")
+        for term in terms:
+            if self.quiet:
+                print(term)
+            else:
+                print(f" - {term}")
+
+            if self.verbose:
+                definitions = get_definitions(self.c, term)
+                if len(definitions) == 0:
+                    print(f"  {C.FAIL}No definition found{C.ENDC}")
+                elif len(definitions) == 1:
+                    print(f"  {C.OKBLUE}{definitions[0]}{C.ENDC}")
+                else:
+                    for i, definition in enumerate(definitions, 1):
+                        print(f"  {C.OKBLUE}{i}. {definition}{C.ENDC}")
 
     def do_add(self) -> None:
         trm = f"{C.OKBLUE}{self.term}{C.ENDC}{C.BOLD}"
@@ -228,11 +242,13 @@ class Action:
 def main() -> None:
     parser = get_parser()
     args, unknown_args = parser.parse_known_args()
+    
+    print(args)
 
     conn, c = init(args.sqlite_path)
 
     # If no term is provided, default to `all_terms`
-    if not any([args.show, args.add,args.delete]) and len(unknown_args) == 0:
+    if not any([args.show, args.add, args.delete]) and len(unknown_args) == 0:
         args.all_terms = True
 
     # If only a term is provided, show by default.
@@ -255,7 +271,7 @@ def main() -> None:
             print(f"{C.HEADER}{k.upper()}:\t{C.OKBLUE}{v}{C.ENDC}")
         print()
 
-    action = Action(c, conn, term, args.quiet)
+    action = Action(c, conn, term, args.quiet, args.verbose)
 
     if args.show:
         action.do_show()

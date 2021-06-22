@@ -27,7 +27,7 @@ tmuxc() {
     tmux -CC a -t $@
 }
 tmuxa() {
-    tmux a -t $@
+    tmux a -dt $@
 }
 _tmux() {
     local opts

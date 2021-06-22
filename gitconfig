@@ -12,6 +12,13 @@
     st = status -sb
     su = status -uno
     br = checkout -b
+    brm = "!f() { \
+        if [[ $# -ne 1 ]]; then \
+            echo 'Usage: git brm <name>'; \
+        else \
+            git checkout -b $1 master; \
+        fi \
+    }; f"
     bd = branch -d
     bD = branch -D
     bl = branch --list

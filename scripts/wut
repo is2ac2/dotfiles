@@ -242,8 +242,6 @@ class Action:
 def main() -> None:
     parser = get_parser()
     args, unknown_args = parser.parse_known_args()
-    
-    print(args)
 
     conn, c = init(args.sqlite_path)
 

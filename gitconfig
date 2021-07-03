@@ -50,11 +50,11 @@
         git branch | grep $bp | xargs git branch -D; \
     }; f"
 
-[pull]
-    rebase = true
-
 [core]
     excludesfile = ~/.gitignore_global
+
+[pull]
+    rebase = true
 
 [push]
     default = matching

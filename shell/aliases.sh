@@ -238,7 +238,11 @@ export TORCH_CUDA_ARCH_LIST="6.0;7.0"
 export TERM=screen-256color
 
 # tensorboard
-alias tbd='tensorboard serve --logdir . --port 6006'
+tbd() {
+    cmd='tensorboard serve --logdir . --port 6006'
+    echo "Running '$cmd'"
+    $cmd
+}
 
 # pwd without symlinks
 alias pwd='pwd -P'

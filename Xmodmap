@@ -1,0 +1,3 @@
+# Remaps Mac eject key to screen saver
+keycode 169 = XF86ScreenSaver
+

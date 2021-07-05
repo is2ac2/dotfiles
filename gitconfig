@@ -29,6 +29,7 @@
     wt = worktree
     uncommit = reset HEAD~1
     rh = reset --hard
+    rbm = rebase master
     # Pushes to upstream repo branch with the same name
     po = "!git push --set-upstream origin \"$(git rev-parse --abbrev-ref HEAD)\""
     # Shows diff of last commit, or last N commits if provided

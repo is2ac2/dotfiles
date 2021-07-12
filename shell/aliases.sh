@@ -331,7 +331,7 @@ mkcd() {
 }
 
 # change to last directory alphabetically (useful for date folders)
-cl() {
+cb() {
     local last_dir
     last_dir=$(\ls -1 | tail -1)
     echo "cd ${last_dir}"

@@ -239,7 +239,13 @@ export TERM=screen-256color
 
 # tensorboard
 tbd() {
-    cmd='tensorboard serve --logdir . --port 6006'
+    if [[ $# -gt 1 ]]; then
+        port=$1
+        shift
+    else
+        port=6006
+    fi
+    cmd="tensorboard serve --logdir . --port ${port}"
     echo "Running '$cmd'"
     $cmd
 }
@@ -322,6 +328,14 @@ mkcd() {
     mkdir $1
     cd $1
     return 0
+}
+
+# change to last directory alphabetically (useful for date folders)
+cdl() {
+    last_dir=$(ls -1 | tail -1)
+    cmd="cd ${last_dir}"
+    echo $cmd
+    $cmd
 }
 
 # kill vscode

@@ -331,11 +331,11 @@ mkcd() {
 }
 
 # change to last directory alphabetically (useful for date folders)
-cdl() {
-    last_dir=$(ls -1 | tail -1)
-    cmd="cd ${last_dir}"
-    echo $cmd
-    $cmd
+cl() {
+    local last_dir
+    last_dir=$(\ls -1 | tail -1)
+    echo "cd ${last_dir}"
+    cd ${last_dir}
 }
 
 # kill vscode

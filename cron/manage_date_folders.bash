@@ -4,12 +4,12 @@ set -e
 
 # ddate (Delta Date) is defined in shell/aliases.sh.
 source ${HOME}/.shell/aliases.sh
-start_date=$(ddate 90 +'%Y-%m-%d')
-end_date=$(ddate 30 +'%Y-%m-%d')
+start_date=$(ddate 360 +'%Y-%m-%d')
+end_date=$(ddate 180 +'%Y-%m-%d')
 yesterday=$(ddate 1 +'%Y-%m-%d')
 today=$(date +"%Y-%m-%d")
 
-# Deletes any date folders older than 30 days.
+# Deletes any date folders older than 180 days.
 __delete_old_dates() {
     root=$1
 

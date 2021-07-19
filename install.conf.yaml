@@ -40,7 +40,7 @@
     ~/.ssh/config.d/base: ssh/config.d/base
 
 - crontab:
-  - time: 0 * * * *
+  - time: 30 * * * *
     command: '/bin/bash ${HOME}/.cron/hourly.bash'
   - time: 0 0 * * *
     command: '/bin/bash ${HOME}/.cron/daily.bash'

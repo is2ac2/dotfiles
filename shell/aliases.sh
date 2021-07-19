@@ -239,13 +239,11 @@ export TERM=screen-256color
 
 # tensorboard
 tbd() {
+    cmd="tensorboard serve --reload_interval 30 --logdir ."
     if [[ $# -gt 1 ]]; then
-        port=$1
+        cmd="$cmd --port $1"
         shift
-    else
-        port=6006
     fi
-    cmd="tensorboard serve --logdir . --port ${port}"
     echo "Running '$cmd'"
     $cmd
 }

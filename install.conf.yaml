@@ -19,7 +19,6 @@
     ~/.gitignore_global:
     ~/.condarc:
     ~/.muttrc:
-    ~/.python:
     ~/.scripts:
     ~/.pdbrc:
     ~/.shell:

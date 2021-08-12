@@ -12,7 +12,7 @@ source ${HOME}/.shell/aliases.sh
 ${HOME}/.cron/sweep_dates.bash
 
 # Lists model checkpoints in the log directory.
-${HOME}/.scripts/list_models > ${HOME}/models
+# ${HOME}/.scripts/list_models > ${HOME}/models
 
 # Runs local cron script, if found.
 if [ -f ${HOME}/.cron-local/hourly.bash ]; then

@@ -132,6 +132,9 @@ alias sshareme='sshare -u $USER'
 # sortable time format
 export SLURM_TIME_FORMAT='%D (%a) %T'
 
+# kill stopped jobs
+alias kill-stopped='kill -9 `jobs -ps`'
+
 spartme() {
     if [[ $# -ne 1 ]]; then
         echo "Changes all existing jobs to a partition"

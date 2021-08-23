@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 # ddate (Delta Date) is defined in shell/aliases.sh.
 source ${HOME}/.shell/aliases.sh
 start_date=$(ddate 360 +'%Y-%m-%d')

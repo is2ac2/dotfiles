@@ -15,7 +15,7 @@ _print_available_scripts() {
 tdelete() {
     if [[ $# -ne 1 ]]; then
         echo "Usage: tdelete <script>"
-        return 0
+        return 1
     fi
     local filename=$1
     local filepath=$TMP_SCRIPT_ROOT/$filename
@@ -31,7 +31,7 @@ tdelete() {
 tedit() {
     if [[ $# -ne 1 ]]; then
         echo "Usage: tedit <script>"
-        return 0
+        return 1
     fi
     local filename=$1
     local filepath=$TMP_SCRIPT_ROOT/$filename
@@ -46,7 +46,7 @@ tedit() {
 tinit() {
     if [[ $# -ne 1 ]]; then
         echo "Usage: tinit <script>"
-        return 0
+        return 1
     fi
     local filename=$1
     local filepath=$TMP_SCRIPT_ROOT/$filename
@@ -65,7 +65,7 @@ tinit() {
 trun() {
     if [[ $# -lt 1 ]]; then
         echo "Usage: trun <script>"
-        return 0
+        return 1
     fi
     local filename=$1
     shift
@@ -109,7 +109,7 @@ gdrive() {
 cvars() {
     if [[ ! -n $CONDA_PREFIX ]] || [[ "$CONDA_DEFAULT_ENV" == "base" ]]; then
         echo "Can't edit outside of Conda environment"
-        return 0
+        return 1
     fi
 
     local ACTIVATE=$CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
@@ -148,7 +148,7 @@ cvars() {
             echo "  - rm-deactivate {rd}"
             echo "  - activate {a}"
             echo "  - deactivate {d}"
-            return 0
+            return 1
             ;;
         esac
         shift
@@ -330,5 +330,39 @@ smiq() {
         --filename=$outf \
 
     return 0
+}
+
+# --------------------
+# Writes storage usage
+# --------------------
+
+get-storage() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: get-storage <fpath>"
+        return 1
+    fi
+
+    fpath=$1
+    shift
+
+    # Creates a temporary file for reading errors.
+    local tmpfile=$(mktemp /tmp/abc-script.XXXXXX)
+
+    # Logs storage information.
+    rm -f $fpath
+    df -h 2> $tmpfile > $fpath
+    echo "" >> $fpath
+    echo "===== TOP DIRECTORIES =====" >> $fpath
+    du -h -d 4 2> $tmpfile | sort -r -h >> $fpath
+
+    # Appends error messages, if there are any.
+    if [[ -s $tmpfile ]]; then
+        echo "" >> $fpath
+        echo "===== ERRORS =====" >> $fpath
+        cat $tmpfile >> $fpath
+    fi
+    rm $tmpfile
+
+    chmod 444 $fpath
 }
 

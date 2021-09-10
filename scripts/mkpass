@@ -2,6 +2,7 @@
 
 import argparse
 import random
+import urllib.request
 from pathlib import Path
 from typing import Iterable, List
 
@@ -27,15 +28,21 @@ def get_word_password(
     min_length: int,
     max_length: int,
 ) -> str:
-    dfile = Path("/usr/share/dict/words")
+    dfile = Path("~/.cache/most-common-words.txt").expanduser()
+
+    # Downloads list of 10000 most common English words.
     if not dfile.exists():
-        raise FileNotFoundError("Password generation requires a word dictionary; "
-                                f"dictionary {dfile} not found. Use --yubikey-mode"
-                                "instead to generate a standard password.")
+        dfile.parent.mkdir(exist_ok=True)
+        url = ("https://raw.githubusercontent.com/first20hours/"
+               "google-10000-english/master/google-10000-english-usa.txt")
+        urllib.request.urlretrieve(url, str(dfile))
+        if not dfile.exists():
+            raise RuntimeError(f"Failed to download {url} to {dfile}")
+
     with open(dfile, "r") as f:
         def _iter() -> str:
-            for l in f:
-                r = l.strip().lower()
+            for line in f:
+                r = line.strip().lower()
                 if len(r) < 5:
                     continue
                 if len(r) > max_length:
@@ -65,7 +72,8 @@ def main():
                         help="Minimum word length to include")
     parser.add_argument("-w", "--max-word-length", type=int, default=10,
                         help="Maximum word length to include")
-    parser.add_argument("-y", "--yubikey-mode", default=False, action="store_true",
+    parser.add_argument("-y", "--yubikey-mode", default=False,
+                        action="store_true",
                         help="If set, generate a password Yubikey-style")
     parser.add_argument("-l", "--yubikey-length", type=int, default=20,
                         help="Number of characters in Yubikey-style password")

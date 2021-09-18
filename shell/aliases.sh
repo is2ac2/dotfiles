@@ -126,14 +126,17 @@ alias today='date +"%Y-%m-%d'
 alias now='date +"%T"'
 
 # slurm
-alias squeueme='squeue -u $USER'
-alias sshareme='sshare -u $USER'
+alias sqm='squeue -u $USER'
+alias qm='squeueme'
 
 # sortable time format
 export SLURM_TIME_FORMAT='%D (%a) %T'
 
 # kill stopped jobs
 alias kill-stopped='kill -9 `jobs -ps`'
+
+# kill python jobs
+alias killall-py='killall -u ${USER} -n python'
 
 spartme() {
     if [[ $# -ne 1 ]]; then

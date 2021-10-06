@@ -45,6 +45,10 @@
   - [if command -v tmux && tmux info &> /dev/null ; then tmux source ~/.tmux.conf && ~/.tmux/plugins/tpm/bin/install_plugins ; fi, Installing Tmux]
 
 - crontab:
+  - key: SHELL
+    value: /bin/bash
+  - key: RANDOM_DELAY
+    value: 10
   - time: 30 * * * *
     command: '/bin/bash ${HOME}/.cron/hourly.bash'
   - time: 0 0 * * *

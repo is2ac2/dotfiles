@@ -1,0 +1,67 @@
+#!/bin/zsh
+# Script to remind me to do something at some time.
+
+# Parses command-line arguments.
+if [[ $# -ne 3 ]]; then
+    echo "Usage: remindme <when> <unit> <what>"
+    exit 1
+fi
+when=$1; shift
+unit=$1; shift
+what=$1; shift
+
+# Parses the time.
+if ! [[ "${when}" =~ '^[0-9]+$' ]]; then
+    echo "Invalid number: ${when}"
+    exit 1
+fi
+
+case ${unit} in
+    d)
+        num_seconds=$((when * 60 * 60 * 24))
+        ;;
+    h)
+        num_seconds=$((when * 60 * 60))
+        ;;
+    m)
+        num_seconds=$((when * 60))
+        ;;
+    s)
+        num_seconds=${when}
+        ;;
+    *)
+        echo "Invalid unit: ${unit}. Expected one of [d, h, m, s]"
+        exit 1
+        ;;
+esac
+
+filename=$(mktemp /tmp/remindme.XXXXXX)
+
+echo "#!/bin/zsh" > ${filename}
+echo "" >> ${filename}
+echo "if [[ -f '${filename}' ]]; then" >> ${filename}
+echo "    echo 'Reminder: \"${what}\"'" >> ${filename}
+
+# Says the reminder out loud, if possible.
+if command -v say &> /dev/null; then
+    echo "    say ${what}" >> ${filename}
+fi
+
+# Displays a notification, on Mac.
+if command -v osascript &> /dev/null; then
+    echo "    osascript -e 'display notification \"This is a reminder: ${what}\" with title \"Reminder\"'" >> ${filename}
+fi
+
+echo "    rm ${filename}" >> ${filename}
+echo "fi" >> ${filename}
+
+echo "Scheduled script '${filename}' to run in ${num_seconds} seconds"
+echo ""
+cat ${filename}
+
+# Schedule the file to run, or run it right away if there is an error.
+run() {
+    sleep ${num_seconds} && . ${filename}
+}
+run &
+

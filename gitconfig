@@ -33,6 +33,18 @@
     rbm = rebase master -X ours
     # Pushes to upstream repo branch with the same name
     po = "!git push --set-upstream origin \"$(git rev-parse --abbrev-ref HEAD)\""
+    # Force pulls from origin.
+    fpull = "!f() { \
+        if [[ `git status --porcelain` ]]; then \
+            echo 'Found local changes; aborting' \
+        else \
+            branch=$(git rev-parse --abbrev-ref HEAD) \
+            git fetch --all \
+            git branch backup-${branch} \
+            echo \"Created backup branch 'backup-${branch}'\" \
+            git reset --hard origin/${branch} \
+        fi \
+    }"
     # Shows diff of last commit, or last N commits if provided
     last = "!f() { \
         if [[ $# -gt 0 ]]; then \

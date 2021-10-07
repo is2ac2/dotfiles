@@ -126,8 +126,8 @@ alias today='date +"%Y-%m-%d'
 alias now='date +"%T"'
 
 # slurm
-alias sqm='squeue -u $USER'
-alias qm='squeueme'
+alias qm='squeue -u $USER'
+alias qmd='squeue -u $USER | grep "dist"'
 
 # sortable time format
 export SLURM_TIME_FORMAT='%D (%a) %T'

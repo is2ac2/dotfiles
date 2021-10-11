@@ -4,11 +4,10 @@ import argparse
 import ast
 import json
 import re
-from pathlib import Path
 import sys
-
 # These are special objects required for eval.
 from collections import OrderedDict
+from pathlib import Path
 
 
 def strip_string(s: str) -> str:
@@ -103,4 +102,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -64,4 +64,3 @@ run() {
     sleep ${num_seconds} && . ${filename}
 }
 run &
-

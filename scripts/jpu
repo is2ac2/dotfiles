@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import argparse
+
 from notebook import notebookapp
+
 
 class C:
     HEADER = '\033[95m'
@@ -50,4 +52,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

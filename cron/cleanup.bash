@@ -52,8 +52,3 @@ if [ -d "$EVAL_DIR" ]; then
 else
     echo "Missing eval directory: '$EVAL_DIR'"
 fi
-
-# Runs local cron script, if found.
-if [ -f ${HOME}/.cron-local/daily.bash ]; then
-    . ${HOME}/.cron-local/daily.bash
-fi

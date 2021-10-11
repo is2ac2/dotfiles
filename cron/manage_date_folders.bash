@@ -54,4 +54,3 @@ manage_date_folders() {
 
 [ -n $LOG_DIR ] && [ -d $LOG_DIR ] && manage_date_folders $LOG_DIR
 [ -n $EVAL_DIR ] && [ -d $EVAL_DIR ] && manage_date_folders $EVAL_DIR
-

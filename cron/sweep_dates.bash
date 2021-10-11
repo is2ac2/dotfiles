@@ -16,4 +16,3 @@ if [ -n $EVAL_DIR ] && [ -d $EVAL_DIR ]; then
 else
     echo "Missing eval directory: $EVAL_DIR"
 fi
-

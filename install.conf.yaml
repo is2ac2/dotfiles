@@ -7,6 +7,11 @@
 
 - create:
   - ~/.ssh/config.d
+  - ~/.tmux/plugins
+  - ~/.matplotlib
+  - ~/.config/matplotlib
+  - ~/.ipython/profile_default
+  - ~/.jupyter
 
 - link:
     ~/.dotfiles: ''
@@ -40,7 +45,7 @@
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
-  - [~/.zsh/oh-my-zsh.sh, Installing oh-my-zsh]
+  - [if command -v zsh ; then ~/.zsh/oh-my-zsh.sh ; fi, Installing oh-my-zsh]
   - [mkdir -p ~/.ssh/sockets && chmod 700 ~/.ssh/sockets, Creating sockets folder]
   - [if command -v tmux && tmux info &> /dev/null ; then tmux source ~/.tmux.conf && ~/.tmux/plugins/tpm/bin/install_plugins ; fi, Installing Tmux]
 
@@ -51,6 +56,7 @@
     value: 10
   - time: 30 * * * *
     command: '/bin/bash ${HOME}/.cron/hourly.bash'
-  - time: 0 0 * * *
+  - time: 0 6 * * *
     command: '/bin/bash ${HOME}/.cron/daily.bash'
-
+  - time: 0 7 * * 3
+    command: '/bin/bash ${HOME}/.cron/weekly.bash'

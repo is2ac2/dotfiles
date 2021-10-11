@@ -63,6 +63,10 @@
         git worktree prune; \
         git branch | grep $bp | xargs git branch -D; \
     }; f"
+    change-commits = "!f() { \
+        VAR=$1; OLD=$2; NEW=$3; shift 3; \
+        git filter-branch --env-filter \"if [[ \\\"$`echo $VAR`\\\" = '$OLD' ]]; then export $VAR='$NEW'; fi\" $@; \
+    }; f"
 
 [core]
     excludesfile = ~/.gitignore_global

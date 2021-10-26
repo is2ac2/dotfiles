@@ -53,16 +53,9 @@
         else \
             git diff HEAD^ $@; \
         fi }; f"
-    # Prunes worktree, then removes branches with some prefix (default "auto")
-    wt-clean = "!f() { \
-        if [[ $# -gt 0 ]]; then \
-            bp=$1; shift; \
-        else \
-            bp='auto/'; \
-        fi; \
-        git worktree prune; \
-        git branch | grep $bp | xargs git branch -D; \
-    }; f"
+    # Clean up branches that have been deleted on remote
+    gone = "!git fetch -p && git for-each-ref --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" {print $1}' | xargs -r git branch -D"
+    # Command for changing author for old commits
     change-commits = "!f() { \
         VAR=$1; OLD=$2; NEW=$3; shift 3; \
         git filter-branch --env-filter \"if [[ \\\"$`echo $VAR`\\\" = '$OLD' ]]; then export $VAR='$NEW'; fi\" $@; \

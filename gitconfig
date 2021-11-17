@@ -4,13 +4,8 @@
 
 [alias]
     sync = !git pull && git push
-    so = log --oneline
-    ss = log --graph --pretty=format:'%C(bold red)%h%Creset %C(bold magenta)%d %Creset%n%C(bold blue)%an%Creset %C(cyan)%s%Creset'
-    sl = !git smartlog
-    smartlog = log --graph --pretty=format:'commit: %C(bold red)%h%Creset %C(red)<%H>%Creset %C(bold magenta)%d %Creset%ndate: %C(bold yellow)%cd %Creset%C(yellow)%cr%Creset%nauthor: %C(bold blue)    %an%Creset %C(blue)<%ae>%Creset%n%C(cyan)%s%n%Creset'
-    unstash = stash pop
-    sb = status -sb
-    st = status -uno
+    s = !git status
+    l = log --graph --pretty=format:'%C(bold green)%h%Creset %C(bold blue)%an <%ae>%Creset %C(green)%cr%Creset %C(bold magenta)%D%Creset%n          %C(white)%<(80,mtrunc)%s%Creset%n'
     br = checkout -b
     brm = "!f() { \
         if [[ $# -ne 1 ]]; then \
@@ -27,8 +22,9 @@
     di = diff
     cp = cherry-pick
     wt = worktree
-    uncommit = reset HEAD~1
     rh = reset --hard
+    # Uncommits last commit
+    uncommit = reset HEAD~1
     # Rebase onto master, taking all current changes
     rbm = rebase master -X ours
     # Pushes to upstream repo branch with the same name
@@ -88,3 +84,8 @@
     process = git-lfs filter-process
     required = true
 
+[color "status"]
+    branch = bold cyan
+    added = green
+    changed = yellow
+    untracked = red

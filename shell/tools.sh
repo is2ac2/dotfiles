@@ -366,3 +366,15 @@ get-storage() {
     chmod 444 $fpath
 }
 
+# ------------------
+# Less on file group
+# ------------------
+
+gless() {
+    if [[ $# -lt 1 ]]; then
+        echo "Usage: gless <file-group>"
+        return 1
+    fi
+    sed -s '$a\\n[ ----------  ]\n' $@ | less
+}
+

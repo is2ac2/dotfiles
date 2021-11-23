@@ -106,7 +106,7 @@ gdrive() {
 # Edit conda environment variables
 # --------------------------------
 
-cvars() {
+cn-vars() {
     if [[ ! -n $CONDA_PREFIX ]] || [[ "$CONDA_DEFAULT_ENV" == "base" ]]; then
         echo "Can't edit outside of Conda environment"
         return 1

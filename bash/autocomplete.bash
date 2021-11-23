@@ -2,7 +2,7 @@
 # conda
 # -----
 
-alias cenv='conda activate'
+alias cn-env='conda activate'
 _conda_complete() {
     local cur opts
     COMPREPLY=()
@@ -12,10 +12,10 @@ _conda_complete() {
     return 0
 }
 if [[ -f ~/.conda/environments.txt ]]; then
-    complete -F _conda_complete 'cenv'
+    complete -F _conda_complete 'cn-env'
 fi
 
-_cvars_complete() {
+_cn_vars_complete() {
     local cur opts
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
@@ -23,7 +23,7 @@ _cvars_complete() {
     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
     return 0
 }
-complete -F _cvars_complete 'cvars'
+complete -F _cn_vars_complete 'cn-vars'
 
 # ----
 # tmux

@@ -2,22 +2,22 @@
 # conda
 # -----
 
-_cenv() {
+_conda_complete() {
     local opts
     opts=$(cat ~/.conda/environments.txt | xargs -L1 basename | tr '\n' ' ')
     compadd ${=opts}
 }
-cenv() {
+cn-env() {
     conda activate $@
 }
 if [[ -f ~/.conda/environments.txt ]]; then
-    compdef _cenv cenv
+    compdef _conda_complete cn-env
 fi
 
-_cvars() {
+_conda_vars() {
     compadd rm rm-activate rm-deactivate activate deactivate
 }
-compdef _cvars cvars
+compdef _conda_vars cn-vars
 
 # ----
 # tmux

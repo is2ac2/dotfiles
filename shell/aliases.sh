@@ -7,7 +7,7 @@
 # trap 'err_report $LINENO' ERR
 
 # C++ flags for programming competitions.
-export CXXFLAGS="-Wall -Wextra -O2 -pedantic -std=c++11"
+# export CXXFLAGS="-Wall -Wextra -O2 -pedantic -std=c++11"
 
 # -------------
 # Color aliases

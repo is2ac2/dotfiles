@@ -23,6 +23,15 @@
     cp = cherry-pick
     wt = worktree
     rh = reset --hard
+    # Checkout master, pull, then checkout original branch.
+    pm = "!f() { \
+        base_branch=$(git rev-parse --abbrev-ref HEAD); \
+        echo 'Checking out master branch'; \
+        git checkout master; \
+        git pull; \
+        echo \"Checking out ${base_branch} branch\"; \
+        git checkout ${base_branch}; \
+    }; f"
     # Uncommits last commit
     uncommit = reset HEAD~1
     # Rebase onto master, taking all current changes

@@ -375,6 +375,6 @@ gless() {
         echo "Usage: gless <file-group>"
         return 1
     fi
-    sed -s '$a\\n[ ----------  ]\n' $@ | less
+    sed -s '$a\\n[ ---------- ]\n' $@ | less
 }
 

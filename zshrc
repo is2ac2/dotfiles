@@ -53,4 +53,4 @@ if [ -f ~/.zshrc_local_after ]; then
     source ~/.zshrc_local_after
 fi
 
-export PATH=$PATH:~/.scripts
+source ~/.shell/path.sh

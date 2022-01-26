@@ -20,7 +20,10 @@
     ci = commit
     amend = commit --amend --no-edit
     co = checkout
+    d = diff
     di = diff
+    dif = diff
+    dh = diff HEAD
     cp = cherry-pick
     wt = worktree
     rh = reset --hard
@@ -32,6 +35,7 @@
         git pull; \
         echo \"Checking out ${base_branch} branch\"; \
         git checkout ${base_branch}; \
+        git gone; \
     }; f"
     # Uncommits last commit
     uncommit = reset HEAD~1

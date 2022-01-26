@@ -129,6 +129,9 @@ alias now='date +"%T"'
 alias qm='squeue -u $USER'
 alias qmd='squeue -u $USER | grep "dist"'
 
+# paths
+alias rp='realpath'
+
 # sortable time format
 export SLURM_TIME_FORMAT='%D (%a) %T'
 

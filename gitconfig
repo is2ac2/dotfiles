@@ -18,6 +18,8 @@
     bD = branch -D
     bl = branch --list
     ci = commit
+    a = add .
+    cm = commit -m
     amend = commit --amend --no-edit
     co = checkout
     d = diff

@@ -127,7 +127,6 @@ alias now='date +"%T"'
 
 # slurm
 alias qm='squeue -u $USER'
-alias qmd='squeue -u $USER | grep "dist"'
 
 # paths
 alias rp='realpath'

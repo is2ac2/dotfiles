@@ -30,6 +30,7 @@ __update_symlinks() {
         unlink $root/today
     fi
     ln -s $root_today $root/today
+    chmod -R 755 $root_today
 
     # Updates directory for yesterday.
     if [ -L $root/yesterday ]; then

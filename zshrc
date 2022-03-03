@@ -37,6 +37,7 @@ if [ -f ~/.zshrc_local_before ]; then
 fi
 
 source ~/.zsh/plugins_before.zsh
+source ~/.shell/update.sh
 source ~/.shell/info.sh
 source ~/.shell/aliases.sh
 source ~/.shell/tools.sh

@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # conda
 if [[ -f ${HOME}/.conda/environments.txt ]]; then
     echo -e "\033[1;32m----- Conda Environments -----\033[0m"

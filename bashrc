@@ -20,6 +20,7 @@ if [ -f ~/.bashrc_local_before ]; then
     source ~/.bashrc_local_before
 fi
 
+source ~/.shell/update.sh
 source ~/.shell/info.sh
 source ~/.shell/aliases.sh
 source ~/.shell/tools.sh

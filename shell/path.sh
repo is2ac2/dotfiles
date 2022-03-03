@@ -1,13 +1,12 @@
 #!/bin/sh
 
-export PATH=$PATH:${HOME}/.scripts
-if [ -d ${HOME}/.scripts-local ]; then
-    export PATH=${PATH}:${HOME}/.scripts-local
-fi
+# Adds script directories
+pathadd PATH ${HOME}/.scripts
+pathadd PATH ${HOME}/.scripts-local > /dev/null
 
 # Added by Amplify CLI binary installer
-export PATH="$HOME/.amplify/bin:$PATH"
+pathadd PATH $HOME/.amplify/bin > /dev/null
 
-# Removes duplicate paths.
-export PATH=$(printf %s "$PATH" | awk -v RS=: '{ if (!arr[$0]++) {printf("%s%s",!ln++?"":":",$0)} }')
+# Cleans up paths
+pathclean PATH
 

@@ -378,3 +378,42 @@ gless() {
     sed -s '$a\\n[ ---------- ]\n' $@ | less
 }
 
+# ---------------------------------
+# Manage path environment variables
+# ---------------------------------
+
+pathadd() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: pathadd <var> <new-path>"
+        return 1
+    fi
+    local var=$1
+    local new_path=$2
+    local prev_val=${!var}
+    if [[ -d "${new_path}" ]]; then
+        local new_realpath=$(realpath ${new_path})
+        if [[ ":${prev_val}:" != *":${new_realpath}:"* ]]; then
+            export ${var}="${prev_val:+"$prev_val:"}${new_realpath}"
+        fi
+    else
+        echo "Missing: ${new_path}"
+    fi
+}
+
+pathclean() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: pathclean <var>"
+        return 1
+    fi
+    local IFS=":"
+    local var=$1
+    local prev_val=${!var}
+    local new_val
+    for dir in ${prev_val}; do
+        if [[ ":${new_val}:" != *":${dir}:"* ]] && [[ -d ${dir} ]]; then
+            new_val="${new_val:+"$new_val:"}${dir}"
+        fi
+    done
+    export ${var}="${new_val}"
+}
+

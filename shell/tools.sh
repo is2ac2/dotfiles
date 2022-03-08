@@ -389,7 +389,7 @@ pathadd() {
     fi
     local var=$1
     local new_path=$2
-    local prev_val=$(env-val $var)
+    local prev_val="$(env-val $var):"
     if [[ -d "${new_path}" ]]; then
         if [[ ":${prev_val}:" != *":${new_path}:"* ]]; then
             export ${var}="${prev_val:+"$prev_val:"}${new_path}"
@@ -405,7 +405,7 @@ pathclean() {
         return 1
     fi
     local var=$1
-    local prev_val=$(env-val $var)
+    local prev_val="$(env-val $var):"
     local new_val
     while read -d ':' dir; do
         if [[ ":${new_val}:" != *":${dir}:"* ]] && [[ -d ${dir} ]]; then

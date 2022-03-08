@@ -91,7 +91,7 @@ case $OSTYPE in
         ;;
 esac
 
-mkdir -p $NLTK_DATA
+mkdir -p $SLURM_LOG_DIR $RUN_DIR $LOG_DIR $EVAL_DIR $NLTK_DATA
 
 # Some extra bit that seems to be necessary for VSCode.
 if [ -d /etc/profile.d ]; then

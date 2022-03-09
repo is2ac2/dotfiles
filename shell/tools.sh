@@ -155,7 +155,7 @@ cn-vars() {
     done
 
     if [[ $WRITE_ACTIVATE == 1 ]]; then
-        echo "#! /bin/sh" >>$ACTIVATE
+        echo "#!/bin/sh" >>$ACTIVATE
         echo "# $ACTIVATE" >>$ACTIVATE
         echo "" >>$ACTIVATE
     fi

@@ -8,7 +8,7 @@
     l = log --graph --pretty=format:'%C(bold green)%h%Creset %C(bold blue)%an <%ae>%Creset %C(green)%cr%Creset %C(bold magenta)%D%Creset%n          %C(white)%<(80,mtrunc)%s%Creset%n'
     br = checkout -b
     brm = "!f() { \
-        if [[ $# -ne 1 ]]; then \
+        if [ $# -ne 1 ]; then \
             echo 'Usage: git brm <name>'; \
         else \
             git checkout -b $1 master; \
@@ -47,7 +47,7 @@
     po = "!git push --set-upstream origin \"$(git rev-parse --abbrev-ref HEAD)\""
     # Force pulls from origin.
     fpull = "!f() { \
-        if [[ `git status --porcelain` ]]; then \
+        if [ `git status --porcelain` ]; then \
             echo 'Found local changes; aborting' \
         else \
             branch=$(git rev-parse --abbrev-ref HEAD) \
@@ -59,9 +59,8 @@
     }"
     # Shows diff of last commit, or last N commits if provided
     last = "!f() { \
-        if [[ $# -gt 0 ]]; then \
-            n=$1; shift; \
-            git diff HEAD~$n $@; \
+        if [ $# -gt 0 ]; then \
+            n=$1; shift; git diff HEAD~${n} $@; \
         else \
             git diff HEAD^ $@; \
         fi }; f"
@@ -70,7 +69,7 @@
     # Command for changing author for old commits
     change-commits = "!f() { \
         VAR=$1; OLD=$2; NEW=$3; shift 3; \
-        git filter-branch --env-filter \"if [[ \\\"$`echo $VAR`\\\" = '$OLD' ]]; then export $VAR='$NEW'; fi\" $@; \
+        git filter-branch --env-filter \"if [ \\\"$`echo $VAR`\\\" = '$OLD' ]; then export $VAR='$NEW'; fi\" $@; \
     }; f"
 
 [core]

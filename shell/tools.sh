@@ -220,13 +220,9 @@ brun() {
     local dname=$(dirname "$fpath")
     cd $dname
 
-    local cyan=`tput setaf 6`
-    local green=`tput setaf 2`
-    local reset=`tput sgr0`
-
     local extname=$(find $dname -type f -name "$fname.*" | head -1)
     if [[ -n ${extname} ]]; then
-        echo "$(cyan)Assuming you meant $(green)${extname}$(nc)"
+        echo "Assuming you meant '${extname}'"
         fname=$extname
     fi
 

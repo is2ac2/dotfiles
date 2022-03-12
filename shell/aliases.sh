@@ -47,7 +47,6 @@ case $OSTYPE in
         alias ls='ls -G'
 
         export SLURM_LOG_DIR=${HOME}/Experiments/.Slurm
-        export RUN_DIR=${HOME}/Experiments/Runs
         export LOG_DIR=${HOME}/Experiments/Logs
         export EVAL_DIR=${HOME}/Experiments/Evaluation
 
@@ -68,7 +67,6 @@ case $OSTYPE in
         alias ls='ls --color=always'
 
         export SLURM_LOG_DIR=${HOME}/slurm_logs
-        export RUN_DIR=${HOME}/runs
         export LOG_DIR=${HOME}/logs
         export EVAL_DIR=${HOME}/eval
 
@@ -91,7 +89,7 @@ case $OSTYPE in
         ;;
 esac
 
-mkdir -p $SLURM_LOG_DIR $RUN_DIR $LOG_DIR $EVAL_DIR $NLTK_DATA
+mkdir -p $SLURM_LOG_DIR $LOG_DIR $EVAL_DIR $NLTK_DATA
 
 # Some extra bit that seems to be necessary for VSCode.
 if [ -d /etc/profile.d ]; then

@@ -22,5 +22,11 @@ pull_dotfiles() {
     cd ${old_dir}
 }
 
-pull_dotfiles
+echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1
+
+if [ $? -eq 0  ]; then
+    pull_dotfiles
+else
+    warn-big-text 'No internet access'
+fi
 

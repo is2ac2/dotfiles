@@ -13,16 +13,6 @@ else
     echo "Missing slurm log directory: '$SLURM_LOG_DIR'"
 fi
 
-# Removes old run directories.
-if [ -d "$RUN_DIR" ]; then
-    find "$RUN_DIR/" \
-        -mindepth 1 \
-        -type d \
-        -mtime +14 | xargs -I {} -P 8 rm -r {} 2> /tmp/${USER}_run_cleanup_$(date +'%Y-%m-%d').log
-else
-    echo "Missing run directory: '$RUN_DIR'"
-fi
-
 # Removes empty log directories.
 if [ -d "$LOG_DIR" ]; then
     find "$LOG_DIR/" \

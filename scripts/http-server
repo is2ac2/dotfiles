@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+"""Helper script to run an HTTP server from a given directory."""
+
+import argparse
+import http.server
+import os
+import re
+import socket
+import socketserver
+import threading
+import time
+from typing import Tuple
+
+
+def get_free_port() -> Tuple[str, int]:
+    """Returns an open port to connect to."""
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(("", 0))
+    addr = s.getsockname()
+    port = addr
+    s.close()
+    return port
+
+
+def close_server(httpd: socketserver.TCPServer, wait_seconds: int):
+    """Closes an active TCP server."""
+
+    time.sleep(wait_seconds)
+    print(f"Closing thread after {wait_seconds} seconds")
+    httpd.shutdown()
+
+
+def main() -> None:
+    """Runs an HTTP server from the current directory."""
+
+    parser = argparse.ArgumentParser(description="Serves an HTTP server.")
+    parser.add_argument(
+        "-w",
+        "--wait-seconds",
+        default=60 * 10,
+        type=int,
+        help="Number of seconds to wait",
+    )
+    args = parser.parse_args()
+
+    addr, port = get_free_port()
+    handler = http.server.SimpleHTTPRequestHandler
+
+    if "SSH_CONNECTION" in os.environ:
+        addrs = re.findall(r"((\d+\.){3}\d+)", os.environ["SSH_CONNECTION"])
+        if not addrs:
+            raise RuntimeError(f"Unexpected {os.environ['SSH_CONNECTION']=}")
+        host_addr = addrs[-1][0]
+    else:
+        host_addr = addr
+
+    with socketserver.TCPServer((addr, port), handler) as httpd:
+        print(f"Serving HTTP on {addr} port {port} (http://{host_addr}:{port}) ...")
+        thread = threading.Thread(target=close_server, args=(httpd, args.wait_seconds))
+        thread.daemon = True
+        thread.start()
+        httpd.serve_forever()
+
+
+if __name__ == "__main__":
+    main()

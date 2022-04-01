@@ -3,7 +3,7 @@
     email = ben@bolte.cc
 
 [include]
-    path = ~/.gitconfig_work
+    path = ~/.gitconfig_local
 
 [alias]
     sync = !git pull && git push

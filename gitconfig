@@ -2,6 +2,9 @@
     name = Benjamin Bolte
     email = ben@bolte.cc
 
+[include]
+    path = ~/.gitconfig_work
+
 [alias]
     sync = !git pull && git push
     s = !git status

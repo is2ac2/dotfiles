@@ -25,7 +25,7 @@
     cm = commit -m
     amend = commit --amend --no-edit
     co = checkout
-    latest = !git checkout master && git pull && git gone
+    latest = !git checkout master && git pull
     d = diff
     di = diff
     dif = diff

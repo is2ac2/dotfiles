@@ -11,6 +11,8 @@ import threading
 import time
 from typing import Tuple
 
+TEXT_MIMETYPES: Tuple[str, ...] = ("text/plain", "application/octet-stream")
+
 
 def get_free_port() -> Tuple[str, int]:
     """Returns an open port to connect to."""
@@ -31,6 +33,20 @@ def close_server(httpd: socketserver.TCPServer, wait_seconds: int):
     httpd.shutdown()
 
 
+class RequestHandler(http.server.SimpleHTTPRequestHandler):
+    """Custom handler for rendering specific filetypes."""
+
+    def end_headers(self) -> None:
+        mimetype = self.guess_type(self.path)
+        is_file = not self.path.endswith("/")
+        if is_file and os.path.exists(path := self.translate_path(self.path)):
+            file_bytes = os.stat(path, follow_symlinks=True).st_size
+            if mimetype in TEXT_MIMETYPES and file_bytes < 10 * 1024 * 1024:
+                self.send_header("Content-Type", "text/plain")
+                self.send_header("Content-Disposition", "inline")
+        super().end_headers()
+
+
 def main() -> None:
     """Runs an HTTP server from the current directory."""
 
@@ -45,7 +61,7 @@ def main() -> None:
     args = parser.parse_args()
 
     addr, port = get_free_port()
-    handler = http.server.SimpleHTTPRequestHandler
+    handler = RequestHandler
 
     if "SSH_CONNECTION" in os.environ:
         addrs = re.findall(r"((\d+\.){3}\d+)", os.environ["SSH_CONNECTION"])

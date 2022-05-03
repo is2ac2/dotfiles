@@ -346,8 +346,16 @@ get-storage() {
 
     # Logs storage information.
     rm -f $fpath
+
+    # Logs information about the entire file system.
     df -h 2> $tmpfile > $fpath
     echo "" >> $fpath
+
+    # Logs information about the local disk.
+    echo "===== LOCAL DISK =====" >> fpath
+    df -k ${HOME} -h --output=size,used,avail 2> $tmpfile > $fpath
+
+    # Logs the top offending directories.
     echo "===== TOP DIRECTORIES =====" >> $fpath
     du -h -d 4 2> $tmpfile | sort -r -h >> $fpath
 

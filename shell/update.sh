@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 warn-big-text() {
     if [[ $# -ne 1 ]]; then

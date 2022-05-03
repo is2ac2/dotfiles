@@ -3,15 +3,24 @@
 
 import argparse
 import http.server
+import io
 import os
 import re
 import socket
 import socketserver
 import threading
 import time
-from typing import Tuple
+import urllib.parse
+from http import HTTPStatus
+from typing import BinaryIO, Tuple, Union
 
 TEXT_MIMETYPES: Tuple[str, ...] = ("text/plain", "application/octet-stream")
+
+# Maximum size of text file to render.
+MAX_TEXT_FILE_SIZE = 512 * 1024
+
+# Buffer size for copying file.
+COPY_BUFSIZE = 64 * 1024
 
 
 def get_free_port() -> Tuple[str, int]:
@@ -33,18 +42,124 @@ def close_server(httpd: socketserver.TCPServer, wait_seconds: int):
     httpd.shutdown()
 
 
-class RequestHandler(http.server.SimpleHTTPRequestHandler):
-    """Custom handler for rendering specific filetypes."""
+def sizeof_fmt(num: float, suffix: str = "B") -> str:
+    """Converts raw number of bytes to a human-readable value."""
 
-    def end_headers(self) -> None:
-        mimetype = self.guess_type(self.path)
-        is_file = not self.path.endswith("/")
-        if is_file and os.path.exists(path := self.translate_path(self.path)):
-            file_bytes = os.stat(path, follow_symlinks=True).st_size
-            if mimetype in TEXT_MIMETYPES and file_bytes < 10 * 1024 * 1024:
+    for unit in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"]:
+        if abs(num) < 1024.0:
+            return f"{num:3.1f}{unit}{suffix}"
+        num /= 1024.0
+    return f"{num:.1f}Yi{suffix}"
+
+
+class RequestHandler(http.server.SimpleHTTPRequestHandler):
+    """Custom request handler, which is more useful for debugging.
+
+    This request handler is similar to the base request handler, except that it
+    disables browser caching, displays text files in the browser by default
+    (instead of downloading them), and truncates the displayed file if it is
+    very large.
+    """
+
+    def send_head(self) -> Union[io.BytesIO, BinaryIO, None]:
+        """Sends the head, always ignoring browser cache."""
+
+        path = self.translate_path(self.path)
+        f = None
+        if os.path.isdir(path):
+            parts = urllib.parse.urlsplit(self.path)
+            if not parts.path.endswith("/"):
+                self.send_response(HTTPStatus.MOVED_PERMANENTLY)
+                new_parts = (parts[0], parts[1], parts[2] + "/", parts[3], parts[4])
+                new_url = urllib.parse.urlunsplit(new_parts)
+                self.send_header("Location", new_url)
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+                return None
+            for index in "index.html", "index.htm":
+                index = os.path.join(path, index)
+                if os.path.exists(index):
+                    path = index
+                    break
+            else:
+                return self.list_directory(path)
+        ctype = self.guess_type(path)
+        # check for trailing "/" which should return 404. See Issue17324
+        # The test for this was added in test_httpserver.py
+        # However, some OS platforms accept a trailingSlash as a filename
+        # See discussion on python-dev and Issue34711 regarding
+        # parseing and rejection of filenames with a trailing slash
+        if path.endswith("/"):
+            self.send_error(HTTPStatus.NOT_FOUND, "File not found")
+            return None
+        try:
+            f = open(path, "rb")
+        except OSError:
+            self.send_error(HTTPStatus.NOT_FOUND, "File not found")
+            return None
+
+        try:
+            fs = os.fstat(f.fileno())
+
+            self.send_response(HTTPStatus.OK)
+
+            # By default, always inline text files.
+            if ctype in TEXT_MIMETYPES:
                 self.send_header("Content-Type", "text/plain")
                 self.send_header("Content-Disposition", "inline")
-        super().end_headers()
+            else:
+                self.send_header("Content-Type", ctype)
+
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Content-Length", str(fs[6]))
+            self.send_header("Last-Modified", self.date_time_string(int(fs.st_mtime)))
+            self.end_headers()
+            return f
+        except Exception:
+            f.close()
+            raise
+
+    def do_GET(self) -> None:
+        f = self.send_head()
+        if f:
+            try:
+                self.copyfile_truncated(f, self.wfile)
+            finally:
+                f.close()
+
+    def copyfile_truncated(self, src: BinaryIO, dst: BinaryIO) -> None:
+        """Copies truncated file to the destination file."""
+
+        # Checks that there is a file corresponding to the path.
+        if not os.path.isfile(self.translate_path(self.path)):
+            return self.copyfile(src, dst)
+
+        # Checks that the browser is requesting HTML rendering.
+        has_html = any(
+            "text/html" in accept.split(",")
+            for accept in self.headers.get("Accept", "").split(";")
+        )
+        if not has_html:
+            return self.copyfile(src, dst)
+
+        # Gets the file size in bytes.
+        path = self.translate_path(self.path)
+        file_bytes = os.stat(path, follow_symlinks=True).st_size
+
+        # Custom handling for text files; if the file is larger than 10
+        # megabytes, render a truncated version of the file.
+        for _ in range((MAX_TEXT_FILE_SIZE + COPY_BUFSIZE - 1) // COPY_BUFSIZE):
+            buf = src.read(COPY_BUFSIZE)
+            if not buf:
+                break
+            dst.write(buf)
+        else:
+            trunc_str = sizeof_fmt(MAX_TEXT_FILE_SIZE)
+            byte_str = sizeof_fmt(file_bytes)
+            end_str = f"Truncated to {trunc_str}; full file is {byte_str}"
+            dst.write(str.encode(f"\n\n=== {end_str} ===\n\n"))
+            src.seek(-COPY_BUFSIZE, io.SEEK_END)
+            dst.write(src.read())
 
 
 def main() -> None:

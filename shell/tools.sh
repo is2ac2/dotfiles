@@ -348,16 +348,17 @@ get-storage() {
     rm -f $fpath
 
     # Logs information about the entire file system.
-    df -h 2> $tmpfile > $fpath
-    echo "" >> $fpath
+    df -h -a 2>> $tmpfile >> $fpath
 
     # Logs information about the local disk.
-    echo "===== LOCAL DISK =====" >> fpath
-    df -k ${HOME} -h --output=size,used,avail 2> $tmpfile > $fpath
+    echo "" >> $fpath
+    echo "===== LOCAL DISK =====" >> $fpath
+    df -h ${HOME} 2>> $tmpfile >> $fpath
 
     # Logs the top offending directories.
+    echo "" >> $fpath
     echo "===== TOP DIRECTORIES =====" >> $fpath
-    du -h -d 4 2> $tmpfile | sort -r -h >> $fpath
+    du -h -d 4 2>> $tmpfile | sort -r -h >> $fpath
 
     # Appends error messages, if there are any.
     if [[ -s $tmpfile ]]; then

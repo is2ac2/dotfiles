@@ -344,8 +344,12 @@ get-storage() {
     # Creates a temporary file for reading errors.
     local tmpfile=$(mktemp /tmp/abc-script.XXXXXX)
 
-    # Logs storage information.
+    # Removes existing file path.
     rm -f $fpath
+
+    # Logs current date.
+    date 2>> $tmpfile >> $fpath
+    echo "" >> $fpath
 
     # Logs information about the entire file system.
     df -h -a 2>> $tmpfile >> $fpath

@@ -11,6 +11,3 @@ ${HOME}/.cron/cleanup.bash
 if [ -f ${HOME}/.cron-local/weekly.bash ]; then
     . ${HOME}/.cron-local/weekly.bash
 fi
-
-# Computes storage space (put this last because it might be slow).
-cd ${HOME} && get-storage ${HOME}/storage

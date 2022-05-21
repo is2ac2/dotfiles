@@ -11,3 +11,6 @@ ${HOME}/.cron/manage_date_folders.bash
 if [ -f ${HOME}/.cron-local/daily.bash ]; then
     . ${HOME}/.cron-local/daily.bash
 fi
+
+# Computes storage space (put this last because it might be slow).
+cd ${HOME} && get-storage ${HOME}/storage

@@ -24,18 +24,27 @@ COPY_BUFSIZE = 64 * 1024
 
 
 def get_free_port() -> Tuple[str, int]:
-    """Returns an open port to connect to."""
+    """Returns an open port to connect to.
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind(("", 0))
-    addr = s.getsockname()
+    Returns:
+        The address and open port number
+    """
+
+    socket_ptr = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket_ptr.bind(("", 0))
+    addr = socket_ptr.getsockname()
     port = addr
-    s.close()
+    socket_ptr.close()
     return port
 
 
-def close_server(httpd: socketserver.TCPServer, wait_seconds: int):
-    """Closes an active TCP server."""
+def close_server(httpd: socketserver.TCPServer, wait_seconds: int) -> None:
+    """Closes an active TCP server.
+
+    Args:
+        httpd: The server object being closed
+        wait_seconds: Amount of time to wait before shutdown
+    """
 
     time.sleep(wait_seconds)
     print(f"Closing thread after {wait_seconds} seconds")
@@ -43,7 +52,15 @@ def close_server(httpd: socketserver.TCPServer, wait_seconds: int):
 
 
 def sizeof_fmt(num: float, suffix: str = "B") -> str:
-    """Converts raw number of bytes to a human-readable value."""
+    """Converts raw number of bytes to a human-readable value.
+
+    Args:
+        num: The number of bytes to format as a string
+        suffix: The additional suffix to add
+
+    Returns:
+        The number, formatted as a human-readable size
+    """
 
     for unit in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"]:
         if abs(num) < 1024.0:
@@ -62,10 +79,17 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     """
 
     def send_head(self) -> Union[io.BytesIO, BinaryIO, None]:
-        """Sends the head, always ignoring browser cache."""
+        """Sends the head, always ignoring browser cache.
+
+        Returns:
+            The file pointer object
+
+        Raises:
+            Exception: If there is an issue sending the head
+        """
 
         path = self.translate_path(self.path)
-        f = None
+        file_ptr = None
         if os.path.isdir(path):
             parts = urllib.parse.urlsplit(self.path)
             if not parts.path.endswith("/"):
@@ -93,13 +117,13 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(HTTPStatus.NOT_FOUND, "File not found")
             return None
         try:
-            f = open(path, "rb")
+            file_ptr = open(path, "rb")
         except OSError:
             self.send_error(HTTPStatus.NOT_FOUND, "File not found")
             return None
 
         try:
-            fs = os.fstat(f.fileno())
+            file_stat = os.fstat(file_ptr.fileno())
 
             self.send_response(HTTPStatus.OK)
 
@@ -111,35 +135,46 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header("Content-Type", ctype)
 
             self.send_header("Cache-Control", "no-cache")
-            self.send_header("Content-Length", str(fs[6]))
-            self.send_header("Last-Modified", self.date_time_string(int(fs.st_mtime)))
+            self.send_header("Content-Length", str(file_stat[6]))
+            self.send_header("Last-Modified", self.date_time_string(int(file_stat.st_mtime)))
             self.end_headers()
-            return f
+            return file_ptr
         except Exception:
-            f.close()
+            file_ptr.close()
             raise
 
     def do_GET(self) -> None:
-        f = self.send_head()
-        if f:
+        file_ptr = self.send_head()
+        if file_ptr:
             try:
-                self.copyfile_truncated(f, self.wfile)
+                self.copyfile_truncated(file_ptr, self.wfile)
             finally:
-                f.close()
+                file_ptr.close()
 
     def copyfile_truncated(self, src: BinaryIO, dst: BinaryIO) -> None:
-        """Copies truncated file to the destination file."""
+        """Copies truncated file to the destination file.
+
+        Args:
+            src: The file to copy from
+            dst: The file to copy to
+
+        Returns:
+            The result of `self.copyfile`
+        """
 
         # Checks that there is a file corresponding to the path.
         if not os.path.isfile(self.translate_path(self.path)):
             return self.copyfile(src, dst)
 
         # Checks that the browser is requesting HTML rendering.
-        has_html = any(
-            "text/html" in accept.split(",")
-            for accept in self.headers.get("Accept", "").split(";")
-        )
+        accepts = self.headers.get("Accept", "").split(";")
+        has_html = any("text/html" in accept.split(",") for accept in accepts)
         if not has_html:
+            return self.copyfile(src, dst)
+
+        # Checks that the file type is not an image.
+        is_image = any(a.startswith("image/") for accept in accepts for a in accept.split(","))
+        if is_image:
             return self.copyfile(src, dst)
 
         # Gets the file size in bytes.
@@ -163,7 +198,14 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
 
 
 def main() -> None:
-    """Runs an HTTP server from the current directory."""
+    """Runs an HTTP server from the current directory.
+
+    Uses the SSH_CONNECTION environment variable to get the host address,
+    if this script is running on a server.
+
+    Raises:
+        RuntimeError: If the SSH_CONNECTION environment variable is malformed
+    """
 
     parser = argparse.ArgumentParser(description="Serves an HTTP server.")
     parser.add_argument(

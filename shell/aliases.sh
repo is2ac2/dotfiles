@@ -66,11 +66,11 @@ case $OSTYPE in
     "linux-gnu"*)
         alias ls='ls --color=always'
 
-        export SLURM_LOG_DIR=${HOME}/slurm_logs
-        export LOG_DIR=${HOME}/logs
-        export EVAL_DIR=${HOME}/eval
+        export SLURM_LOG_DIR=${HOME}/Experiments/Slurm
+        export LOG_DIR=${HOME}/Experiments/Logs
+        export EVAL_DIR=${HOME}/Experiments/Evaluation
 
-        export NLTK_DATA=${HOME}/software/nltk/data
+        export NLTK_DATA=${HOME}/Software/nltk/data
 
         ddate() {
             if [[ $# -lt 1 ]]; then

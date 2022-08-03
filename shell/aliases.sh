@@ -463,6 +463,8 @@ ppgrep() {
     return 0
 }
 
+# Shows process tree.
+alias psme='pstree -p $(whoami)'
 
 # ubuntu: combine apt update && upgrade
 aptu() {

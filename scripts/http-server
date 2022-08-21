@@ -83,9 +83,6 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
 
         Returns:
             The file pointer object
-
-        Raises:
-            Exception: If there is an issue sending the head
         """
 
         path = self.translate_path(self.path)
@@ -208,6 +205,7 @@ def main() -> None:
     """
 
     parser = argparse.ArgumentParser(description="Serves an HTTP server.")
+    parser.add_argument("dir", nargs="?", default=None)
     parser.add_argument(
         "-w",
         "--wait-seconds",
@@ -216,6 +214,9 @@ def main() -> None:
         help="Number of seconds to wait",
     )
     args = parser.parse_args()
+
+    if args.dir is not None:
+        os.chdir(args.dir)
 
     addr, port = get_free_port()
     handler = RequestHandler

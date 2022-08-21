@@ -117,7 +117,7 @@ alias cl='clear'
 alias reload='exec $SHELL'
 
 # nvidia
-alias smi='watch -n1 nvidia-smi'
+alias smi='watch -n0.1 nvidia-smi'
 
 # time
 alias today='date +"%Y-%m-%d'

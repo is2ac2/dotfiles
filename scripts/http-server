@@ -221,12 +221,20 @@ def main() -> None:
         type=int,
         help="Number of seconds to wait",
     )
+    parser.add_argument(
+        "-p",
+        "--port",
+        type=int,
+        help="A specific port to use",
+    )
     args = parser.parse_args()
 
     if args.dir is not None:
         os.chdir(args.dir)
 
     addr, port = get_free_port()
+    if args.port is not None:
+        port = args.port
     handler = RequestHandler
 
     if "SSH_CONNECTION" in os.environ:

@@ -11,16 +11,14 @@ warn-big-text() {
     fi
 }
 
-pull_dotfiles() {
+pull-dotfiles() {
     local old_dir=$(pwd)
     cd ${HOME}/.dotfiles
     if [[ $(git status --porcelain) ]]; then
         warn-big-text 'Uncommitted Dotfile changes'
     else
-        git pull --quiet
+        git pull
     fi
     cd ${old_dir}
 }
-
-pull_dotfiles
 

@@ -49,8 +49,10 @@ case $OSTYPE in
         export SLURM_LOG_DIR=${HOME}/Experiments/.Slurm
         export LOG_DIR=${HOME}/Experiments/Logs
         export EVAL_DIR=${HOME}/Experiments/Evaluation
-
-        export NLTK_DATA=${HOME}/Software/NLTK/data
+        export DATA_DIR=${HOME}/Experiments/Data
+        export DATA_CACHE_DIR=${DATA_DIR}/.Cache
+        export MODEL_DIR=${HOME}/Experiments/Models
+        export STAGE_DIR=${HOME}/Experiments/Stage
 
         ddate() {
             if [[ $# -lt 1 ]]; then
@@ -69,8 +71,10 @@ case $OSTYPE in
         export SLURM_LOG_DIR=${HOME}/Experiments/Slurm
         export LOG_DIR=${HOME}/Experiments/Logs
         export EVAL_DIR=${HOME}/Experiments/Evaluation
-
-        export NLTK_DATA=${HOME}/Software/nltk/data
+        export DATA_DIR=${HOME}/Experiments/Data
+        export DATA_CACHE_DIR=${DATA_DIR}/.Cache
+        export MODEL_DIR=${HOME}/Experiments/Models
+        export STAGE_DIR=${HOME}/Experiments/Stage
 
         ddate() {
             if [[ $# -lt 1 ]]; then
@@ -89,7 +93,7 @@ case $OSTYPE in
         ;;
 esac
 
-mkdir -p $SLURM_LOG_DIR $LOG_DIR $EVAL_DIR $NLTK_DATA
+mkdir -p $SLURM_LOG_DIR $LOG_DIR $EVAL_DIR $DATA_DIR $DATA_CACHE_DIR $MODEL_DIR $STAGE_DIR
 
 # Some extra bit that seems to be necessary for VSCode.
 if [ -d /etc/profile.d ]; then

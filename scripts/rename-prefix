@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+from typing import Dict
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Rename prefixes")
+    parser.add_argument("prefix")
+    parser.add_argument("new_prefix")
+    args = parser.parse_args()
+
+    prefix, new_prefix = args.prefix, args.new_prefix
+    path_map: Dict[str, str] = {}
+    for path in os.listdir():
+        if path.startswith(prefix):
+            path_map[path] = new_prefix + path[len(prefix):]
+    for from_name, to_name in path_map.items():
+        os.rename(from_name, to_name)
+
+
+if __name__ == "__main__":
+    main()
+

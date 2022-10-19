@@ -53,6 +53,7 @@ case $OSTYPE in
         export DATA_CACHE_DIR=${DATA_DIR}/.Cache
         export MODEL_DIR=${HOME}/Experiments/Models
         export STAGE_DIR=${HOME}/Experiments/Stage
+        export RUN_DIR=${LOG_DIR}/today
 
         ddate() {
             if [[ $# -lt 1 ]]; then
@@ -75,6 +76,7 @@ case $OSTYPE in
         export DATA_CACHE_DIR=${DATA_DIR}/.Cache
         export MODEL_DIR=${HOME}/Experiments/Models
         export STAGE_DIR=${HOME}/Experiments/Stage
+        export RUN_DIR=${LOG_DIR}/today
 
         ddate() {
             if [[ $# -lt 1 ]]; then

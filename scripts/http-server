@@ -221,6 +221,10 @@ def main() -> None:
     addr, port = get_free_port()
     handler = RequestHandler
 
+    if "HTTP_SERVER_PORT" in os.environ:
+        print(f"Using port {os.environ['HTTP_SERVER_PORT']=} instead of {port}")
+        port = int(os.environ["HTTP_SERVER_PORT"])
+
     if "SSH_CONNECTION" in os.environ:
         addrs = re.findall(r"((\d+\.){3}\d+)", os.environ["SSH_CONNECTION"])
         if not addrs:

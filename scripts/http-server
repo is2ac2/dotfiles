@@ -83,6 +83,9 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
 
         Returns:
             The file pointer object
+
+        Raises:
+            Exception: On errors when sending particular header lines
         """
 
         path = self.translate_path(self.path)
@@ -192,6 +195,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
             dst.write(str.encode(f"\n\n=== {end_str} ===\n\n"))
             src.seek(-COPY_BUFSIZE, io.SEEK_END)
             dst.write(src.read())
+        return None
 
 
 def main() -> None:

@@ -226,7 +226,8 @@ def main() -> None:
     handler = RequestHandler
 
     if "HTTP_SERVER_PORT" in os.environ:
-        print(f"Using port {os.environ['HTTP_SERVER_PORT']=} instead of {port}")
+        print(f"Using port {os.environ['HTTP_SERVER_PORT']=} instead of {port}; assuming localhost")
+        addr = "127.0.0.1"
         port = int(os.environ["HTTP_SERVER_PORT"])
 
     if "SSH_CONNECTION" in os.environ:

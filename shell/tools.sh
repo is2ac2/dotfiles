@@ -348,7 +348,7 @@ gless() {
 # ---------------------------------
 
 pathadd() {
-    if [[ $# -ne 2 ]]; then
+    if [[ $# -ne 2 ]] && [[ $# -ne 3 ]]; then
         echo "Usage: pathadd <var> <new-path>"
         return 1
     fi
@@ -357,7 +357,7 @@ pathadd() {
     local prev_val="$(env-val $var):"
     if [[ -d "${new_path}" ]]; then
         if [[ ":${prev_val}:" != *":${new_path}:"* ]]; then
-            export ${var}="${prev_val:+"$prev_val:"}${new_path}"
+            export ${var}=${new_path}:${prev_val}
         fi
     else
         echo "Missing: ${new_path}"

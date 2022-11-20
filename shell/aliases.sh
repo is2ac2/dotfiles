@@ -262,7 +262,7 @@ tbd() {
         echo "Usage: tbd (<directory>) (<port>)"
     fi
     echo "Running '$cmd'"
-    $cmd
+    eval $cmd
 }
 
 # pwd without symlinks

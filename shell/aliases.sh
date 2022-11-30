@@ -194,6 +194,7 @@ shist() {
 slog() {
     if [[ $# -ne 1 ]]; then
         echo "Usage: sl <job-id>"
+        return 1
     fi
     local job_id=$1; shift
     echo $(slurm-parse-comment $job_id -p 'Log directory: ')
@@ -205,6 +206,7 @@ sl() {
         less ${log_dir}/logs/slurm_out.txt
     else
         echo "Failed to get log directory for job ID $1"
+        return 1
     fi
 }
 
@@ -215,18 +217,39 @@ sle() {
         less ${last_err_file}
     else
         echo "Failed to get log directory for job ID $1"
+        return 1
     fi
 }
 
 stbd() {
-    local log_dir=$(slog $@)
-    if [[ -n $log_dir ]]; then
-        local tbd_root=${log_dir}/logs/tensorboard/
-        local last_tbd_dir=$(\ls -1 ${tbd_root} | tail -n 1)
-        tbd ${tbd_root}${last_tbd_dir}
-    else
-        echo "Failed to get log directory for job ID $1"
+    if [[ $# -eq 0 ]]; then
+        echo "Usage: stbd <job-id> (<job_id>...)"
+        return 1
     fi
+
+    local tmp_tbd_dir=$(mktemp -d -t tbd-XXXXXXXX)
+    for job_id in "$@"; do
+        local log_dir=$(slog $job_id)
+        local tbd_root=${log_dir}/logs/tensorboard/
+        local last_tbd_dir=$(\ls -t ${tbd_root} | tail -n 1)
+        if [[ -n $last_tbd_dir ]]; then
+            ln -s ${tbd_root}${last_tbd_dir} ${tmp_tbd_dir}/${job_id}
+        else
+            echo "Failed to get log directory for job ID $job_id"
+        fi
+    done
+
+    local cmd
+    if [[ -n $TENSORBOARD_PORT ]]; then
+        cmd="tensorboard serve --port ${TENSORBOARD_PORT} --logdir ${tmp_tbd_dir}"
+    else
+        cmd="tensorboard serve --bind_all --logdir ${tmp_tbd_dir}"
+    fi
+
+    echo "Running '$cmd'"
+    eval $cmd
+
+    rm -r $tmp_tbd_dir
 }
 
 # speed test

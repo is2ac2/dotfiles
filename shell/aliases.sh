@@ -191,7 +191,7 @@ shist() {
     sacct --format='Start%25,End%25,JobID,JobName%30,Partition,State%20' --user $USER $@ | awk 'NR<3{print $0;next}{print$0| "sort -r"}'| less
 }
 
-slurm-log-dir() {
+slog() {
     if [[ $# -ne 1 ]]; then
         echo "Usage: sl <job-id>"
     fi
@@ -200,7 +200,7 @@ slurm-log-dir() {
 }
 
 sl() {
-    local log_dir=$(slurm-log-dir $@)
+    local log_dir=$(slog $@)
     if [[ -n $log_dir ]]; then
         less ${log_dir}/logs/slurm_out.txt
     else
@@ -209,7 +209,7 @@ sl() {
 }
 
 sle() {
-    local log_dir=$(slurm-log-dir $@)
+    local log_dir=$(slog $@)
     if [[ -n $log_dir ]]; then
         local last_err_file=$(\ls -1 ${log_dir}/logs/slurm_err.*.txt | tail -n 1)
         less ${last_err_file}
@@ -219,7 +219,7 @@ sle() {
 }
 
 stbd() {
-    local log_dir=$(slurm-log-dir $@)
+    local log_dir=$(slog $@)
     if [[ -n $log_dir ]]; then
         local tbd_root=${log_dir}/logs/tensorboard/
         local last_tbd_dir=$(\ls -1 ${tbd_root} | tail -n 1)

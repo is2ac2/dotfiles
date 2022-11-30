@@ -191,6 +191,22 @@ shist() {
     sacct --format='Start%25,End%25,JobID,JobName%30,Partition,State%20' --user $USER $@ | awk 'NR<3{print $0;next}{print$0| "sort -r"}'| less
 }
 
+sl() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: sl <job-id>"
+    fi
+    local job_id=$1; shift
+    less $(slurm-log-files $job_id)
+}
+
+sle() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: sle <job-id>"
+    fi
+    local job_id=$1; shift
+    less $(slurm-log-files $job_id -e)
+}
+
 # speed test
 speedtest() {
     echo "Runs speed test against remote server

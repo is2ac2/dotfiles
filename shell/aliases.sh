@@ -239,11 +239,11 @@ stbd() {
         fi
     done
 
-    local cmd
+    local cmd='tensorboard serve --samples_per_plugin scalars=999999999 --logdir ${tmp_tbd_dir}'
     if [[ -n $TENSORBOARD_PORT ]]; then
-        cmd="tensorboard serve --port ${TENSORBOARD_PORT} --logdir ${tmp_tbd_dir}"
+        cmd="${cmd} --port ${TENSORBOARD_PORT}"
     else
-        cmd="tensorboard serve --bind_all --logdir ${tmp_tbd_dir}"
+        cmd="${cmd} --bind_all"
     fi
 
     echo "Running '$cmd'"

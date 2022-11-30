@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+
+import argparse
+import functools
+import json
+import re
+import subprocess
+import sys
+import threading
+from pathlib import Path
+from typing import Dict, List
+
+
+def get_job_id_cache_path() -> Path:
+    return Path.home() / ".cache" / "slurm-log-files" / "comments.json"
+
+
+@functools.lru_cache
+def load_job_id_cache() -> Dict[str, List[str]]:
+    cache_path = get_job_id_cache_path()
+    if not cache_path.exists():
+        return {}
+    with open(cache_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_job_id_cache(job_ids: Dict[str, List[str]]) -> None:
+    cache_path = get_job_id_cache_path()
+    cache_path.parent.mkdir(exist_ok=True, parents=True)
+    with open(cache_path, "w", encoding="utf-8") as f:
+        json.dump(job_ids, f, indent=2)
+
+
+def save_to_cache(job_id: str, comments: List[str]) -> None:
+    job_ids = load_job_id_cache()
+    job_ids[job_id] = comments
+    save_job_id_cache(job_ids)
+
+
+def cleanup(proc: subprocess.Popen, command: List[str]) -> None:
+    print(f"Timeout while calling {' '.join(command)}", file=sys.stderr)
+    proc.kill()
+
+
+def run_command(cmd: List[str], timeout: int) -> str:
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    timer = threading.Timer(timeout, cleanup, [process, cmd])
+
+    try:
+        timer.start()
+        stdout, stderr = process.communicate()
+        sys.stderr.buffer.write(stderr)
+    finally:
+        timer.cancel()
+
+    return stdout.decode("utf-8")
+
+
+def parse_comment(job_id: str) -> List[str]:
+    job_id_cache = load_job_id_cache()
+    if job_id in job_id_cache:
+        return job_id_cache[job_id]
+
+    stdout = run_command(["sacct", "--jobs", job_id, "--format", "Comment%10000"], 10)
+    comment_re = re.search("--- \n(.+?)\n", stdout, re.MULTILINE)
+    if comment_re is None:
+        raise RuntimeError(f"Invalid job ID: {job_id}")
+    comment = comment_re.group(1).strip()
+    comments = re.split(r";\s*", comment)
+    save_to_cache(job_id, comments)
+    return comments
+
+
+def main() -> None:
+    """Parses the slurm comment from a job ID."""
+
+    parser = argparse.ArgumentParser(description="Parses the slurm comment for a job ID")
+    parser.add_argument("job_id", help="The job ID to look up")
+    parser.add_argument("-p", "--prefix", help="Only print lines with this prefix")
+    args = parser.parse_args()
+
+    parsed_comment = parse_comment(args.job_id)
+    if args.prefix is not None:
+        parsed_comment = [p[len(args.prefix) :] for p in parsed_comment if p.startswith(args.prefix)]
+    print("\n".join(parsed_comment))
+
+
+if __name__ == "__main__":
+    main()

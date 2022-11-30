@@ -191,20 +191,42 @@ shist() {
     sacct --format='Start%25,End%25,JobID,JobName%30,Partition,State%20' --user $USER $@ | awk 'NR<3{print $0;next}{print$0| "sort -r"}'| less
 }
 
-sl() {
+slurm-log-dir() {
     if [[ $# -ne 1 ]]; then
         echo "Usage: sl <job-id>"
     fi
     local job_id=$1; shift
-    less $(slurm-log-files $job_id)
+    echo $(slurm-parse-comment $job_id -p 'Log directory: ')
+}
+
+sl() {
+    local log_dir=$(slurm-log-dir $@)
+    if [[ -n $log_dir ]]; then
+        less ${log_dir}/logs/slurm_out.txt
+    else
+        echo "Failed to get log directory for job ID $1"
+    fi
 }
 
 sle() {
-    if [[ $# -ne 1 ]]; then
-        echo "Usage: sle <job-id>"
+    local log_dir=$(slurm-log-dir $@)
+    if [[ -n $log_dir ]]; then
+        local last_err_file=$(\ls -1 ${log_dir}/logs/slurm_err.*.txt | tail -n 1)
+        less ${last_err_file}
+    else
+        echo "Failed to get log directory for job ID $1"
     fi
-    local job_id=$1; shift
-    less $(slurm-log-files $job_id -e)
+}
+
+stbd() {
+    local log_dir=$(slurm-log-dir $@)
+    if [[ -n $log_dir ]]; then
+        local tbd_root=${log_dir}/logs/tensorboard/
+        local last_tbd_dir=$(\ls -1 ${tbd_root} | tail -n 1)
+        tbd ${tbd_root}${last_tbd_dir}
+    else
+        echo "Failed to get log directory for job ID $1"
+    fi
 }
 
 # speed test

@@ -58,17 +58,28 @@ def run_command(cmd: List[str], timeout: int) -> str:
 
 def parse_comment(job_id: str) -> List[str]:
     job_id_cache = load_job_id_cache()
-    if job_id in job_id_cache:
+    if job_id in job_id_cache and job_id_cache[job_id]:
         return job_id_cache[job_id]
 
+    # Attempts to parse job ID using `sacct`.
     stdout = run_command(["sacct", "--jobs", job_id, "--format", "Comment%10000"], 10)
     comment_re = re.search("--- \n(.+?)\n", stdout, re.MULTILINE)
-    if comment_re is None:
-        raise RuntimeError(f"Invalid job ID: {job_id}")
-    comment = comment_re.group(1).strip()
-    comments = re.split(r";\s*", comment)
-    save_to_cache(job_id, comments)
-    return comments
+    if comment_re is not None:
+        comments = [c.strip() for c in re.split(r";\s*", comment_re.group(1).strip()) if c.strip()]
+        if comments:
+            save_to_cache(job_id, comments)
+            return comments
+
+    # Attempts to parse job ID using `squeue`.
+    stdout = run_command(["squeue", "--jobs", job_id, "--format", "%k"], 10)
+    comment_re = re.search(r"COMMENT\n(.+)\n", stdout)
+    if comment_re is not None:
+        comments = [c.strip() for c in re.split(r";\s*", comment_re.group(1).strip()) if c.strip()]
+        if comments:
+            save_to_cache(job_id, comments)
+            return comments
+
+    raise RuntimeError(f"Failed to parse comment for {job_id}")
 
 
 def main() -> None:

@@ -40,7 +40,6 @@ source ~/.zsh/plugins_before.zsh
 source ~/.shell/update.sh
 source ~/.shell/info.sh
 source ~/.shell/aliases.sh
-source ~/.shell/tools.sh
 source ~/.zsh/aliases.zsh
 source ~/.zsh/settings.zsh
 source ~/.zsh/autocomplete.zsh

@@ -2,7 +2,6 @@
 
 # Sources bashrc to make sure Python is set correctly.
 source ${HOME}/.shell/aliases.sh
-source ${HOME}/.shell/tools.sh
 
 # Cleans up old folders.
 ${HOME}/.cron/cleanup.bash

@@ -268,12 +268,20 @@ export TERM=screen-256color
 # tensorboard
 tbd() {
     local cmd
+    local extra
+
+    if [[ -n $TENSORBOARD_PORT ]] && [[ $# -ne 2 ]]; then
+        extra="--port ${TENSORBOARD_PORT}"
+    else
+        extra="--bind_all"
+    fi
+
     if [[ $# -eq 0 ]]; then
-        cmd="tensorboard serve --reload_interval 30 --bind_all --logdir ."
+        cmd="tensorboard serve --reload_interval 30 --logdir . ${extra}"
     elif [[ $# -eq 1 ]]; then
-        cmd="tensorboard serve --reload_interval 30 --bind_all --logdir $1"; shift
+        cmd="tensorboard serve --reload_interval 30 --logdir $1 ${extra}"; shift
     elif [[ $# -eq 2 ]]; then
-        cmd="tensorboard serve --reload_interval 30 --bind_all --logdir $1 --port $2"; shift; shift
+        cmd="tensorboard serve --reload_interval 30 --logdir $1 --port $2 ${extra}"; shift; shift
     else
         echo "Usage: tbd (<directory>) (<port>)"
     fi

@@ -52,5 +52,3 @@ else
     rm $cleanup_logfile
 fi
 
-# Removes various caches.
-rm -r ${HOME}/.cache/slurm-log-files/

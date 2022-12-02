@@ -228,16 +228,23 @@ stbd() {
     fi
 
     local tmp_tbd_dir=$(mktemp -d -t tbd-XXXXXXXX)
+    local has_dir=0
     for job_id in "$@"; do
         local log_dir=$(slog $job_id)
         local tbd_root=${log_dir}/logs/tensorboard/
         local last_tbd_dir=$(\ls -t ${tbd_root} | tail -n 1)
         if [[ -n $last_tbd_dir ]]; then
             ln -s ${tbd_root}${last_tbd_dir} ${tmp_tbd_dir}/${job_id}
+            has_dir=1
         else
             echo "Failed to get log directory for job ID $job_id"
         fi
     done
+
+    if [[ $has_dir -eq 0 ]]; then
+        echo "No log directories found"
+        return 1
+    fi
 
     local cmd="tensorboard serve --logdir ${tmp_tbd_dir}"
     if [[ -n $TENSORBOARD_PORT ]]; then

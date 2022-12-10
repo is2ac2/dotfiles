@@ -232,9 +232,11 @@ stbd() {
     for job_id in "$@"; do
         local log_dir=$(slog $job_id)
         local tbd_root=${log_dir}/logs/tensorboard/
-        local last_tbd_dir=$(\ls -t ${tbd_root} | tail -n 1)
+        local last_tbd_dir=$(\ls -1 ${tbd_root} | sort | tail -n 1)
         if [[ -n $last_tbd_dir ]]; then
-            ln -s ${tbd_root}${last_tbd_dir} ${tmp_tbd_dir}/${job_id}
+            local tbd_full_dir=${tbd_root}${last_tbd_dir}
+            echo "-> ${tbd_full_dir}"
+            ln -s ${tbd_full_dir} ${tmp_tbd_dir}/${job_id}
             has_dir=1
         else
             echo "Failed to get log directory for job ID $job_id"

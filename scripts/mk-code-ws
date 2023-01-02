@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+"""Script which creates a new VSCode workspace from a given directory.
+
+The new workspace is stored under `~/.code-workspaces` and is named after
+the directory name. The workspace has two folders: the given directory and
+the `~/.code-workspaces` directory itself.
+"""
+
+from pathlib import Path
+import json
+
+
+def main():
+    """Create a new VSCode workspace from the current directory."""
+
+    directory = Path.cwd()
+    code_ws_directory = Path("~/.code-workspaces").expanduser()
+    code_ws_directory.mkdir(exist_ok=True, parents=True)
+    workspace_file = code_ws_directory / f"{directory.name}.code-workspace"
+    for i in range(1, 1000):
+        if not workspace_file.exists():
+            break
+        print(f"Workspace {workspace_file} already exists, trying another name")
+        workspace_file = code_ws_directory / f"{directory.name}-{i}.code-workspace"
+
+    with open(workspace_file, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "folders": [
+                    {
+                        "name": directory.name,
+                        "path": str(directory),
+                    },
+                    {
+                        "name": "Workspaces",
+                        "path": "code_ws_directory",
+                    },
+                ],
+                "settings": {},
+            },
+            f,
+            indent=4,
+            sort_keys=True,
+        )
+
+    print(f"Created workspace {workspace_file}")
+
+
+if __name__ == "__main__":
+    main()

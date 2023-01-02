@@ -6,8 +6,10 @@ the directory name. The workspace has two folders: the given directory and
 the `~/.code-workspaces` directory itself.
 """
 
-from pathlib import Path
 import json
+import os
+import shutil
+from pathlib import Path
 
 
 def main():
@@ -23,6 +25,18 @@ def main():
         print(f"Workspace {workspace_file} already exists, trying another name")
         workspace_file = code_ws_directory / f"{directory.name}-{i}.code-workspace"
 
+    settings = {}
+
+    if "CONDA_PREFIX" in os.environ:
+        conda_prefix = Path(os.environ["CONDA_PREFIX"])
+
+        # Adds Python interpretter if currently inside a Conda environment.
+        settings["python.defaultInterpreterPath"] = str(conda_prefix / "bin" / "python")
+
+        # Adds CMake path, if CMake is installed in the Conda environment.
+        if (cmake_path := shutil.which("cmake")) is not None and cmake_path.startswith(str(conda_prefix)):
+            settings["cmake.cmakePath"] = cmake_path
+
     with open(workspace_file, "w", encoding="utf-8") as f:
         json.dump(
             {
@@ -36,7 +50,7 @@ def main():
                         "path": "code_ws_directory",
                     },
                 ],
-                "settings": {},
+                "settings": settings,
             },
             f,
             indent=4,

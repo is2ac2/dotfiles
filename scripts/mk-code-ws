@@ -12,6 +12,31 @@ import shutil
 from pathlib import Path
 
 
+def clean_name(dir_name: str) -> str:
+    """Converts directory name into a name suitable for VSCode workspace.
+
+    Args:
+        dir_name: Directory name.
+
+    Returns:
+        Cleaned name.
+    """
+
+    # Replaces all non-alphanumeric characters with a space.
+    name = "".join(c if c.isalnum() else " " for c in dir_name)
+
+    # Removes all leading and trailing spaces.
+    name = name.strip()
+
+    # Replaces all consecutive spaces with a single space.
+    name = " ".join(name.split())
+
+    # Capitalizes the first letter of each word.
+    name = " ".join(word.capitalize() for word in name.split(" "))
+
+    return name
+
+
 def main():
     """Create a new VSCode workspace from the current directory."""
 
@@ -34,28 +59,27 @@ def main():
         settings["python.defaultInterpreterPath"] = str(conda_prefix / "bin" / "python")
 
         # Adds CMake path, if CMake is installed in the Conda environment.
-        if (cmake_path := shutil.which("cmake")) is not None and cmake_path.startswith(str(conda_prefix)):
+        if (cmake_path := shutil.which("cmake")) is not None and cmake_path.startswith(
+            str(conda_prefix)
+        ):
             settings["cmake.cmakePath"] = cmake_path
 
-    with open(workspace_file, "w", encoding="utf-8") as f:
-        json.dump(
+    config = {
+        "folders": [
             {
-                "folders": [
-                    {
-                        "name": directory.name,
-                        "path": str(directory),
-                    },
-                    {
-                        "name": "Workspaces",
-                        "path": "code_ws_directory",
-                    },
-                ],
-                "settings": settings,
+                "name": clean_name(directory.name),
+                "path": str(directory),
             },
-            f,
-            indent=4,
-            sort_keys=True,
-        )
+            {
+                "name": "Workspaces",
+                "path": str(code_ws_directory),
+            },
+        ],
+        "settings": settings,
+    }
+
+    with open(workspace_file, "w", encoding="utf-8") as f:
+        json.dump(config, f, indent=4, sort_keys=True)
 
     print(f"Created workspace {workspace_file}")
 

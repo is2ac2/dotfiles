@@ -5,6 +5,12 @@ import sys
 
 
 def update_env():
+    try:
+        import ipdb
+        os.environ["PYTHONBREAKPOINT"] = "ipdb.set_trace"
+    except Exception:
+        pass
+
     if "PYTHONDOTENV" in os.environ:
         dotenv = os.environ["PYTHONDOTENV"]
         if os.path.isfile(dotenv):

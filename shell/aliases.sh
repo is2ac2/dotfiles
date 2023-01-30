@@ -738,13 +738,8 @@ cn-vars() {
         echo "" >>$DEACTIVATE
     fi
 
-    if [[ "$EDITOR" == "vim" ]]; then
-        [[ $EDIT_ACTIVATE == 1 ]] && vim "+normal G$" +startinsert $ACTIVATE
-        [[ $EDIT_DEACTIVATE == 1 ]] && vim "+normal G$" +startinsert $DEACTIVATE
-    else
-        [[ $EDIT_ACTIVATE == 1 ]] && $EDITOR $ACTIVATE
-        [[ $EDIT_DEACTIVATE == 1 ]] && $EDITOR $DEACTIVATE
-    fi
+    [[ $EDIT_ACTIVATE == 1 ]] && $EDITOR $ACTIVATE
+    [[ $EDIT_DEACTIVATE == 1 ]] && $EDITOR $DEACTIVATE
 
     echo "Done editing environment variables for $CONDA_PREFIX"
 }

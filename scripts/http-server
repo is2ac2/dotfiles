@@ -6,6 +6,7 @@ import http.server
 import io
 import os
 import re
+import psutil
 import socket
 import socketserver
 import threading
@@ -237,6 +238,18 @@ def main() -> None:
         print(f"Using port {os.environ['HTTP_SERVER_PORT']=} instead of {port}; assuming localhost")
         host_addr = "127.0.0.1"
         port = int(os.environ["HTTP_SERVER_PORT"])
+
+        # Attempts to kill any pre-existing server on that port.
+        for proc in psutil.process_iter():
+            try:
+                for conn in proc.connections():
+                    if conn.laddr.port == port:
+                        proc.kill()
+                        proc.wait()
+                        break
+
+            except (psutil.NoSuchProcess, psutil.AccessDenied, IndexError):
+                pass
 
     with socketserver.TCPServer((addr, port), handler) as httpd:
         print(f"Serving HTTP on {addr} port {port} (http://{host_addr}:{port}) ...")

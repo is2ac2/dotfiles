@@ -308,8 +308,6 @@ alias lesg='less ++G'  # Automatically jump to end
 # python
 export PYTHONHASHSEED=1337  # For making experiments repeatable
 export PYTHONSTARTUP="${HOME}/.python/startup.py"
-export PYTHONPATH=".:${HOME}/.python/extras/"
-# export PYTHONBREAKPOINT='bendb.interact'
 
 # jupyter
 alias jpn='USE_JUPYTER_CONF=1 jupyter notebook'

@@ -2,6 +2,7 @@
 
 # Sources bashrc to make sure Python is set correctly.
 source ${HOME}/.shell/aliases.sh
+source ${HOME}/.shell/path.sh
 
 # Ensures that scripts folders are only executable by user.
 [ -d "${HOME}/scripts"  ] && chmod -R 744 ${HOME}/scripts
@@ -10,6 +11,9 @@ source ${HOME}/.shell/aliases.sh
 
 # Sweeps dates files.
 ${HOME}/.cron/sweep_dates.bash
+
+# Caches running slurm jobs.
+slurm-parse-comment
 
 # Runs local cron script, if found.
 if [ -f ${HOME}/.cron-local/hourly.bash ]; then

@@ -70,7 +70,8 @@ def save_to_cache(job_id: str, comments: List[str]) -> None:
     """
 
     job_ids = load_job_id_cache()
-    job_ids[job_id] = comments
+    current_time = time.time()
+    job_ids[job_id] = comments + [f"{CACHE_TIME_PREFIX}{current_time}"]
     save_job_id_cache(job_ids)
 
 

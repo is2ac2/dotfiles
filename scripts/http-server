@@ -244,6 +244,7 @@ def main() -> None:
             try:
                 for conn in proc.connections():
                     if conn.laddr.port == port:
+                        print(f"Killing {proc.pid=} on {conn.laddr=}")
                         proc.kill()
                         proc.wait()
                         break
@@ -252,6 +253,7 @@ def main() -> None:
                 pass
 
     with socketserver.TCPServer((addr, port), handler) as httpd:
+        httpd.allow_reuse_address = True
         print(f"Serving HTTP on {addr} port {port} (http://{host_addr}:{port}) ...")
         thread = threading.Thread(target=close_server, args=(httpd, args.wait_seconds))
         thread.daemon = True

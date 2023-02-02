@@ -79,7 +79,7 @@ def main():
     }
 
     with open(workspace_file, "w", encoding="utf-8") as f:
-        json.dump(config, f, indent=4, sort_keys=True)
+        json.dump(config, f, indent=2, sort_keys=True)
 
     print(f"Created workspace {workspace_file}")
 

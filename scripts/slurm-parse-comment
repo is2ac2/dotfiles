@@ -264,6 +264,7 @@ def main() -> None:
                 if args.prefix is not None:
                     parsed_comment = [p[len(args.prefix) :] for p in parsed_comment if p.startswith(args.prefix)]
                 print("\n".join(parsed_comment))
+                break
 
             except RuntimeError as exc:
                 if args.no_retry:
@@ -275,6 +276,7 @@ def main() -> None:
                 else:
                     cache_today_dirs()
                 time.sleep(5)
+                continue
 
 
 if __name__ == "__main__":

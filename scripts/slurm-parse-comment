@@ -121,7 +121,7 @@ def parse_comment(job_id: str) -> List[str]:
         The comment.
 
     Raises:
-        ValueError: If the job ID is invalid.
+        RuntimeError: If the job ID is invalid.
     """
 
     job_id_cache = load_job_id_cache()
@@ -247,6 +247,8 @@ def main() -> None:
         action="store_true",
         help="If set, caches the comments for all running jobs",
     )
+    parser.add_argument("-n", "--no-retry", default=False, action="store_true", help="If set, don't retry on failure")
+    parser.add_argument("-t", "--num-retries", type=int, default=1, help="The number of times to retry on failure")
     args = parser.parse_args()
 
     if args.job_id is None:
@@ -256,10 +258,23 @@ def main() -> None:
             cache_today_dirs()
 
     else:
-        parsed_comment = parse_comment(args.job_id)
-        if args.prefix is not None:
-            parsed_comment = [p[len(args.prefix) :] for p in parsed_comment if p.startswith(args.prefix)]
-        print("\n".join(parsed_comment))
+        for _ in range(args.num_retries + 1):
+            try:
+                parsed_comment = parse_comment(args.job_id)
+                if args.prefix is not None:
+                    parsed_comment = [p[len(args.prefix) :] for p in parsed_comment if p.startswith(args.prefix)]
+                print("\n".join(parsed_comment))
+
+            except RuntimeError as exc:
+                if args.no_retry:
+                    raise
+
+                print(exc, file=sys.stderr)
+                if args.running_jobs:
+                    cache_running_jobs()
+                else:
+                    cache_today_dirs()
+                time.sleep(5)
 
 
 if __name__ == "__main__":

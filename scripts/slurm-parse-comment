@@ -187,7 +187,7 @@ def cache_today_dirs() -> None:
 
     # Gets all job IDs from today's log directory.
     new_job_ids: Dict[str, List[str]] = {}
-    for sbatch_file in log_dir.glob("today/*/run_*/sbatch.sh"):
+    for sbatch_file in log_dir.glob("*day/*/run_*/sbatch.sh"):
         stderr_files = list(sbatch_file.parent.glob("logs/slurm_err.*.txt"))
         if not stderr_files:
             continue

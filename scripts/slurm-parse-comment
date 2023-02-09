@@ -33,7 +33,6 @@ def get_job_id_cache_path() -> Path:
     return Path.home() / ".cache" / "slurm-log-files" / "comments.json"
 
 
-@functools.lru_cache
 def load_job_id_cache() -> Dict[str, List[str]]:
     """Loads the job ID cache.
 
@@ -275,7 +274,7 @@ def main() -> None:
                     cache_running_jobs()
                 else:
                     cache_today_dirs()
-                time.sleep(5)
+                time.sleep(0.1)
                 continue
 
 

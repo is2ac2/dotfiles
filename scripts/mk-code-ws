@@ -52,6 +52,10 @@ def main():
 
     settings = {}
 
+    # Adds Ruff path if it is available.
+    if (ruff_path := shutil.which("ruff")) is not None:
+        settings["ruff.path"] = ruff_path
+
     if "CONDA_PREFIX" in os.environ:
         conda_prefix = Path(os.environ["CONDA_PREFIX"])
 

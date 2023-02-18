@@ -56,17 +56,58 @@ def main():
     if (ruff_path := shutil.which("ruff")) is not None:
         settings["ruff.path"] = ruff_path
 
+    # Adds NVCC path if available.
+    if (nvcc_path := shutil.which("nvcc")) is not None:
+        settings["cmake.configureSettings"]["CMAKE_CUDA_COMPILER"] = str(Path(nvcc_path).resolve())
+
+    # Adds cmake-format path if available.
+    if (cmake_format_path := shutil.which("cmake-format")) is not None:
+        settings["cmakeFormat.exePath"] = cmake_format_path
+
+    # Adds clang-format path if available.
+    if (clang_format_path := shutil.which("clang-format")) is not None:
+        settings["clang-format.executable"] = clang_format_path
+
     if "CONDA_PREFIX" in os.environ:
         conda_prefix = Path(os.environ["CONDA_PREFIX"])
 
         # Adds Python interpretter if currently inside a Conda environment.
         settings["python.defaultInterpreterPath"] = str(conda_prefix / "bin" / "python")
 
-        # Adds CMake path, if CMake is installed in the Conda environment.
-        if (cmake_path := shutil.which("cmake")) is not None and cmake_path.startswith(
-            str(conda_prefix)
-        ):
-            settings["cmake.cmakePath"] = cmake_path
+    # Adds CMake path, if CMake is installed.
+    if (cmake_path := shutil.which("cmake")) is not None and cmake_path.startswith(str(conda_prefix)):
+        settings["cmake.cmakePath"] = cmake_path
+
+    settings["cmake.configureSettings"] = {}
+
+    cmake_prefix_paths = []
+
+    # Gets PyTorch settings.
+    try:
+        import torch
+
+        cmake_prefix_paths += [str(Path(torch.__file__).parent / "share" / "cmake")]
+
+        try:
+            major_ver, minor_ver = torch.cuda.get_device_capability()
+            settings["cmake.configureSettings"]["TORCH_CUDA_ARCH_LIST"] = f"'{major_ver}.{minor_ver}'"
+
+        except AssertionError:
+            pass
+
+    except ModuleNotFoundError:
+        pass
+
+    # Gets Pybind11 settings.
+    try:
+        import pybind11
+
+        cmake_prefix_paths += [pybind11.get_cmake_dir()]
+    except ModuleNotFoundError:
+        pass
+
+    if cmake_prefix_paths:
+        settings["cmake.configureSettings"]["CMAKE_PREFIX_PATH"] = cmake_prefix_paths
 
     config = {
         "folders": [

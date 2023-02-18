@@ -13,7 +13,7 @@ source ${HOME}/.shell/path.sh
 ${HOME}/.cron/sweep_dates.bash
 
 # Caches running slurm jobs.
-slurm-parse-comment
+${HOME}/.scripts/slurm-parse-comment
 
 # Runs local cron script, if found.
 if [ -f ${HOME}/.cron-local/hourly.bash ]; then

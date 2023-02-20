@@ -54,7 +54,7 @@ def main():
 
     # Adds Ruff path if it is available.
     if (ruff_path := shutil.which("ruff")) is not None:
-        settings["ruff.path"] = ruff_path
+        settings["ruff.path"] = [ruff_path]
 
     # Adds NVCC path if available.
     if (nvcc_path := shutil.which("nvcc")) is not None:
@@ -78,8 +78,7 @@ def main():
     if (cmake_path := shutil.which("cmake")) is not None and cmake_path.startswith(str(conda_prefix)):
         settings["cmake.cmakePath"] = cmake_path
 
-    settings["cmake.configureSettings"] = {}
-
+    cmake_configure_settings = {}
     cmake_prefix_paths = []
 
     # Gets PyTorch settings.
@@ -90,7 +89,7 @@ def main():
 
         try:
             major_ver, minor_ver = torch.cuda.get_device_capability()
-            settings["cmake.configureSettings"]["TORCH_CUDA_ARCH_LIST"] = f"'{major_ver}.{minor_ver}'"
+            cmake_configure_settings["TORCH_CUDA_ARCH_LIST"] = f"'{major_ver}.{minor_ver}'"
 
         except AssertionError:
             pass
@@ -107,7 +106,10 @@ def main():
         pass
 
     if cmake_prefix_paths:
-        settings["cmake.configureSettings"]["CMAKE_PREFIX_PATH"] = cmake_prefix_paths
+        cmake_configure_settings["CMAKE_PREFIX_PATH"] = cmake_prefix_paths
+
+    if cmake_configure_settings:
+        settings["cmake.configureSettings"] = cmake_configure_settings
 
     config = {
         "folders": [

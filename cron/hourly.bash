@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Sources bashrc to make sure Python is set correctly.
+source ${HOME}/.bash/aliases.bash
 source ${HOME}/.shell/aliases.sh
 source ${HOME}/.shell/path.sh
 

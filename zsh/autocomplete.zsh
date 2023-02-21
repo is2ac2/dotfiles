@@ -10,8 +10,12 @@ _conda_complete() {
 cn-env() {
     conda activate $@
 }
+cn-rm() {
+    conda remove --all --name $@
+}
 if [[ -f ~/.conda/environments.txt ]]; then
     compdef _conda_complete cn-env
+    compdef _conda_complete cn-rm
 fi
 
 _conda_vars() {

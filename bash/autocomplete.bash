@@ -3,6 +3,7 @@
 # -----
 
 alias cn-env='conda activate'
+alias cn-rm='conda remove --all --name'
 _conda_complete() {
     local cur opts
     COMPREPLY=()
@@ -13,6 +14,7 @@ _conda_complete() {
 }
 if [[ -f ~/.conda/environments.txt ]]; then
     complete -F _conda_complete 'cn-env'
+    complete -F _conda_complete 'cn-rm'
 fi
 
 _cn_vars_complete() {

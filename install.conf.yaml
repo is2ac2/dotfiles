@@ -32,6 +32,7 @@
     ~/.bashrc:
     ~/.bash_profile:
     ~/.cron:
+    ~/.cron-local/bin: cron-local/bin
     ~/.zsh:
     ~/.zshrc:
     ~/.imwheelrc:
@@ -56,6 +57,8 @@
     value: /bin/bash
   - key: RANDOM_DELAY
     value: 10
+  - time: 0 6 * * *
+    command: 'mkdir -p ${HOME}/.cron-local && /usr/bin/env > ${HOME}/.cron-local/cron-env'
   - time: 30 * * * *
     command: '/bin/bash ${HOME}/.cron/hourly.bash'
   - time: 0 6 * * *

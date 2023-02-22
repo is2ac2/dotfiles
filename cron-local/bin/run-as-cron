@@ -1,0 +1,12 @@
+#!/bin/sh
+
+fpath=${HOME}/.cron-local/cron-env
+
+if [ ! -f ${fpath} ]; then
+    echo "${fpath} doesn't exist yet; wait for Cron job to run"
+    exit 1
+fi
+
+# Runs the command as the Cron user.
+/usr/bin/env -i $(cat ${fpath}) "$@"
+

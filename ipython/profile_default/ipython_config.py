@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 c.InteractiveShellApp.exec_PYTHONSTARTUP = False
 c.TerminalIPythonApp.display_banner = False

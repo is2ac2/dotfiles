@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """Script which creates a new VSCode workspace from a given directory.
 
 The new workspace is stored under `~/.code-workspaces` and is named after
@@ -62,10 +62,6 @@ def main():
     if (ruff_path := shutil.which("ruff")) is not None:
         settings["ruff.path"] = [ruff_path]
 
-    # Adds NVCC path if available.
-    if (nvcc_path := shutil.which("nvcc")) is not None:
-        settings["cmake.configureSettings"]["CMAKE_CUDA_COMPILER"] = str(Path(nvcc_path).resolve())
-
     # Adds cmake-format path if available.
     if (cmake_format_path := shutil.which("cmake-format")) is not None:
         settings["cmakeFormat.exePath"] = cmake_format_path
@@ -74,18 +70,29 @@ def main():
     if (clang_format_path := shutil.which("clang-format")) is not None:
         settings["clang-format.executable"] = clang_format_path
 
+    cmake_configure_settings = {}
+    cmake_environment = {}
+    cmake_prefix_paths = []
+
     if "CONDA_PREFIX" in os.environ:
-        conda_prefix = Path(os.environ["CONDA_PREFIX"])
+        conda_prefix = Path(os.environ["CONDA_PREFIX"]).resolve()
+
+        # Adds conda prefix to environment.
+        cmake_environment["CONDA_PREFIX"] = str(conda_prefix)
 
         # Adds Python interpretter if currently inside a Conda environment.
         settings["python.defaultInterpreterPath"] = str(conda_prefix / "bin" / "python")
+
+        # Adds Python exeuctable path.
+        cmake_configure_settings["PYTHON_EXECUTABLE"] = str(conda_prefix / "bin" / "python")
 
     # Adds CMake path, if CMake is installed.
     if (cmake_path := shutil.which("cmake")) is not None and cmake_path.startswith(str(conda_prefix)):
         settings["cmake.cmakePath"] = cmake_path
 
-    cmake_configure_settings = {}
-    cmake_prefix_paths = []
+    # Adds NVCC path if available.
+    if (nvcc_path := shutil.which("nvcc")) is not None:
+        cmake_configure_settings["CMAKE_CUDA_COMPILER"] = str(Path(nvcc_path).resolve())
 
     # Gets PyTorch settings.
     try:
@@ -101,7 +108,7 @@ def main():
             pass
 
     except ModuleNotFoundError:
-        pass
+        print("PyTorch not found, skipping")
 
     # Gets Pybind11 settings.
     try:
@@ -109,13 +116,16 @@ def main():
 
         cmake_prefix_paths += [pybind11.get_cmake_dir()]
     except ModuleNotFoundError:
-        pass
+        print("Pybind11 not found, skipping")
 
     if cmake_prefix_paths:
         cmake_configure_settings["CMAKE_PREFIX_PATH"] = cmake_prefix_paths
 
     if cmake_configure_settings:
         settings["cmake.configureSettings"] = cmake_configure_settings
+
+    if cmake_environment:
+        settings["cmake.environment"] = cmake_environment
 
     config = {
         "folders": [

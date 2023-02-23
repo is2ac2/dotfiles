@@ -11,6 +11,7 @@ import json
 import os
 import shutil
 from pathlib import Path
+from typing import Union, Dict, List
 
 
 def clean_name(dir_name: str) -> str:
@@ -36,6 +37,35 @@ def clean_name(dir_name: str) -> str:
     name = " ".join(word.capitalize() for word in name.split(" "))
 
     return name
+
+
+def recursive_merge(config: Union[Dict, List], old_config: Union[Dict, List]) -> None:
+    """Recursively merges from old config into new config.
+
+    Args:
+        config: New config.
+        old_config: Old config.
+    """
+
+    if isinstance(config, dict) and isinstance(old_config, dict):
+        for key, value in old_config.items():
+            if key in config:
+                if isinstance(value, (dict, list)):
+                    recursive_merge(config[key], value)
+                elif config[key] != value:
+                    print(f"Ignoring key {key} in old config")
+            else:
+                print(f"Adding new key {key} from old config")
+                config[key] = value
+
+    elif isinstance(config, list) and isinstance(old_config, list):
+        for value in old_config:
+            if value not in config:
+                print(f"Adding new value {value} from old config")
+                config.append(value)
+
+    else:
+        raise ValueError(f"Cannot merge {type(config)} and {type(old_config)}")
 
 
 def main():
@@ -140,6 +170,12 @@ def main():
         ],
         "settings": settings,
     }
+
+    if workspace_file.exists():
+        with open(workspace_file, "r") as f:
+            old_config = json.load(f)
+
+        recursive_merge(config, old_config)
 
     with open(workspace_file, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=2, sort_keys=True)

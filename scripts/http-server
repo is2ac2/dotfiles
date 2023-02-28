@@ -89,6 +89,11 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
             Exception: On errors when sending particular header lines
         """
 
+        # Don't cache.
+        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+        self.send_header("Pragma", "no-cache")
+        self.send_header("Expires", "0")
+
         path = self.translate_path(self.path)
         file_ptr = None
         if os.path.isdir(path):

@@ -81,7 +81,7 @@ def main():
     workspace_file = code_ws_directory / f"{directory.name}.code-workspace"
     if not args.update:
         for i in range(1, 1000):
-            if workspace_file.exists():
+            if not workspace_file.exists():
                 break
             print(f"Workspace {workspace_file} already exists, trying another name")
             workspace_file = code_ws_directory / f"{directory.name}-{i}.code-workspace"

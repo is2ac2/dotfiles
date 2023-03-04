@@ -15,8 +15,6 @@ import urllib.parse
 from http import HTTPStatus
 from typing import BinaryIO, Tuple, Union
 
-import psutil
-
 TEXT_MIMETYPES: Tuple[str, ...] = ("text/plain", "application/octet-stream")
 
 # Maximum size of text file to render.
@@ -251,17 +249,23 @@ def main() -> None:
         port = int(os.environ["HTTP_SERVER_PORT"])
 
         # Attempts to kill any pre-existing server on that port.
-        for proc in psutil.process_iter():
-            try:
-                for conn in proc.connections():
-                    if conn.laddr.port == port:
-                        print(f"Killing {proc.pid=} on {conn.laddr=}")
-                        proc.kill()
-                        proc.wait()
-                        break
+        try:
+            import psutil
 
-            except (psutil.NoSuchProcess, psutil.AccessDenied, IndexError):
-                pass
+            for proc in psutil.process_iter():
+                try:
+                    for conn in proc.connections():
+                        if conn.laddr.port == port:
+                            print(f"Killing {proc.pid=} on {conn.laddr=}")
+                            proc.kill()
+                            proc.wait()
+                            break
+
+                except (psutil.NoSuchProcess, psutil.AccessDenied, IndexError):
+                    pass
+
+        except ModuleNotFoundError:
+            print("`psutil` module is not installed; skipping")
 
     with socketserver.TCPServer((addr, port), handler) as httpd:
         httpd.allow_reuse_address = True

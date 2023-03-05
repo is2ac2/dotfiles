@@ -2,8 +2,16 @@
 # conda
 # -----
 
-alias cn-env='conda activate'
-alias cn-rm='conda remove --all --name'
+cn-env() {
+    load-conda
+    conda activate $@
+}
+
+cn-rm() {
+    load-conda
+    conda remove --all --name $@
+}
+
 _conda_complete() {
     local cur opts
     COMPREPLY=()
@@ -12,6 +20,7 @@ _conda_complete() {
     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
     return 0
 }
+
 if [[ -f ~/.conda/environments.txt ]]; then
     complete -F _conda_complete 'cn-env'
     complete -F _conda_complete 'cn-rm'

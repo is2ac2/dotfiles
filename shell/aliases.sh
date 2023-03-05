@@ -557,7 +557,7 @@ aptu() {
     apt autoremove
 }
 
-# NVM stuff.
+# NVM
 export NVM_DIR="$HOME/.nvm"
 load-nvm() {
     unalias nvm 2> /dev/null
@@ -565,6 +565,25 @@ load-nvm() {
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 }
 alias nvm='echo "NVM is not loaded at startup by default; run \"load-nvm\" to load"'
+
+# Ruby
+export DEFAULT_RUBY_VERSION=3.1.2
+load-ruby() {
+    unalias ruby 2> /dev/null
+    # Loads chruby.
+    if [ -f /opt/homebrew/opt/chruby/share/chruby/chruby.sh ]; then
+        source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
+        source /opt/homebrew/opt/chruby/share/chruby/auto.sh
+    elif [ -f /usr/local/share/chruby/chruby.sh ]; then
+        source /usr/local/share/chruby/chruby.sh
+        source /usr/local/share/chruby/auto.sh
+    fi
+    chruby ruby-3.1.2
+}
+alias ruby='echo "Ruby is not loaded at startup by default; run \"load-ruby\" to load"'
+
+# Conda
+export CONDA_DIR="${HOME}/.miniconda3"
 
 # History search
 alias hgr='history | grep'

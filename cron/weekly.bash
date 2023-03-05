@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Sources bashrc to make sure Python is set correctly.
-source ${HOME}/.shell/aliases.sh
+source ${HOME}/.bashrc
 
 # Cleans up old folders.
 ${HOME}/.cron/cleanup.bash

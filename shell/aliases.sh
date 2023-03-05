@@ -97,8 +97,6 @@ case $OSTYPE in
         ;;
 esac
 
-mkdir -p $SLURM_LOG_DIR $LOG_DIR $EVAL_DIR $DATA_DIR $DATA_CACHE_DIR $MODEL_DIR $STAGE_DIR
-
 # Some extra bit that seems to be necessary for VSCode.
 if [ -d /etc/profile.d ]; then
     for i in /etc/profile.d/*.sh; do
@@ -561,8 +559,12 @@ aptu() {
 
 # NVM stuff.
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+load-nvm() {
+    unalias nvm 2> /dev/null
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+}
+alias nvm='echo "NVM is not loaded at startup by default; run \"load-nvm\" to load"'
 
 # History search
 alias hgr='history | grep'
@@ -579,7 +581,7 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0  ] && echo terminal || ech
 
 export TMP_SCRIPT_ROOT=$HOME/.tmp-scripts/
 
-mkdir -p $TMP_SCRIPT_ROOT
+(mkdir -p $TMP_SCRIPT_ROOT $SLURM_LOG_DIR $LOG_DIR $EVAL_DIR $DATA_DIR $DATA_CACHE_DIR $MODEL_DIR $STAGE_DIR &)
 
 _print_available_scripts() {
     find $TMP_SCRIPT_ROOT -type f | cut -c${#TMP_SCRIPT_ROOT}- | sed 's:/*::'

@@ -569,8 +569,10 @@ alias nvm='echo "NVM is not loaded at startup by default; run \"load-nvm\" to lo
 # Ruby
 load-ruby() {
     unalias ruby 2> /dev/null
+    unalias bundle 2> /dev/null
+    unalias gem 2> /dev/null
 
-    # Loads chruby
+    # Loads chruby.
     if [ -f /opt/homebrew/opt/chruby/share/chruby/chruby.sh ]; then
         source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
         source /opt/homebrew/opt/chruby/share/chruby/auto.sh
@@ -589,6 +591,8 @@ load-ruby() {
     fi
 }
 alias ruby='echo "Ruby is not loaded at startup by default; run \"load-ruby\" to load"'
+alias bundle='echo "Ruby is not loaded at startup by default; run \"load-ruby\" to load"'
+alias gem='echo "Ruby is not loaded at startup by default; run \"load-ruby\" to load"'
 
 # Conda
 export CONDA_DIR="${HOME}/.miniconda3"

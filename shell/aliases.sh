@@ -567,10 +567,10 @@ load-nvm() {
 alias nvm='echo "NVM is not loaded at startup by default; run \"load-nvm\" to load"'
 
 # Ruby
-export DEFAULT_RUBY_VERSION=3.1.2
 load-ruby() {
     unalias ruby 2> /dev/null
-    # Loads chruby.
+
+    # Loads chruby
     if [ -f /opt/homebrew/opt/chruby/share/chruby/chruby.sh ]; then
         source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
         source /opt/homebrew/opt/chruby/share/chruby/auto.sh
@@ -578,7 +578,15 @@ load-ruby() {
         source /usr/local/share/chruby/chruby.sh
         source /usr/local/share/chruby/auto.sh
     fi
-    chruby ruby-3.1.2
+
+    # Gets the latest versoin in ~/.rubies
+    local latest_ruby
+    latest_ruby=$(\ls -1 ${HOME}/.rubies | tail -1)
+    if [ -n "$latest_ruby" ]; then
+        chruby $latest_ruby
+    else
+        echo "No rubies found in ${HOME}/.rubies"
+    fi
 }
 alias ruby='echo "Ruby is not loaded at startup by default; run \"load-ruby\" to load"'
 

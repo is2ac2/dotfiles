@@ -31,10 +31,13 @@
     ~/.bash:
     ~/.bashrc:
     ~/.bash_profile:
+    ~/.profile:
     ~/.cron:
     ~/.cron-local/bin: cron-local/bin
     ~/.zsh:
     ~/.zshrc:
+    ~/.zlogin:
+    ~/.curlrc:
     ~/.imwheelrc:
     ~/.inputrc:
     ~/.Xmodmap:

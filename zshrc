@@ -14,7 +14,7 @@ fi
 
 export ZSH="${HOME}/.oh-my-zsh"
 
-ZSH_THEME="murilasso"
+ZSH_THEME="amuse"
 
 export CASE_SENSITIVE=true
 export DISABLE_UPDATE_PROMPT=true
@@ -54,4 +54,3 @@ if [ -f ~/.zshrc_local_after ]; then
 fi
 
 source ~/.shell/path.sh
-

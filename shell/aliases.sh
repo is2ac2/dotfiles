@@ -568,31 +568,56 @@ alias nvm='echo "NVM is not loaded at startup by default; run \"load-nvm\" to lo
 
 # Ruby
 load-ruby() {
+    unalias rvm 2> /dev/null
+    unalias chruby 2> /dev/null
     unalias ruby 2> /dev/null
     unalias bundle 2> /dev/null
     unalias gem 2> /dev/null
 
+    # Loads RVM.
+    pathadd PATH ${HOME}/.rvm/bin > /dev/null
+    if [ -f $HOME/.rvm/scripts/rvm ]; then
+        source $HOME/.rvm/scripts/rvm
+        return 0
+    fi
+
     # Loads chruby.
+    local found_chruby=0
     if [ -f /opt/homebrew/opt/chruby/share/chruby/chruby.sh ]; then
         source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
         source /opt/homebrew/opt/chruby/share/chruby/auto.sh
+        found_chruby=1
     elif [ -f /usr/local/share/chruby/chruby.sh ]; then
         source /usr/local/share/chruby/chruby.sh
         source /usr/local/share/chruby/auto.sh
+        found_chruby=1
     fi
 
-    # Gets the latest versoin in ~/.rubies
-    local latest_ruby
-    latest_ruby=$(\ls -1 ${HOME}/.rubies | tail -1)
-    if [ -n "$latest_ruby" ]; then
-        chruby $latest_ruby
-    else
-        echo "No rubies found in ${HOME}/.rubies"
+    # Gets the latest version in ~/.rubies
+    if [ $found_chruby -eq 1 ]; then
+        local latest_ruby=$(\ls -1 ${HOME}/.rubies | tail -1)
+        if [ -n "$latest_ruby" ]; then
+            chruby $latest_ruby
+            return 0
+        else
+            echo "No rubies found in ${HOME}/.rubies"
+        fi
     fi
 }
+alias rvm='echo "Ruby is not laoded at startup by default; run \"load-ruby\" to load"'
+alias chruby='echo "Ruby is not laoded at startup by default; run \"load-ruby\" to load"'
 alias ruby='echo "Ruby is not loaded at startup by default; run \"load-ruby\" to load"'
 alias bundle='echo "Ruby is not loaded at startup by default; run \"load-ruby\" to load"'
 alias gem='echo "Ruby is not loaded at startup by default; run \"load-ruby\" to load"'
+
+# Homebrew
+load-brew() {
+    unalias brew 2> /dev/null
+
+    pathadd PATH /opt/homebrew/bin > /dev/null
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+}
+alias brew='echo "Homebrew is not loaded at startup by default; run \"load-brew\" to load"'
 
 # Conda
 export CONDA_DIR="${HOME}/.miniconda3"
@@ -958,7 +983,11 @@ pathadd() {
     local prev_val="$(env-val $var):"
     if [[ -d "${new_path}" ]]; then
         if [[ ":${prev_val}:" != *":${new_path}:"* ]]; then
-            export ${var}=${new_path}:${prev_val}
+            if [[ $# -eq 3 ]] && [[ $3 == "append" ]]; then
+                export ${var}=${prev_val}:${new_path}
+            else
+                export ${var}=${new_path}:${prev_val}
+            fi
         fi
     else
         echo "Missing: ${new_path}"

@@ -18,8 +18,9 @@ function conda_prompt_info {
 }
 
 function hostname_prompt_info {
-    local hostname_str=$(hostname)
-    echo " %{$fg[cyan]%}<${hostname_str}>%{$reset_color%}"
+    if [[ -n "$HOST" ]]; then
+        echo " 🖥  %{$fg[cyan]%}${HOST}%{$reset_color%}"
+    fi
 }
 
 export PROMPT='

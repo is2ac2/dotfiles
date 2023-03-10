@@ -23,8 +23,7 @@ function hostname_prompt_info {
     fi
 }
 
-export PROMPT='
-%{$fg_bold[green]%}%~%{$reset_color%}$(git_prompt_info)$(virtualenv_prompt_info)$(conda_prompt_info) ⌚ %{$fg_bold[red]%}%*%{$reset_color%}$(hostname_prompt_info)
+export PROMPT='%{$fg_bold[green]%}%~%{$reset_color%}$(git_prompt_info)$(virtualenv_prompt_info)$(conda_prompt_info) ⌚ %{$fg_bold[red]%}%*%{$reset_color%}$(hostname_prompt_info)
 $ '
 
 export RPROMPT='$(ruby_prompt_info)'

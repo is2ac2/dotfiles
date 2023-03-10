@@ -22,3 +22,4 @@ pull-dotfiles() {
     cd ${old_dir}
 }
 
+(pull-dotfiles &)

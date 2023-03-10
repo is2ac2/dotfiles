@@ -8,22 +8,6 @@ if [ -z "$PS1" ]; then
     return
 fi
 
-# ---------
-# oh-my-zsh
-# ---------
-
-export ZSH="${HOME}/.oh-my-zsh"
-
-ZSH_THEME="amuse"
-
-export CASE_SENSITIVE=true
-export DISABLE_UPDATE_PROMPT=true
-export ZSH_DISABLE_COMPFIX=true
-
-plugins=(git)
-
-source $ZSH/oh-my-zsh.sh
-
 # -----------
 # Main config
 # -----------
@@ -44,6 +28,7 @@ source ~/.zsh/aliases.zsh
 source ~/.zsh/settings.zsh
 source ~/.zsh/autocomplete.zsh
 source ~/.zsh/plugins_after.zsh
+source ~/.zsh/prompt.zsh
 
 if [ -f ~/.shell_local_after ]; then
     source ~/.shell_local_after

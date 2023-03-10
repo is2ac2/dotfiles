@@ -17,7 +17,7 @@ pull-dotfiles() {
     if [[ $(git status --porcelain) ]]; then
         warn-big-text 'Uncommitted Dotfile changes'
     else
-        git pull > /dev/null
+        git sync > /dev/null 2> /dev/null
     fi
     cd ${old_dir}
 }

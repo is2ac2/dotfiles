@@ -12,9 +12,11 @@ export ZSH_THEME_RUBY_PROMPT_PREFIX="%{$fg_bold[red]%}‹"
 export ZSH_THEME_RUBY_PROMPT_SUFFIX="›%{$reset_color%}"
 
 function conda_prompt_info {
-    case $CONDA_PREFIX in *"$CONDA_DEFAULT_ENV")
-        echo " %{$fg[green]%}‹${CONDA_DEFAULT_ENV}›%{$reset_color%}"
-    esac
+    if [[ -n $CONDA_DEFAULT_ENV ]]; then
+        case $CONDA_PREFIX in *"$CONDA_DEFAULT_ENV")
+            echo " %{$fg[green]%}‹${CONDA_DEFAULT_ENV}›%{$reset_color%}"
+        esac
+    fi
 }
 
 function hostname_prompt_info {

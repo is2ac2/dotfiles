@@ -28,7 +28,7 @@ source ~/.zsh/aliases.zsh
 source ~/.zsh/settings.zsh
 source ~/.zsh/autocomplete.zsh
 source ~/.zsh/plugins_after.zsh
-source ~/.zsh/prompt.zsh
+source ~/.zsh/command_line.zsh
 
 if [ -f ~/.shell_local_after ]; then
     source ~/.shell_local_after

@@ -568,17 +568,22 @@ alias nvm='echo "NVM is not loaded at startup by default; run \"load-nvm\" to lo
 
 # Ruby
 load-ruby() {
+    unalias rbenv 2> /dev/null
     unalias rvm 2> /dev/null
     unalias chruby 2> /dev/null
     unalias ruby 2> /dev/null
     unalias bundle 2> /dev/null
     unalias gem 2> /dev/null
 
+    # Loads rbenv.
+    if command -v rbenv &> /dev/null ; then
+        eval "$(rbenv init - zsh)"
+    fi
+
     # Loads RVM.
     pathadd PATH ${HOME}/.rvm/bin > /dev/null
     if [ -f $HOME/.rvm/scripts/rvm ]; then
         source $HOME/.rvm/scripts/rvm
-        return 0
     fi
 
     # Loads chruby.
@@ -598,12 +603,12 @@ load-ruby() {
         local latest_ruby=$(\ls -1 ${HOME}/.rubies | tail -1)
         if [ -n "$latest_ruby" ]; then
             chruby $latest_ruby
-            return 0
         else
             echo "No rubies found in ${HOME}/.rubies"
         fi
     fi
 }
+alias rbenv='echo "Ruby is not laoded at startup by default; run \"load-ruby\" to load"'
 alias rvm='echo "Ruby is not laoded at startup by default; run \"load-ruby\" to load"'
 alias chruby='echo "Ruby is not laoded at startup by default; run \"load-ruby\" to load"'
 alias ruby='echo "Ruby is not loaded at startup by default; run \"load-ruby\" to load"'

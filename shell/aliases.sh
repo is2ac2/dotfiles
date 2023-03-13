@@ -55,17 +55,6 @@ case $OSTYPE in
         export STAGE_DIR=${HOME}/Experiments/Stage
         export RUN_DIR=${LOG_DIR}/today
         export EVAL_RUN_DIR=${EVAL_DIR}/today
-
-        ddate() {
-            if [[ $# -lt 1 ]]; then
-                echo "Usage: ddate <num-dates-past> (other-args)"
-                return 1
-            fi
-            local delta=$1
-            shift
-            date -v-${delta}d $@
-            return 0
-        }
         ;;
     "linux-gnu"*)
         alias ls='ls --color=always'
@@ -79,23 +68,23 @@ case $OSTYPE in
         export STAGE_DIR=${HOME}/Experiments/Stage
         export RUN_DIR=${LOG_DIR}/today
         export EVAL_RUN_DIR=${EVAL_DIR}/today
-
-        ddate() {
-            if [[ $# -lt 1 ]]; then
-                echo "Usage: ddate <num-dates-past> (other-args)"
-                return 1
-            fi
-            local delta=$1
-            shift
-            date --date "${delta} days ago" $@
-            return 0
-        }
         ;;
     *)
         echo "OS type not supported: '$OSTYPE'"
         return
         ;;
 esac
+
+ddate() {
+    if [[ $# -lt 1 ]]; then
+        echo "Usage: ddate <num-dates-past> (other-args)"
+        return 1
+    fi
+    local delta=$1
+    shift
+    date --date "${delta} days ago" $@
+    return 0
+}
 
 # Some extra bit that seems to be necessary for VSCode.
 if [ -d /etc/profile.d ]; then

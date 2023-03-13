@@ -55,6 +55,8 @@ case $OSTYPE in
         export STAGE_DIR=${HOME}/Experiments/Stage
         export RUN_DIR=${LOG_DIR}/today
         export EVAL_RUN_DIR=${EVAL_DIR}/today
+
+        alias date='gdate'
         ;;
     "linux-gnu"*)
         alias ls='ls --color=always'

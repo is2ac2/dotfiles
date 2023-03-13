@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Sources bashrc to make sure Python is set correctly.
-source ${HOME}/.bashrc
+# For `get-storage`
+source ${HOME}/.shell/aliases.sh
 
 # Updates old dates.
 ${HOME}/.cron/manage_date_folders.bash

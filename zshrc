@@ -24,11 +24,11 @@ source ~/.zsh/plugins_before.zsh
 source ~/.shell/update.sh
 source ~/.shell/info.sh
 source ~/.shell/aliases.sh
+source ~/.zsh/command_line.zsh
 source ~/.zsh/aliases.zsh
 source ~/.zsh/settings.zsh
 source ~/.zsh/autocomplete.zsh
 source ~/.zsh/plugins_after.zsh
-source ~/.zsh/command_line.zsh
 
 if [ -f ~/.shell_local_after ]; then
     source ~/.shell_local_after

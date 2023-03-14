@@ -1,13 +1,20 @@
 #!/bin/bash
 
-warn-big-text() {
+warn-with-red-background() {
     if [[ $# -ne 1 ]]; then
         echo "Usage: warn-big-text <text>"
     else
         local text="WARNING: $1"; shift
-        printf '%*s\n' "${#text}" '' | tr ' ' '!'
-        printf "${RED}${text}${NC}\n"
-        printf '%*s\n' "${#text}" '' | tr ' ' '!'
+
+        # Red text.
+        # local red='\033[0;31m'
+        # local nc='\033[0m'
+        # echo -e "${red}${text}${nc}"
+
+        # Red background.
+        local red='\033[41m'
+        local nc='\033[0m'
+        echo -e "${red}${text}${nc}"
     fi
 }
 
@@ -15,7 +22,7 @@ pull-dotfiles() {
     local old_dir=$(pwd)
     cd ${HOME}/.dotfiles
     if [[ $(git status --porcelain) ]]; then
-        warn-big-text 'Uncommitted Dotfile changes'
+        warn-with-red-background 'Uncommitted Dotfile changes'
     else
         git sync > /dev/null 2> /dev/null
     fi

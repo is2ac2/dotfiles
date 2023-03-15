@@ -31,6 +31,8 @@ scancelme() {
 # -----
 
 load-conda() {
+    unalias conda 2> /dev/null
+
     # >>> conda initialize >>>
     __conda_setup="$('${CONDA_DIR}/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
     if [ $? -eq 0 ]; then
@@ -45,3 +47,5 @@ load-conda() {
     unset __conda_setup
     # <<< conda initialize <<<
 }
+
+alias conda='load-conda && \conda'

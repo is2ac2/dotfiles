@@ -555,7 +555,8 @@ load-nvm() {
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 }
-alias nvm='echo "NVM is not loaded at startup by default; run \"load-nvm\" to load"'
+
+alias nvm='load-nvm && \nvm'
 
 # Ruby
 load-ruby() {
@@ -599,12 +600,13 @@ load-ruby() {
         fi
     fi
 }
-alias rbenv='echo "Ruby is not laoded at startup by default; run \"load-ruby\" to load"'
-alias rvm='echo "Ruby is not laoded at startup by default; run \"load-ruby\" to load"'
-alias chruby='echo "Ruby is not laoded at startup by default; run \"load-ruby\" to load"'
-alias ruby='echo "Ruby is not loaded at startup by default; run \"load-ruby\" to load"'
-alias bundle='echo "Ruby is not loaded at startup by default; run \"load-ruby\" to load"'
-alias gem='echo "Ruby is not loaded at startup by default; run \"load-ruby\" to load"'
+
+alias rbenv='load-ruby && \rbenv'
+alias rvm='load-ruby && \rvm'
+alias chruby='load-ruby && \chruby'
+alias ruby='load-ruby && \ruby'
+alias bundle='load-ruby && \bundle'
+alias gem='load-ruby && \gem'
 
 # Homebrew
 load-brew() {
@@ -613,7 +615,8 @@ load-brew() {
     pathadd PATH /opt/homebrew/bin > /dev/null
     eval "$(/opt/homebrew/bin/brew shellenv)"
 }
-alias brew='echo "Homebrew is not loaded at startup by default; run \"load-brew\" to load"'
+
+alias brew='load-brew && \brew'
 
 # Conda
 export CONDA_DIR="${HOME}/.miniconda3"

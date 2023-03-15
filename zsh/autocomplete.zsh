@@ -8,11 +8,9 @@ _conda_complete() {
     compadd ${=opts}
 }
 cn-env() {
-    load-conda
     conda activate $@
 }
 cn-rm() {
-    load-conda
     conda remove --all --name $@
 }
 if [[ -f ~/.conda/environments.txt ]]; then

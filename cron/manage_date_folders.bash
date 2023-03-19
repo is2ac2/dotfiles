@@ -2,6 +2,8 @@
 
 # ddate (Delta Date) is defined in shell/aliases.sh.
 source ${HOME}/.shell/aliases.sh
+load-brew
+
 start_date=$(ddate 360 +'%Y-%m-%d')
 end_date=$(ddate 180 +'%Y-%m-%d')
 yesterday=$(ddate 1 +'%Y-%m-%d')

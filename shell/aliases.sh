@@ -567,6 +567,9 @@ load-ruby() {
     unalias bundle 2> /dev/null
     unalias gem 2> /dev/null
 
+    # Loads Homebrew.
+    load-brew
+
     # Loads rbenv.
     if command -v rbenv &> /dev/null ; then
         eval "$(rbenv init - zsh)"
@@ -609,11 +612,14 @@ alias bundle='load-ruby && \bundle'
 alias gem='load-ruby && \gem'
 
 # Homebrew
+export HOMEBREW_PREFIX=/opt/homebrew
 load-brew() {
     unalias brew 2> /dev/null
 
-    pathadd PATH /opt/homebrew/bin > /dev/null
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+    if [ -d $HOMEBREW_PREFIX ]; then
+        pathadd PATH ${HOMEBREW_PREFIX}/bin > /dev/null
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
 }
 
 alias brew='load-brew && \brew'

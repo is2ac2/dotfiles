@@ -11,7 +11,10 @@ cn-env() {
     conda activate $@
 }
 cn-rm() {
-    conda remove --all --name $@
+    if [ $CONDA_DEFAULT_ENV = $1 ]; then
+        conda deactivate
+    fi
+    conda remove --all --name $1
 }
 if [[ -f ~/.conda/environments.txt ]]; then
     compdef _conda_complete cn-env

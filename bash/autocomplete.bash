@@ -9,6 +9,9 @@ cn-env() {
 
 cn-rm() {
     load-conda
+    if [ $CONDA_DEFAULT_ENV = $1 ]; then
+        conda deactivate
+    fi
     conda remove --all --name $@
 }
 

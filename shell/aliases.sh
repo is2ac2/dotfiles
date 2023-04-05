@@ -557,6 +557,7 @@ load-nvm() {
 }
 
 alias nvm='load-nvm && \nvm'
+alias npm='load-nvm && \npm'
 
 # Ruby
 load-ruby() {

@@ -72,14 +72,14 @@ def main():
     """Create a new VSCode workspace from the current directory."""
 
     parser = argparse.ArgumentParser(description="Creates a new VSCode workspace from a given directory.")
-    parser.add_argument("-u", "--update", default=False, action="store_true", help="Update existing workspace.")
+    parser.add_argument("-n", "--no-update", default=False, action="store_true", help="Update existing workspace.")
     args = parser.parse_args()
 
     directory = Path.cwd()
     code_ws_directory = Path("~/.code-workspaces").expanduser()
     code_ws_directory.mkdir(exist_ok=True, parents=True)
     workspace_file = code_ws_directory / f"{directory.name}.code-workspace"
-    if not args.update:
+    if args.no_update:
         for i in range(1, 1000):
             if not workspace_file.exists():
                 break

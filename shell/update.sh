@@ -29,4 +29,6 @@ pull-dotfiles() {
     cd ${old_dir}
 }
 
-(pull-dotfiles &)
+if [ -t 1  ] ; then
+    (pull-dotfiles &)
+fi

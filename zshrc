@@ -21,12 +21,12 @@ if [ -f ~/.zshrc_local_before ]; then
 fi
 
 source ~/.zsh/plugins_before.zsh
-source ~/.shell/update.sh
-source ~/.shell/info.sh
-source ~/.shell/aliases.sh
 source ~/.zsh/command_line.zsh
 source ~/.zsh/aliases.zsh
 source ~/.zsh/settings.zsh
+source ~/.shell/update.sh
+source ~/.shell/info.sh
+source ~/.shell/aliases.sh
 source ~/.zsh/autocomplete.zsh
 source ~/.zsh/plugins_after.zsh
 

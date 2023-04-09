@@ -32,7 +32,15 @@ function ruby_prompt_info_impl {
     fi
 }
 
-export PROMPT='[%{$fg[yellow]%}%~%{$reset_color%}]$(git_prompt_info)$(virtualenv_prompt_info)$(conda_prompt_info)$(ruby_prompt_info_impl) ⌚ [%{$fg[red]%}%*%{$reset_color%}]$(hostname_prompt_info)
+function tmux_prompt_info {
+    if [[ -n $TMUX ]]; then
+        echo " [%{$fg_bold[red]%}$(tmux display-message -p '#S')%{$reset_color%}]"
+    elif [[ ! -n $TMUX ]] && [[ $(tmux ls 2> /dev/null) ]]; then
+        echo " [%{$fg_bold[red]%}$(tmux ls | wc -l | tr -d ' ') sessions%{$reset_color%}]"
+    fi
+}
+
+export PROMPT='[%{$fg[yellow]%}%~%{$reset_color%}]$(git_prompt_info)$(virtualenv_prompt_info)$(conda_prompt_info)$(tmux_prompt_info)$(ruby_prompt_info_impl) ⌚ [%{$fg[red]%}%*%{$reset_color%}]$(hostname_prompt_info)
 $ '
 
 export VIRTUAL_ENV_DISABLE_PROMPT=0

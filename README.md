@@ -17,14 +17,6 @@ git clone git@github.com:codekansas/dotfiles.git && cd dotfiles && ./install
 
 Here are some of the additional commands in these dotfiles, besides the housekeeping-type improvements.
 
-### dfu
-
-Update dotfiles to latest revision:
-
-```bash
-dfu
-```
-
 ### prof
 
 Profile directory (useful for finding large files):

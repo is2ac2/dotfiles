@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # For `get-storage`
-source ${HOME}/.shell/aliases.sh
+source ${HOME}/.bashrc
 
 # Updates old dates.
 ${HOME}/.cron/manage_date_folders.bash

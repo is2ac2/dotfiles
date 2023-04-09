@@ -374,21 +374,6 @@ topc() {
     return 0
 }
 
-# update dotfiles
-dfu() {
-    if [[ $# -ne 0 ]]; then
-        echo "Updates dotfiles. Usage: dfu"
-        return 1
-    fi
-
-    cd ~/.dotfiles
-    git pull --ff-only
-    ./install -q
-    cd -
-    echo "Updated dotfiles; run 'reload' to refresh environment"
-    return 0
-}
-
 # profile directory
 prof() {
     if [[ $# -ne 0 ]]; then

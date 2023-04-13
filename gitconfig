@@ -78,6 +78,7 @@
 
 [core]
     excludesfile = ~/.gitignore_global
+    attributesfile = ~/.gitattributes
 
 [pull]
     rebase = true
@@ -102,6 +103,9 @@
     smudge = git-lfs smudge -- %f
     process = git-lfs filter-process
     required = true
+
+[filter "strip-notebook-output"]
+    clean = "jupyter nbconvert --clear-output --to notebook --stdin --stdout --log-level=ERROR"
 
 [color "status"]
     branch = bold cyan

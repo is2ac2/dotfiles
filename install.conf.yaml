@@ -20,6 +20,7 @@
     ~/.vim:
     ~/.vimrc:
     ~/.vim_runtime:
+    ~/.gitattributes:
     ~/.gitconfig:
     ~/.gitignore_global:
     ~/.condarc:

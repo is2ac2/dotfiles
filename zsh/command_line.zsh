@@ -41,7 +41,7 @@ function tmux_prompt_info {
         fi
     fi
 }
-c
+
 export PROMPT='[%{$fg[yellow]%}%~%{$reset_color%}]$(git_prompt_info)$(virtualenv_prompt_info)$(conda_prompt_info)$(tmux_prompt_info)$(ruby_prompt_info_impl) ⌚ [%{$fg[red]%}%*%{$reset_color%}]$(hostname_prompt_info)
 $ '
 

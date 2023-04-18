@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/zsh
 
-# Sources bashrc to make sure Python is set correctly.
-source ${HOME}/.shell/aliases.sh
+# Gets project-specific aliases.
+source ~/.shell/aliases.sh
 
 cleanup_logfile=/tmp/${USER}_slurm_cleanup_$(date +'%Y-%m-%d').log
 
@@ -23,12 +23,6 @@ if [ -d "$LOG_DIR" ]; then
         -empty \
         -type d \
         -mtime +2 | xargs -I {} -P 8 rm -r {} 2>> $cleanup_logfile
-    find "$LOG_DIR/" \
-        -mindepth 1 \
-        -maxdepth 2 \
-        -name local.* \
-        -type d \
-        -mtime +1 | xargs -I {} -P 8 rm -r {} 2>> $cleanup_logfile
 else
     echo "Missing log directory: '$LOG_DIR'"
 fi

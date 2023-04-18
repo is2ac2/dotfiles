@@ -1,10 +1,13 @@
-#!/bin/bash
+#!/bin/zsh
 
-# Sources bashrc to make sure Python is set correctly.
-source ${HOME}/.bashrc
+# For Python
+source ~/.shell/aliases.sh
+source ~/.zsh/aliases.zsh
+
+load-brew
 
 # Cleans up old folders.
-${HOME}/.cron/cleanup.bash
+/bin/zsh ~/.cron/cleanup.zsh
 
 # Runs local cron script, if found.
 if [ -f ${HOME}/.cron-local/weekly.bash ]; then

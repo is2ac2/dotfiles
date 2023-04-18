@@ -1,7 +1,9 @@
-#!/bin/bash
+#!/bin/zsh
 
 # ddate (Delta Date) is defined in shell/aliases.sh.
-source ${HOME}/.shell/aliases.sh
+source ~/.shell/aliases.sh
+source ~/.zsh/aliases.zsh
+
 load-brew
 
 start_date=$(ddate 360 +'%Y-%m-%d')
@@ -13,7 +15,7 @@ today=$(date +"%Y-%m-%d")
 __delete_old_dates() {
     root=$1
 
-    ${HOME}/.scripts/manage_dates \
+    python3 ~/.scripts/manage_dates \
         $root \
         -s $start_date \
         -e $end_date \

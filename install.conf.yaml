@@ -58,14 +58,14 @@
 
 - crontab:
   - key: SHELL
-    value: /bin/bash
+    value: /bin/zsh
   - key: RANDOM_DELAY
     value: 10
   - time: 0 6 * * *
     command: 'mkdir -p ${HOME}/.cron-local && /usr/bin/env > ${HOME}/.cron-local/cron-env'
   - time: 30 * * * *
-    command: '/bin/bash ${HOME}/.cron/hourly.bash'
+    command: '/bin/zsh ${HOME}/.cron/hourly.zsh'
   - time: 0 6 * * *
-    command: '/bin/bash ${HOME}/.cron/daily.bash'
+    command: '/bin/zsh ${HOME}/.cron/daily.zsh'
   - time: 0 7 * * 3
-    command: '/bin/bash ${HOME}/.cron/weekly.bash'
+    command: '/bin/zsh ${HOME}/.cron/weekly.zsh'

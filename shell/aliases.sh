@@ -135,6 +135,9 @@ alias kill-stopped='kill -9 `jobs -ps`'
 # kill python jobs
 alias killall-py='killall -u ${USER} -n python'
 
+# show a warning if startup takes longer than this
+export SLOW_STARTUP_WARNING_MS=1000
+
 spartme() {
     if [[ $# -ne 1 ]]; then
         echo "Changes all existing jobs to a partition"

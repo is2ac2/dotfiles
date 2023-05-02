@@ -12,6 +12,16 @@ fi
 # Main Bash commands
 # ------------------
 
+get_time() {
+    if command -v python3 &> /dev/null; then
+        python3 -c 'import time; print(round(time.time() * 1000))'
+    else
+        echo "0"
+    fi
+}
+
+start_time=$(get_time)
+
 if [ -f ~/.shell_local_before ]; then
     source ~/.shell_local_before
 fi
@@ -38,3 +48,9 @@ if [ -f ~/.bashrc_local_after ]; then
 fi
 
 source ~/.shell/path.sh
+
+end_time=$(get_time)
+time_delta=$(($end_time - $start_time))
+if [ $time_delta -gt $SLOW_STARTUP_WARNING_MS ]; then
+    warn-with-red-background "Startup took $time_delta milliseconds"
+fi

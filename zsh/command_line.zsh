@@ -1,9 +1,7 @@
-export ZSH="${HOME}/.oh-my-zsh"
-
-source $ZSH/oh-my-zsh.sh
-
+zcomet load ohmyzsh
 zcomet load agkozak/zsh-z
 zcomet load ohmyzsh plugins/gitfast
+zcomet load ohmyzsh lib git.zsh
 
 zcomet trigger zhooks agkozak/zhooks
 zcomet trigger zsh-prompt-benchmark romkatv/zsh-prompt-benchmark
@@ -60,8 +58,6 @@ export ZSH_THEME_VIRTUALENV_SUFFIX=$ZSH_THEME_VIRTUAL_ENV_PROMPT_SUFFIX
 export CASE_SENSITIVE=true
 export DISABLE_UPDATE_PROMPT=true
 export ZSH_DISABLE_COMPFIX=true
-
-plugins=(git)
 
 zcomet load zsh-users/zsh-syntax-highlighting
 zcomet load zsh-users/zsh-autosuggestions

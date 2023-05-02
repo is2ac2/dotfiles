@@ -1,2 +1,2 @@
-*.ipynb filter=strip-notebook-output
+*.ipynb.ignored filter=strip-notebook-output
 

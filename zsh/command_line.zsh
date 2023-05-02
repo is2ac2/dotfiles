@@ -2,6 +2,12 @@ export ZSH="${HOME}/.oh-my-zsh"
 
 source $ZSH/oh-my-zsh.sh
 
+zcomet load agkozak/zsh-z
+zcomet load ohmyzsh plugins/gitfast
+
+zcomet trigger zhooks agkozak/zhooks
+zcomet trigger zsh-prompt-benchmark romkatv/zsh-prompt-benchmark
+
 export ZSH_THEME_GIT_PROMPT_PREFIX=" on [%{$fg_bold[magenta]%}"
 export ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}]"
 export ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[red]%}!"
@@ -56,3 +62,8 @@ export DISABLE_UPDATE_PROMPT=true
 export ZSH_DISABLE_COMPFIX=true
 
 plugins=(git)
+
+zcomet load zsh-users/zsh-syntax-highlighting
+zcomet load zsh-users/zsh-autosuggestions
+
+zcomet compinit

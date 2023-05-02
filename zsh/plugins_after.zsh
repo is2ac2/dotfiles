@@ -1,7 +1,3 @@
-source ~/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source ~/.zsh/plugins/conda-zsh-completion/conda-zsh-completion.plugin.zsh
-compinit
-
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
 
 if [[ "$(tput colors)" == "256" ]]; then

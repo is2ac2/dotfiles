@@ -78,3 +78,5 @@ case `uname` in
     ;;
 esac
 
+# Accept autosuggest on shift + tab
+bindkey '^[[Z' autosuggest-accept

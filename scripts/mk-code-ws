@@ -85,6 +85,9 @@ def main():
                 break
             print(f"Workspace {workspace_file} already exists, trying another name")
             workspace_file = code_ws_directory / f"{directory.name}-{i}.code-workspace"
+        is_new = True
+    else:
+        is_new = not workspace_file.exists()
 
     settings = {}
 
@@ -180,7 +183,7 @@ def main():
     with open(workspace_file, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=2, sort_keys=True)
 
-    print(f"Created workspace {workspace_file}")
+    print(f"{'Created' if is_new else 'Updated'} workspace {workspace_file}")
 
 
 if __name__ == "__main__":

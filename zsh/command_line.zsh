@@ -39,7 +39,10 @@ function ruby_prompt_info_impl {
 function tmux_prompt_info {
     if command -v tmux > /dev/null; then
         if [[ -n $TMUX ]]; then
-            echo " [%{$fg[magenta]%}$(tmux display-message -p '#S')%{$reset_color%}]"
+            local msg=$(tmux display-message -p '#S' 2> /dev/null)
+            if [[ -n $msg ]]; then
+                echo " [%{$fg[magenta]%}${msg}%{$reset_color%}]"
+            fi
         elif [[ ! -n $TMUX ]] && [[ $(tmux ls 2> /dev/null) ]]; then
             echo " [%{$fg[magenta]%}$(tmux ls | wc -l | tr -d ' ') sessions%{$reset_color%}]"
         fi

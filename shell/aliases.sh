@@ -307,6 +307,18 @@ export PYTHONSTARTUP="${HOME}/.python/startup.py"
 alias jpn='USE_JUPYTER_CONF=1 jupyter notebook'
 export JUPYTER_NOTEBOOK_PORT=${JUPYTER_NOTEBOOK_PORT:-44638}
 
+clear-jpn() {
+    local dir
+    if [[ $# -eq 0 ]]; then
+        dir=$(pwd)
+    else
+        dir=$1
+    fi
+    dir=$(realpath $dir)
+    echo "Clearing all Jupyter notebooks in ${dir}"
+    find . -type f -name "*.ipynb" -exec jupyter nbconvert --clear-output {} \;
+}
+
 # cuda
 export TORCH_CUDA_ARCH_LIST="6.0;6.1;6.2;7.0;7.5;8.0"
 

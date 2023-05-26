@@ -175,8 +175,12 @@ def main():
     }
 
     if workspace_file.exists():
-        with open(workspace_file, "r") as f:
-            old_config = json.load(f)
+        try:
+            with open(workspace_file, "r") as f:
+                old_config = json.load(f)
+
+        except json.JSONDecodeError:
+            old_config = {}
 
         recursive_merge(config, old_config)
 

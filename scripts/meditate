@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 # If not running on Mac, show error and exit.
 if [ "$(uname)" != "Darwin" ]; then
@@ -6,34 +6,73 @@ if [ "$(uname)" != "Darwin" ]; then
   exit 1
 fi
 
-# Expect exactly one argument.
-if [ $# -ne 1 ]; then
+# Expect exactly one or two argument.
+if [ $# -ne 1 ] && [ $# -ne 2 ]; then
   echo "Usage: meditate <minutes>"
   exit 1
 fi
 
-# Parse the argument as an integer.
+# Parse the first argument as integer number of minutesr.
 minutes=$1
 if ! [[ $minutes =~ ^[0-9]+$ ]]; then
   echo "Usage: meditate <minutes>"
   exit 1
 fi
 
-# URL of the bowl sound.
-url='https://github.com/codekansas/dotfiles/releases/download/0.0.1/bowl.mp3'
-
-# Downloads the URL to /tmp/bowl.mp3 if it doesn't exist.
-if [ ! -f /tmp/bowl.mp3 ]; then
-  curl -L $url -o /tmp/bowl.mp3
+# Parse the second argument as integer number of breathes per minute (default 6).
+bpm=6
+if [ $# -eq 2 ]; then
+  bpm=$2
+  if ! [[ $bpm =~ ^[0-9]+$ ]]; then
+    echo "Usage: meditate <minutes> <breaths per minute>"
+    exit 1
+  fi
 fi
 
-echo "Meditating for $minutes minutes..."
+# URL of the bowl sound.
+url='https://github.com/codekansas/dotfiles/releases/download/0.0.1/bowl.mp3'
+fpath=/tmp/bowl.mp3
 
-# Plays the file.
-afplay /tmp/bowl.mp3
+# Sounds to play after first few breaths.
+init_sound=/System/Library/Sounds/Tink.aiff
+if [ ! -f ${init_sound} ]; then
+  echo "${init_sound} not found."
+  exit 1
+fi
 
-# Sleeps for the specified number of minutes.
-sleep $(($minutes * 60))
+# Downloads the URL to ${fpath} if it doesn't exist.
+if [ ! -f ${fpath} ]; then
+  curl -L $url -o ${fpath}
+fi
+
+# Play the file.
+afplay ${fpath}
+
+# Sleeps for the specified number of seconds, showing a spinner (| / - \).
+seconds=$(($minutes * 60))
+num_breaths=$(($seconds * $bpm / 60))
+seconds_per_breath=$(echo "$seconds / $num_breaths" | bc -l)
+for ((i=0; i<$num_breaths; i++)); do
+  case $(($i % 4)) in
+    0) printf '|';;
+    1) printf '/';;
+    2) printf '-';;
+    3) printf '\\';;
+  esac
+  printf " ${i}/${num_breaths}"
+  for ((k=1; k<=4; k++)); do
+    printf " ${k}"
+    ([ $i -le 3 ] || ([ $i -le 20 ] && [ $k -eq 1 ])) && afplay ${init_sound} &
+    sleep $(($seconds_per_breath / 8))
+  done
+  printf ' |'
+  for ((k=4; k>=1; k--)); do
+    printf " ${k}"
+    ([ $i -le 3 ] || ([ $i -le 10 ] && [ $k -eq 4 ])) && afplay ${init_sound} &
+    sleep $(($seconds_per_breath / 8))
+  done
+  printf '\r                           \r'
+done
 
 # Play the file again.
-afplay /tmp/bowl.mp3
+afplay ${fpath}

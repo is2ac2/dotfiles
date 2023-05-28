@@ -62,13 +62,13 @@ for ((i=0; i<$num_breaths; i++)); do
   printf " ${i}/${num_breaths}"
   for ((k=1; k<=4; k++)); do
     printf " ${k}"
-    ([ $i -le 3 ] || ([ $i -le 20 ] && [ $k -eq 1 ])) && afplay ${init_sound} &
+    ([ $i -le 3 ] || ([ $i -le 20 ] && [ $k -eq 1 ])) && (afplay ${init_sound} &)
     sleep $(($seconds_per_breath / 8))
   done
   printf ' |'
   for ((k=4; k>=1; k--)); do
     printf " ${k}"
-    ([ $i -le 3 ] || ([ $i -le 10 ] && [ $k -eq 4 ])) && afplay ${init_sound} &
+    ([ $i -le 3 ] || ([ $i -le 10 ] && [ $k -eq 4 ])) && (afplay ${init_sound} &)
     sleep $(($seconds_per_breath / 8))
   done
   printf '\r                           \r'

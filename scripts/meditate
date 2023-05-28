@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# If not running on Mac, show error and exit.
+if [ "$(uname)" != "Darwin" ]; then
+  echo "This script only works on Mac."
+  exit 1
+fi
+
+# Expect exactly one argument.
+if [ $# -ne 1 ]; then
+  echo "Usage: meditate <minutes>"
+  exit 1
+fi
+
+# Parse the argument as an integer.
+minutes=$1
+if ! [[ $minutes =~ ^[0-9]+$ ]]; then
+  echo "Usage: meditate <minutes>"
+  exit 1
+fi
+
+# URL of the bowl sound.
+url='https://github.com/codekansas/dotfiles/releases/download/0.0.1/bowl.mp3'
+
+# Downloads the URL to /tmp/bowl.mp3 if it doesn't exist.
+if [ ! -f /tmp/bowl.mp3 ]; then
+  curl -L $url -o /tmp/bowl.mp3
+fi
+
+echo "Meditating for $minutes minutes..."
+
+# Plays the file.
+afplay /tmp/bowl.mp3
+
+# Sleeps for the specified number of minutes.
+sleep $(($minutes * 60))
+
+# Play the file again.
+afplay /tmp/bowl.mp3

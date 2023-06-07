@@ -11,7 +11,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Union, Dict, List
+from typing import Dict, List, Union
 
 
 def clean_name(dir_name: str) -> str:
@@ -78,7 +78,8 @@ def main():
     directory = Path.cwd()
     code_ws_directory = Path("~/.code-workspaces").expanduser()
     code_ws_directory.mkdir(exist_ok=True, parents=True)
-    workspace_file = code_ws_directory / f"{directory.name}.code-workspace"
+    workspace_file = (code_ws_directory / f"{directory.name}.code-workspace").resolve()
+
     if args.no_update:
         for i in range(1, 1000):
             if not workspace_file.exists():
@@ -88,6 +89,10 @@ def main():
         is_new = True
     else:
         is_new = not workspace_file.exists()
+
+    print("┌─" + "─" * len(str(workspace_file)) + "─┐")
+    print(f"│ {workspace_file} │")
+    print("└─" + "─" * len(str(workspace_file)) + "─┘")
 
     settings = {}
 

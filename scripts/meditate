@@ -31,7 +31,8 @@ fi
 
 # URL of the bowl sound.
 url='https://github.com/codekansas/dotfiles/releases/download/0.0.1/bowl.mp3'
-fpath=/tmp/bowl.mp3
+fdir=${HOME}/.cache
+fpath=${fdir}/bowl.mp3
 
 # Sounds to play after first few breaths.
 init_sound=/System/Library/Sounds/Tink.aiff
@@ -42,6 +43,7 @@ fi
 
 # Downloads the URL to ${fpath} if it doesn't exist.
 if [ ! -f ${fpath} ]; then
+  mkdir -p ${fdir}
   curl -L $url -o ${fpath}
 fi
 

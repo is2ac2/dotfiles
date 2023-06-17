@@ -627,6 +627,7 @@ alias brew='load-brew && \brew'
 
 # Conda
 export CONDA_DIR="${HOME}/.miniconda3"
+export CONDA_DEFAULT_PYTHON_VERSION=3.10
 
 # History search
 alias hgr='history | grep'
@@ -806,6 +807,21 @@ cn-vars() {
     [[ $EDIT_DEACTIVATE == 1 ]] && $EDITOR $DEACTIVATE
 
     echo "Done editing environment variables for $CONDA_PREFIX"
+}
+
+# ------------------------------
+# Create a new Conda environment
+# ------------------------------
+
+cn-new() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: cn-new <env-name>"
+        return 1
+    fi
+    local ENV_NAME=$1
+    conda create -n $ENV_NAME python=$CONDA_DEFAULT_PYTHON_VERSION
+    conda deactivate
+    conda activate $ENV_NAME
 }
 
 # ---------------

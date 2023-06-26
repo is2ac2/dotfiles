@@ -1,0 +1,38 @@
+#!/bin/zsh
+# Bump version number in a Python package.
+# This assumes the version number can be found in <package>/__init__.py with
+# the format '__version__ = "1.2.3"'. This script finds the file with the
+# version number, increments the last digit.
+
+package=$(basename $(pwd))
+echo " ↪ Bumping version for package $package"
+
+# Looks through all __init__.py files which are direct children of directories
+# in the current directory and checks if they contain a line with __version__.
+# If so, it prints the path to the file.
+init_file=$(find . -maxdepth 2 -name __init__.py -exec grep -H __version__ {} \; | cut -d: -f1)
+if [[ -z $init_file ]]; then
+    echo "!!! Could not find __init__.py with __version__ in current directory !!!"
+    exit 1
+fi
+echo " ↪ Found __init__.py with __version__ in $init_file"
+
+# Extract the version number from the file and bumps it.
+version=$(grep __version__ $init_file | cut -d\" -f2)
+echo " ↪ Current version is $version"
+major=$(echo $version | cut -d. -f1)
+minor=$(echo $version | cut -d. -f2)
+patch=$(echo $version | cut -d. -f3)
+patch=$((patch + 1))
+new_version="$major.$minor.$patch"
+echo " ↪ New version is $new_version"
+
+# Replace the version number in the file.
+tmp_file=$(mktemp)
+awk -v old="$version" -v new="$new_version" '{ sub(old, new) } 1' $init_file > $tmp_file && mv $tmp_file $init_file
+echo " ↪ Updated version number in $init_file"
+
+# Commit file with new version number.
+git add $init_file
+git commit -m "Bump version to $new_version"
+echo " ↪ Committed new version number"

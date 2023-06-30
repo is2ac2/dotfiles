@@ -12,7 +12,7 @@ if [ $# -ne 1 ] && [ $# -ne 2 ]; then
   exit 1
 fi
 
-# Parse the first argument as integer number of minutesr.
+# Parse the first argument as integer number of minutes.
 minutes=$1
 if ! [[ $minutes =~ ^[0-9]+$ ]]; then
   echo "Usage: meditate <minutes>"

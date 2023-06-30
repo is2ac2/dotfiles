@@ -58,4 +58,5 @@ for ((i=0; i<$num_intervals; i++)); do
     printf "\r%02d:%02d" $(($j / 60)) $(($j % 60))
     sleep 1
   done
+  interval_sound
 done

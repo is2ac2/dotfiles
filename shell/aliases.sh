@@ -750,6 +750,7 @@ cn-vars() {
         return 1
     fi
 
+    local CONDA_ENV_NAME=$(basename $CONDA_PREFIX)
     local ACTIVATE=$CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
     local DEACTIVATE=$CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh
     mkdir -p $(dirname $ACTIVATE) $(dirname $DEACTIVATE)
@@ -806,7 +807,10 @@ cn-vars() {
     [[ $EDIT_ACTIVATE == 1 ]] && $EDITOR $ACTIVATE
     [[ $EDIT_DEACTIVATE == 1 ]] && $EDITOR $DEACTIVATE
 
-    echo "Done editing environment variables for $CONDA_PREFIX"
+    echo "Done editing environment variables for $CONDA_PREFIX; reloading..."
+    conda deactivate
+    conda activate $CONDA_ENV_NAME
+    return 0
 }
 
 # ------------------------------

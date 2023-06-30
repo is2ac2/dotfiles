@@ -37,7 +37,8 @@ fi
 
 # Sound to play at the end of each interval.
 function interval_sound {
-  for ((j=4; j>0; j--)) do
+  local num_intervals=$1
+  for ((j=$num_intervals; j>0; j--)) do
     afplay ${sec_sound} &
     sleep 0.25
   done
@@ -46,17 +47,21 @@ function interval_sound {
 # For `num_intervals` intervals, play a sound every second for `on_seconds`
 # seconds while printing a countdown timer, then sleep for `off_seconds`
 # seconds, only showing the countdown timer.
-for ((i=0; i<$num_intervals; i++)); do
+for ((i=1; i<=$num_intervals; i++)); do
   for ((j=$on_seconds; j>0; j--)); do
-    printf "\r%02d:%02d" $(($j / 60)) $(($j % 60))
+    printf "\r%d/%d %02d:%02d" $i $num_intervals $(($j / 60)) $(($j % 60))
     afplay ${sec_sound} &
     sleep 1
   done
-  printf "\r%02d:%02d" 0 0
-  interval_sound
-  for ((j=$off_seconds; j>0; j--)); do
-    printf "\r%02d:%02d" $(($j / 60)) $(($j % 60))
-    sleep 1
-  done
-  interval_sound
+  printf "\r%d/%d %02d:%02d" $i $num_intervals 0 0
+  if [ $i -lt $num_intervals ]; then
+    interval_sound 4
+    for ((j=$off_seconds; j>0; j--)); do
+      printf "\r%d/%d %02d:%02d" $i $num_intervals $(($j / 60)) $(($j % 60))
+      sleep 1
+    done
+    interval_sound 4
+  fi
 done
+
+interval_sound 10

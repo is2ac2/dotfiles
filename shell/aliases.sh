@@ -621,6 +621,10 @@ load-brew() {
     if [ -d $HOMEBREW_PREFIX ]; then
         pathadd PATH ${HOMEBREW_PREFIX}/bin > /dev/null
         eval "$(/opt/homebrew/bin/brew shellenv)"
+
+        pathadd C_INCLUDE_PATH ${HOMEBREW_PREFIX}/include/ > /dev/null
+        pathadd CPLUS_INCLUDE_PATH ${HOMEBREW_PREFIX}/include/ > /dev/null
+        pathadd LIBRARY_PATH ${HOMEBREW_PREFIX}/lib > /dev/null
     fi
 }
 

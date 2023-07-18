@@ -307,6 +307,9 @@ export PYTHONSTARTUP="${HOME}/.python/startup.py"
 alias jpn='USE_JUPYTER_CONF=1 jupyter notebook'
 export JUPYTER_NOTEBOOK_PORT=${JUPYTER_NOTEBOOK_PORT:-44638}
 
+# scikit-learn
+export SCIKIT_LEARN_DATA=${DATA_DIR}/scikit-learn
+
 clear-jpn() {
     local dir
     if [[ $# -eq 0 ]]; then

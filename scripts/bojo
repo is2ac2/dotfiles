@@ -4,12 +4,14 @@
 import argparse
 import datetime
 import os
+import shutil
 import sqlite3
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, cast, get_args
 
-Command = Literal["add", "list", "move", "delete"]
+Command = Literal["add", "list", "move", "pull", "push", "delete"]
 CommandShorthand = Literal["a", "l", "m", "d"]
 
 State = Literal["incomplete", "complete", "migrated", "scheduled", "irrelevant", "note", "event"]
@@ -144,13 +146,19 @@ class Task:
         )
 
 
-def query_tasks(state: State | None, limit: int) -> list[Task]:
+def query_tasks(state: State | None, limit: int | None) -> list[Task]:
     db = sqlite3.connect(bojo_root() / "bojo.db")
     cursor = db.cursor()
     if state is None:
-        cursor.execute("SELECT * FROM tasks ORDER BY updated_at DESC LIMIT ?", (limit,))
+        if limit is None:
+            cursor.execute("SELECT * FROM tasks ORDER BY updated_at DESC")
+        else:
+            cursor.execute("SELECT * FROM tasks ORDER BY updated_at DESC LIMIT ?", (limit,))
     else:
-        cursor.execute("SELECT * FROM tasks WHERE state=? ORDER BY updated_at DESC LIMIT ?", (state, limit))
+        if limit is None:
+            cursor.execute("SELECT * FROM tasks WHERE state=? ORDER BY updated_at DESC", (state,))
+        else:
+            cursor.execute("SELECT * FROM tasks WHERE state=? ORDER BY updated_at DESC LIMIT ?", (state, limit))
     return [Task(*row) for row in cursor.fetchall()]
 
 
@@ -224,7 +232,6 @@ def move_subcommand(rest: list[str]) -> None:
             except AssertionError:
                 print(f"Task '{task_id_str}' is invalid; use `bojo list` to see valid tasks")
 
-
     def get_move_state() -> State:
         while True:
             state_str = input("State: ")
@@ -261,6 +268,61 @@ def delete_subcommand(rest: list[str]) -> None:
         delete_tasks(args.task_id)
 
 
+def push_pull_subcommand(push: bool, rest: list[str]) -> None:
+    parser = argparse.ArgumentParser(description="Sync bullet journal to a Github Gist")
+    parser.add_argument("gist_id", help="ID of the gist to sync to", nargs="?")
+    args = parser.parse_args(rest)
+
+    (br := bojo_root()).mkdir(parents=True, exist_ok=True)
+    if not (db_path := br / "bojo.db").exists():
+        raise RuntimeError("Database does not exist")
+
+    gist_id = args.gist_id
+    if gist_id is None:
+        gist_id = os.environ.get("BOJO_GIST_ID")
+        if gist_id is None:
+            gist_id = input("Gist ID (or set BOJO_GIST_ID env var): ")
+
+    repo_addr = f"git@gist.github.com:{gist_id}.git"
+    repo_loc = bojo_root() / "bojo-gist"
+    repo_db_path = repo_loc / "bojo.db"
+    if not repo_loc.exists():
+        print(colorize("Cloning gist", "green", bold=True))
+        subprocess.run(["git", "clone", repo_addr, repo_loc])
+    else:
+        print(colorize("Pulling gist", "green", bold=True))
+        subprocess.run(["git", "pull"], cwd=repo_loc)
+
+    if push:
+        print(colorize("Copying database to remote", "green", bold=True))
+        shutil.copyfile(db_path, repo_db_path)
+
+        print(colorize("Dumping database to markdown", "green", bold=True))
+        db = sqlite3.connect(db_path)
+        with open(repo_loc / "bojo.md", "w") as f:
+            f.write("| ID | State | Signifier | Description | Created | Updated |\n")
+            f.write("|----|-------|-----------|-------------|---------|---------|\n")
+            query = """
+                SELECT id, description, state, signifier, created_at, updated_at
+                FROM tasks
+                ORDER BY updated_at DESC
+            """
+            for row in db.execute(query):
+                task_id, description, state, signifier, created_at, updated_at = row
+                created_str = datetime.datetime.fromtimestamp(created_at).strftime("%Y-%m-%d %H:%M:%S")
+                updated_str = datetime.datetime.fromtimestamp(updated_at).strftime("%Y-%m-%d %H:%M:%S")
+                f.write(f"| {task_id} | {state} | {signifier} | {description} | {created_str} | {updated_str} |\n")
+
+        print(colorize("Pushing gist", "green", bold=True))
+        subprocess.run(["git", "add", "bojo.db", "bojo.md"], cwd=repo_loc)
+        subprocess.run(["git", "commit", "-m", "Update bullet journal"], cwd=repo_loc)
+        subprocess.run(["git", "push"], cwd=repo_loc)
+
+    else:
+        print(colorize("Copying database from remote", "green", bold=True))
+        shutil.copyfile(repo_db_path, db_path)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.strip())
     parser.add_argument("command", help="Command to run", choices=get_args(Command) + get_args(CommandShorthand))
@@ -279,6 +341,10 @@ def main() -> None:
             move_subcommand(rest)
         case "delete" | "d":
             delete_subcommand(rest)
+        case "pull":
+            push_pull_subcommand(False, rest)
+        case "push":
+            push_pull_subcommand(True, rest)
         case _:
             raise NotImplementedError(f"Command {command} not implemented")
 

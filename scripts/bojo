@@ -9,7 +9,7 @@ import sqlite3
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, cast, get_args
+from typing import Any, Literal, cast, get_args
 
 Command = Literal["add", "list", "move", "pull", "push", "delete"]
 CommandShorthand = Literal["a", "l", "m", "d"]
@@ -146,19 +146,25 @@ class Task:
         )
 
 
-def query_tasks(state: State | None, limit: int | None) -> list[Task]:
+def query_tasks(state: State | None, signifier: str | None, limit: int | None) -> list[Task]:
     db = sqlite3.connect(bojo_root() / "bojo.db")
     cursor = db.cursor()
-    if state is None:
-        if limit is None:
-            cursor.execute("SELECT * FROM tasks ORDER BY updated_at DESC")
-        else:
-            cursor.execute("SELECT * FROM tasks ORDER BY updated_at DESC LIMIT ?", (limit,))
-    else:
-        if limit is None:
-            cursor.execute("SELECT * FROM tasks WHERE state=? ORDER BY updated_at DESC", (state,))
-        else:
-            cursor.execute("SELECT * FROM tasks WHERE state=? ORDER BY updated_at DESC LIMIT ?", (state, limit))
+    clauses: list[tuple[str, Any]] = []
+    args: list[Any] = []
+    if state is not None:
+        clauses.append(("state=?", state))
+    if signifier is not None:
+        clauses.append(("signifier=?", signifier))
+    command = "SELECT * FROM tasks"
+    if clauses:
+        clauses_str = " AND ".join([f"{k}" for k, _ in clauses])
+        args += [v for _, v in clauses]
+        command += f" WHERE {clauses_str}"
+    command += " ORDER BY updated_at DESC"
+    if limit is not None:
+        command += " LIMIT ?"
+        args += [limit]
+    cursor.execute(command, tuple(args))
     return [Task(*row) for row in cursor.fetchall()]
 
 
@@ -166,6 +172,13 @@ def is_valid_task(task_id: int) -> bool:
     db = sqlite3.connect(bojo_root() / "bojo.db")
     cursor = db.cursor()
     cursor.execute("SELECT COUNT(*) FROM tasks WHERE id=?", (task_id,))
+    return bool(cursor.fetchone()[0])
+
+
+def is_valid_signifier(s: str) -> bool:
+    db = sqlite3.connect(bojo_root() / "bojo.db")
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(*) FROM tasks WHERE signifier=?", (s,))
     return bool(cursor.fetchone()[0])
 
 
@@ -202,12 +215,22 @@ def add_subcommand(rest: list[str]) -> None:
 
 def list_subcommand(rest: list[str]) -> None:
     parser = argparse.ArgumentParser(description="List tasks in the journal")
-    parser.add_argument("state", help="State of the task", nargs="?")
+    parser.add_argument("state_or_signifier", help="State or signifier of the task", nargs="?")
     parser.add_argument("-n", "--num-items", help="Number of items to show", type=int, default=10)
     args = parser.parse_args(rest)
 
-    state = None if args.state is None else get_state(args.state)
-    tasks = query_tasks(state, args.num_items)
+    def get_state_or_signifier(s: str) -> tuple[State | None, str | None]:
+        try:
+            return get_state(s), None
+        except ValueError as e:
+            if is_valid_signifier(s):
+                return None, s
+            else:
+                raise ValueError(f"Invalid state or signifier: {s}") from e
+
+    state_or_signifier = args.state_or_signifier
+    state, signifier = (None, None) if state_or_signifier is None else get_state_or_signifier(state_or_signifier)
+    tasks = query_tasks(state, signifier, args.num_items)
 
     for task in tasks:
         print(f" ↪ {task}")

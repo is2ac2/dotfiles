@@ -66,6 +66,8 @@ def get_state(s: str) -> State:
         return SHORTHAND_TO_STATE[cast(StateShorthand, s)]
     if s in get_args(State):
         return cast(State, s)
+    if not s:
+        return "incomplete"
     raise ValueError(f"Invalid state {s}")
 
 
@@ -174,8 +176,8 @@ def add_subcommand(rest: list[str]) -> None:
     args = parser.parse_args(rest)
 
     description = input("Description: ") if args.description is None else args.description
-    state = get_state(input("State: ") if args.state is None else args.state)
-    signifier = input("Signifier: ") if args.signifier is None else args.signifier
+    state = get_state(input("State [x]: ") if args.state is None else args.state)
+    signifier = input("Signifier ['']: ") if args.signifier is None else args.signifier
 
     add_task(description, state, signifier)
 

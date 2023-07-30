@@ -214,15 +214,17 @@ def delete_subcommand(rest: list[str]) -> None:
 
     if not args.task_id:
         while True:
-            confirm = input("Are you sure you want to delete all tasks? [y/n] ")
+            confirm = input("Are you sure you want to delete all tasks? [y/N] ").lower()
             if confirm == "y":
                 break
-            elif confirm == "n":
+            elif confirm in ("n", ""):
                 return
             else:
                 print("Invalid input")
+        print(colorize("Deleting all tasks", "red", bold=True))
         delete_tasks(None)
     else:
+        print(colorize("Aborting", "red", bold=True))
         delete_tasks(args.task_id)
 
 

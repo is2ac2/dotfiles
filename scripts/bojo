@@ -1,0 +1,250 @@
+#!/usr/bin/env python
+"""Command-line bullet journal tool."""
+
+import argparse
+import datetime
+import os
+import sqlite3
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Literal, cast, get_args
+
+Command = Literal["add", "list", "move", "delete"]
+CommandShorthand = Literal["a", "l", "m", "d"]
+
+State = Literal["incomplete", "complete", "migrated", "scheduled", "irrelevant", "note", "event"]
+StateShorthand = Literal["x", "c", "o", ">", "m", "s", "<", "i", "-", "n", "+", "e", "*"]
+
+SHORTHAND_TO_STATE: dict[StateShorthand, State] = {
+    "x": "incomplete",
+    "c": "complete",
+    "o": "complete",
+    ">": "migrated",
+    "m": "migrated",
+    "<": "scheduled",
+    "s": "scheduled",
+    "i": "irrelevant",
+    "-": "irrelevant",
+    "n": "note",
+    "+": "note",
+    "e": "event",
+    "*": "event",
+}
+
+STATE_TO_SHORTHAND = {v: k for k, v in SHORTHAND_TO_STATE.items()}
+
+RESET_SEQ = "\033[0m"
+REG_COLOR_SEQ = "\033[%dm"
+BOLD_COLOR_SEQ = "\033[1;%dm"
+BOLD_SEQ = "\033[1m"
+
+Color = Literal["red", "green", "yellow", "blue", "magenta", "cyan", "white"]
+
+COLOR_ID: dict[Color, int] = {
+    "red": 31,
+    "green": 32,
+    "yellow": 33,
+    "blue": 34,
+    "magenta": 35,
+    "cyan": 36,
+    "white": 37,
+}
+
+STATE_TO_COLOR: dict[State, Color] = {
+    "incomplete": "red",
+    "complete": "green",
+    "migrated": "yellow",
+    "scheduled": "blue",
+    "irrelevant": "magenta",
+    "note": "cyan",
+    "event": "white",
+}
+
+
+def get_state(s: str) -> State:
+    if s in SHORTHAND_TO_STATE:
+        return SHORTHAND_TO_STATE[cast(StateShorthand, s)]
+    if s in get_args(State):
+        return cast(State, s)
+    raise ValueError(f"Invalid state {s}")
+
+
+def get_colorize_parts(color: Color, bold: bool = False) -> tuple[str, str]:
+    if bold:
+        return BOLD_COLOR_SEQ % COLOR_ID[color], RESET_SEQ
+    return REG_COLOR_SEQ % COLOR_ID[color], RESET_SEQ
+
+
+def colorize(s: str, color: Color, bold: bool = False) -> str:
+    start, end = get_colorize_parts(color, bold=bold)
+    return start + s + end
+
+
+def bojo_root() -> Path:
+    return Path(os.environ.get("BOJO_ROOT", "~/.bojo")).expanduser().resolve()
+
+
+def create_db() -> None:
+    (br := bojo_root()).mkdir(parents=True, exist_ok=True)
+    db = sqlite3.connect(br / "bojo.db")
+    db.execute(
+        """
+        CREATE TABLE IF NOT EXISTS tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            description TEXT NOT NULL,
+            state INTEGER NOT NULL,
+            signifier TEXT NOT NULL,
+            created_at INTEGER DEFAULT (strftime('%s', 'now')),
+            updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+        )
+        """
+    )
+    db.commit()
+
+
+def add_task(description: str, state: State, signifier: str) -> None:
+    db = sqlite3.connect(bojo_root() / "bojo.db")
+    db.execute(
+        "INSERT INTO tasks (description, state, signifier) VALUES (?, ?, ?)",
+        (description, state, signifier),
+    )
+    db.commit()
+
+
+@dataclass
+class Task:
+    task_id: int
+    description: str
+    state: State
+    signifier: str
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+    def __post_init__(self) -> None:
+        if isinstance(self.created_at, int):
+            self.created_at = datetime.datetime.fromtimestamp(self.created_at)
+        if isinstance(self.updated_at, int):
+            self.updated_at = datetime.datetime.fromtimestamp(self.updated_at)
+
+    def __repr__(self) -> str:
+        return " ".join(
+            [
+                colorize(str(self.task_id), "green", bold=True),
+                colorize(self.signifier, "cyan", bold=False),
+                colorize(STATE_TO_SHORTHAND[self.state], STATE_TO_COLOR[self.state], bold=True),
+                f"[ {colorize(self.description, 'white', bold=False)} ]",
+                colorize(self.created_at.strftime("%Y-%m-%d"), "yellow", bold=False),
+                colorize(self.updated_at.strftime("%Y-%m-%d"), "red", bold=False),
+            ]
+        )
+
+
+def query_tasks(state: State | None, limit: int) -> list[Task]:
+    db = sqlite3.connect(bojo_root() / "bojo.db")
+    cursor = db.cursor()
+    if state is None:
+        cursor.execute("SELECT * FROM tasks ORDER BY updated_at DESC LIMIT ?", (limit,))
+    else:
+        cursor.execute("SELECT * FROM tasks WHERE state=? ORDER BY updated_at DESC LIMIT ?", (state, limit))
+    return [Task(*row) for row in cursor.fetchall()]
+
+
+def move_task(task_id: int, state: State) -> None:
+    db = sqlite3.connect(bojo_root() / "bojo.db")
+    db.execute("UPDATE tasks SET state=?, updated_at=strftime('%s', 'now') WHERE id=?", (state, task_id))
+    db.commit()
+
+
+def delete_tasks(tasks: list[int] | None) -> None:
+    db = sqlite3.connect(bojo_root() / "bojo.db")
+    cursor = db.cursor()
+    if tasks is None:
+        cursor.execute("DROP TABLE tasks")
+    else:
+        tasks_str = ",".join([str(t) for t in tasks])
+        cursor.execute("DELETE FROM tasks WHERE id IN (?)", (tasks_str,))
+    db.commit()
+
+
+def add_subcommand(rest: list[str]) -> None:
+    parser = argparse.ArgumentParser(description="Add a task to the journal")
+    parser.add_argument("description", help="Description of the task", nargs="?")
+    parser.add_argument("state", help="State of the task", nargs="?")
+    parser.add_argument("signifier", help="Signifier of the task", nargs="?")
+    args = parser.parse_args(rest)
+
+    description = input("Description: ") if args.description is None else args.description
+    state = get_state(input("State: ") if args.state is None else args.state)
+    signifier = input("Signifier: ") if args.signifier is None else args.signifier
+
+    add_task(description, state, signifier)
+
+
+def list_subcommand(rest: list[str]) -> None:
+    parser = argparse.ArgumentParser(description="List tasks in the journal")
+    parser.add_argument("state", help="State of the task", nargs="?")
+    parser.add_argument("-n", "--num-items", help="Number of items to show", type=int, default=10)
+    args = parser.parse_args(rest)
+
+    state = None if args.state is None else get_state(args.state)
+    tasks = query_tasks(state, args.num_items)
+
+    for task in tasks:
+        print(f" ↪ {task}")
+
+
+def move_subcommand(rest: list[str]) -> None:
+    parser = argparse.ArgumentParser(description="Move a task to a new state")
+    parser.add_argument("task_id", help="ID of the task to move", type=int, nargs="?")
+    parser.add_argument("state", help="State to move the task to", nargs="?")
+    args = parser.parse_args(rest)
+
+    task_id = int(input("Task ID: ") if args.task_id is None else args.task_id)
+    state = get_state(input("State: ") if args.state is None else args.state)
+
+    move_task(task_id, state)
+
+
+def delete_subcommand(rest: list[str]) -> None:
+    parser = argparse.ArgumentParser(description="Delete a task from the journal")
+    parser.add_argument("task_id", help="ID of the task to delete", type=int, nargs="*")
+    args = parser.parse_args(rest)
+
+    if not args.task_id:
+        while True:
+            confirm = input("Are you sure you want to delete all tasks? [y/n] ")
+            if confirm == "y":
+                break
+            elif confirm == "n":
+                return
+            else:
+                print("Invalid input")
+        delete_tasks(None)
+    else:
+        delete_tasks(args.task_id)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__.strip())
+    parser.add_argument("command", help="Command to run", choices=get_args(Command) + get_args(CommandShorthand))
+    args, rest = parser.parse_known_args()
+    command = cast(Command | CommandShorthand, args.command)
+
+    # Always create the databse.
+    create_db()
+
+    match command:
+        case "add" | "a":
+            add_subcommand(rest)
+        case "list" | "l":
+            list_subcommand(rest)
+        case "migrate" | "m":
+            move_subcommand(rest)
+        case "delete" | "d":
+            delete_subcommand(rest)
+        case _:
+            raise NotImplementedError(f"Command {command} not implemented")
+
+
+if __name__ == "__main__":
+    main()

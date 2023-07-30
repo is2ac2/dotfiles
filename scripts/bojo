@@ -218,13 +218,13 @@ def delete_subcommand(rest: list[str]) -> None:
             if confirm == "y":
                 break
             elif confirm in ("n", ""):
+                print(colorize("Aborting", "red", bold=True))
                 return
             else:
                 print("Invalid input")
         print(colorize("Deleting all tasks", "red", bold=True))
         delete_tasks(None)
     else:
-        print(colorize("Aborting", "red", bold=True))
         delete_tasks(args.task_id)
 
 

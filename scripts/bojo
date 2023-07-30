@@ -52,13 +52,17 @@ COLOR_ID: dict[Color, int] = {
 
 STATE_TO_COLOR: dict[State, Color] = {
     "incomplete": "red",
-    "complete": "green",
+    "complete": "blue",
     "migrated": "yellow",
-    "scheduled": "blue",
+    "scheduled": "green",
     "irrelevant": "magenta",
     "note": "cyan",
     "event": "white",
 }
+
+
+def get_state_choices_str() -> str:
+    return "\n".join([f" ↪ {k}: {colorize(v, STATE_TO_COLOR[v])}" for k, v in SHORTHAND_TO_STATE.items()])
 
 
 def get_state(s: str) -> State:
@@ -68,7 +72,7 @@ def get_state(s: str) -> State:
         return cast(State, s)
     if not s:
         return "incomplete"
-    raise ValueError(f"Invalid state {s}")
+    raise ValueError(f"Invalid state {s}. Choices are:\n\n{get_state_choices_str()}")
 
 
 def get_colorize_parts(color: Color, bold: bool = False) -> tuple[str, str]:
@@ -133,8 +137,7 @@ class Task:
             [
                 colorize(str(self.task_id), "green", bold=True),
                 colorize(self.signifier, "cyan", bold=False),
-                colorize(STATE_TO_SHORTHAND[self.state], STATE_TO_COLOR[self.state], bold=True),
-                f"[ {colorize(self.description, 'white', bold=False)} ]",
+                colorize(self.description, STATE_TO_COLOR[self.state], bold=True),
                 colorize(self.created_at.strftime("%Y-%m-%d"), "yellow", bold=False),
                 colorize(self.updated_at.strftime("%Y-%m-%d"), "red", bold=False),
             ]
@@ -149,6 +152,13 @@ def query_tasks(state: State | None, limit: int) -> list[Task]:
     else:
         cursor.execute("SELECT * FROM tasks WHERE state=? ORDER BY updated_at DESC LIMIT ?", (state, limit))
     return [Task(*row) for row in cursor.fetchall()]
+
+
+def is_valid_task(task_id: int) -> bool:
+    db = sqlite3.connect(bojo_root() / "bojo.db")
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(*) FROM tasks WHERE id=?", (task_id,))
+    return bool(cursor.fetchone()[0])
 
 
 def move_task(task_id: int, state: State) -> None:
@@ -201,8 +211,31 @@ def move_subcommand(rest: list[str]) -> None:
     parser.add_argument("state", help="State to move the task to", nargs="?")
     args = parser.parse_args(rest)
 
-    task_id = int(input("Task ID: ") if args.task_id is None else args.task_id)
-    state = get_state(input("State: ") if args.state is None else args.state)
+    def get_task_id() -> int:
+        while True:
+            task_id_str = input("Task ID: ")
+            try:
+                task_id = int(task_id_str)
+                assert task_id > 0
+                assert is_valid_task(task_id)
+                return task_id
+            except ValueError:
+                print(f"Invalid task ID: '{task_id_str}'")
+            except AssertionError:
+                print(f"Task '{task_id_str}' is invalid; use `bojo list` to see valid tasks")
+
+
+    def get_move_state() -> State:
+        while True:
+            state_str = input("State: ")
+            try:
+                state = get_state(state_str)
+                return state
+            except ValueError:
+                print(f"Invalid state: '{state_str}'. Valid choices are:\n\n{get_state_choices_str()}\n")
+
+    task_id = int(get_task_id() if args.task_id is None else args.task_id)
+    state = get_move_state() if args.state is None else get_state(args.state)
 
     move_task(task_id, state)
 

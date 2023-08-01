@@ -1042,3 +1042,14 @@ pathclean() {
     done <<< ${prev_val}
     export ${var}="${new_val}"
 }
+
+# ------------
+# Kill ML jobs
+# ------------
+
+killml() {
+    local tensorboard_port=9249
+    pgrep -f "tensorboard" | xargs kill -9 2> /dev/null
+    pgrep -f "runml" | xargs kill -9 2> /dev/null
+    lsof -i :${tensorboard_port} | grep LISTEN | awk '{print $2}' | xargs kill -9 2> /dev/null
+}

@@ -1049,7 +1049,23 @@ pathclean() {
 
 killml() {
     local tensorboard_port=9249
-    pgrep -f "tensorboard" | xargs kill -9 2> /dev/null
-    pgrep -f "runml" | xargs kill -9 2> /dev/null
-    lsof -i :${tensorboard_port} | grep LISTEN | awk '{print $2}' | xargs kill -9 2> /dev/null
+    local tensorboard_pid=$(lsof -i :${tensorboard_port} | grep LISTEN | awk '{print $2}')
+    if [[ -n ${tensorboard_pid} ]]; then
+        echo "Killing tensorboard port process ${tensorboard_pid}"
+        kill -9 ${tensorboard_pid} 2> /dev/null
+    fi
+
+    local tensorboard_procs=$(pgrep -f "tensorboard")
+    if [[ -n ${tensorboard_pids} ]]; then
+        local num_procs=$(echo ${tensorboard_pids} | wc -w)
+        echo "Killing ${num_procs} tensorboard processes"
+        echo ${tensorboard_pids} | xargs kill -9 2> /dev/null
+    fi
+
+    local runml_procs=$(pgrep -f "runml")
+    if [[ -n ${runml_pids} ]]; then
+        local num_procs=$(echo ${runml_pids} | wc -w)
+        echo "Killing ${num_procs} runml processes"
+        echo ${runml_pids} | xargs kill -9 2> /dev/null
+    fi
 }

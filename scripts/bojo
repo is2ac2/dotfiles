@@ -182,9 +182,27 @@ def is_valid_signifier(s: str) -> bool:
     return bool(cursor.fetchone()[0])
 
 
-def move_task(task_id: int, state: State) -> None:
+def move_task(task_id: int, state: State | None, signifier: str | None) -> None:
     db = sqlite3.connect(bojo_root() / "bojo.db")
-    db.execute("UPDATE tasks SET state=?, updated_at=strftime('%s', 'now') WHERE id=?", (state, task_id))
+
+    if state is None and signifier is None:
+        raise ValueError("Must specify either state or signifier")
+    elif state is None:
+        db.execute("UPDATE tasks SET signifier=?, updated_at=strftime('%s', 'now') WHERE id=?", (signifier, task_id))
+    elif signifier is None:
+        db.execute("UPDATE tasks SET state=?, updated_at=strftime('%s', 'now') WHERE id=?", (state, task_id))
+    else:
+        db.execute(
+            """
+            UPDATE tasks
+            SET
+                state=?,
+                signifier=?,
+                updated_at=strftime('%s', 'now')
+            WHERE id=?
+            """,
+            (state, signifier, task_id),
+        )
     db.commit()
 
 
@@ -197,6 +215,13 @@ def delete_tasks(tasks: list[int] | None) -> None:
         tasks_str = ",".join([str(t) for t in tasks])
         cursor.execute("DELETE FROM tasks WHERE id IN (?)", (tasks_str,))
     db.commit()
+
+
+def get_task_signifier(task_id: int) -> str:
+    db = sqlite3.connect(bojo_root() / "bojo.db")
+    cursor = db.cursor()
+    cursor.execute("SELECT signifier FROM tasks WHERE id=?", (task_id,))
+    return cursor.fetchone()[0]
 
 
 def add_subcommand(rest: list[str]) -> None:
@@ -213,20 +238,21 @@ def add_subcommand(rest: list[str]) -> None:
     add_task(description, state, signifier)
 
 
+def get_state_or_signifier(s: str) -> tuple[State | None, str | None]:
+    try:
+        return get_state(s), None
+    except ValueError as e:
+        if is_valid_signifier(s):
+            return None, s
+        else:
+            raise ValueError(f"Invalid state or signifier: {s}") from e
+
+
 def list_subcommand(rest: list[str]) -> None:
     parser = argparse.ArgumentParser(description="List tasks in the journal")
     parser.add_argument("state_or_signifier", help="State or signifier of the task", nargs="?")
     parser.add_argument("-n", "--num-items", help="Number of items to show", type=int, default=10)
     args = parser.parse_args(rest)
-
-    def get_state_or_signifier(s: str) -> tuple[State | None, str | None]:
-        try:
-            return get_state(s), None
-        except ValueError as e:
-            if is_valid_signifier(s):
-                return None, s
-            else:
-                raise ValueError(f"Invalid state or signifier: {s}") from e
 
     state_or_signifier = args.state_or_signifier
     state, signifier = (None, None) if state_or_signifier is None else get_state_or_signifier(state_or_signifier)
@@ -239,7 +265,7 @@ def list_subcommand(rest: list[str]) -> None:
 def move_subcommand(rest: list[str]) -> None:
     parser = argparse.ArgumentParser(description="Move a task to a new state")
     parser.add_argument("task_id", help="ID of the task to move", type=int, nargs="?")
-    parser.add_argument("state", help="State to move the task to", nargs="?")
+    parser.add_argument("state_or_signifier", help="State or signifier of the task", nargs="?")
     args = parser.parse_args(rest)
 
     def get_task_id() -> int:
@@ -264,10 +290,24 @@ def move_subcommand(rest: list[str]) -> None:
             except ValueError:
                 print(f"Invalid state: '{state_str}'. Valid choices are:\n\n{get_state_choices_str()}\n")
 
-    task_id = int(get_task_id() if args.task_id is None else args.task_id)
-    state = get_move_state() if args.state is None else get_state(args.state)
+    def get_move_signifier(task_id: int) -> str:
+        current_signifier = get_task_signifier(task_id)
+        signifier_str = input(f"Signifier [{current_signifier}]: ")
+        if signifier_str == "":
+            return current_signifier
+        return signifier_str
 
-    move_task(task_id, state)
+    task_id = int(get_task_id() if args.task_id is None else args.task_id)
+    state_or_signifier = args.state_or_signifier
+    state: State | None = None
+    signifier: str | None = None
+    if state_or_signifier is None:
+        state = get_move_state()
+        signifier = get_move_signifier(task_id)
+    else:
+        state, signifier = get_state_or_signifier(state_or_signifier)
+cd
+    move_task(task_id, state, signifier)
 
 
 def delete_subcommand(rest: list[str]) -> None:

@@ -451,8 +451,18 @@ def suggest_subcommand(rest: list[str]) -> None:
     |-------|-----------|-------------|
     {entries_str}
 
-    Create a realistic schedule for what I should work on today from 9 AM to
-    6 PM. Be succinct and use bullet points.
+    Categories these entries into the following groups (only the description):
+
+    - Reading
+    - Coding
+    - Brainstorming
+
+    Next, rank these entries by how important they are.
+
+    Finally, create a schedule for the day, with reading tasks coming in the
+    morning, coding tasks in the afternoon, and brainstorming tasks in the
+    evening. Allocate time for eating breakfast, lunch and dinner. Assume I
+    am working from 8 AM to 8 PM.
     """
     ).strip()
 
@@ -494,6 +504,7 @@ def suggest_subcommand(rest: list[str]) -> None:
                 choice = delta["content"]
                 sys.stdout.write(choice)
                 sys.stdout.flush()
+        print()
 
 
 def main() -> None:

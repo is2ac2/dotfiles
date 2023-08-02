@@ -7,11 +7,12 @@ import os
 import shutil
 import sqlite3
 import subprocess
+import webbrowser
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, cast, get_args
 
-Command = Literal["add", "list", "move", "pull", "push", "delete"]
+Command = Literal["add", "list", "move", "pull", "push", "delete", "web"]
 CommandShorthand = Literal["a", "l", "m", "d"]
 
 State = Literal["incomplete", "complete", "migrated", "scheduled", "irrelevant", "note", "event"]
@@ -356,6 +357,8 @@ def push_pull_subcommand(push: bool, rest: list[str]) -> None:
         print(colorize("Pulling gist", "green", bold=True))
         subprocess.run(["git", "pull"], cwd=repo_loc)
 
+    gist_url = f"https://gist.github.com/{gist_id}"
+
     if push:
         print(colorize("Copying database to remote", "green", bold=True))
         shutil.copyfile(db_path, repo_db_path)
@@ -380,10 +383,28 @@ def push_pull_subcommand(push: bool, rest: list[str]) -> None:
         subprocess.run(["git", "add", "bojo.db", "bojo.md"], cwd=repo_loc)
         subprocess.run(["git", "commit", "-m", "Update bullet journal"], cwd=repo_loc)
         subprocess.run(["git", "push"], cwd=repo_loc)
+        print(f"Pushed gist to {colorize(gist_url, 'blue', bold=True)}")
 
     else:
         print(colorize("Copying database from remote", "green", bold=True))
         shutil.copyfile(repo_db_path, db_path)
+        print(f"Pulled gist from {colorize(gist_url, 'blue', bold=True)}")
+
+
+def open_web(rest: list[str]) -> None:
+    parser = argparse.ArgumentParser(description="Sync bullet journal to a Github Gist")
+    parser.add_argument("gist_id", help="ID of the gist to sync to", nargs="?")
+    args = parser.parse_args(rest)
+
+    gist_id = args.gist_id
+    if gist_id is None:
+        gist_id = os.environ.get("BOJO_GIST_ID")
+        if gist_id is None:
+            gist_id = input("Gist ID (or set BOJO_GIST_ID env var): ")
+
+    gist_url = f"https://gist.github.com/{gist_id}"
+    print(colorize("Opening gist in browser", "green", bold=True))
+    webbrowser.open(gist_url)
 
 
 def main() -> None:
@@ -408,6 +429,8 @@ def main() -> None:
             push_pull_subcommand(False, rest)
         case "push":
             push_pull_subcommand(True, rest)
+        case "web":
+            open_web(rest)
         case _:
             raise NotImplementedError(f"Command {command} not implemented")
 

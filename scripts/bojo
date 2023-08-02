@@ -306,7 +306,7 @@ def move_subcommand(rest: list[str]) -> None:
         signifier = get_move_signifier(task_id)
     else:
         state, signifier = get_state_or_signifier(state_or_signifier)
-cd
+
     move_task(task_id, state, signifier)
 
 

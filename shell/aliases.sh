@@ -356,7 +356,7 @@ tbd() {
 alias pwd='pwd -P'
 
 # conda
-alias cdenv='conda deactivate'
+alias cdenv='mamba deactivate'
 
 # tmux
 tmuxn() {
@@ -634,6 +634,8 @@ alias brew='load-brew && \brew'
 
 # Conda
 export CONDA_DIR="${HOME}/.miniconda3"
+export MAMBA_INSTALL_DIR="${HOME}/.micromamba"  # Where Micromamba binaries live
+export MAMBA_ROOT_PREFIX="${HOME}/.micromamba"  # Where installed packages live
 export CONDA_DEFAULT_PYTHON_VERSION=3.10
 
 # History search
@@ -815,8 +817,8 @@ cn-vars() {
     [[ $EDIT_DEACTIVATE == 1 ]] && $EDITOR $DEACTIVATE
 
     echo "Done editing environment variables for $CONDA_PREFIX; reloading..."
-    conda deactivate
-    conda activate $CONDA_ENV_NAME
+    mamba deactivate
+    mamba activate $CONDA_ENV_NAME
     return 0
 }
 
@@ -830,9 +832,9 @@ cn-new() {
         return 1
     fi
     local ENV_NAME=$1
-    conda create -n $ENV_NAME python=$CONDA_DEFAULT_PYTHON_VERSION
-    conda deactivate
-    conda activate $ENV_NAME
+    mamba create -n $ENV_NAME python=$CONDA_DEFAULT_PYTHON_VERSION
+    mamba deactivate
+    mamba activate $ENV_NAME
 }
 
 # ---------------
@@ -1035,17 +1037,13 @@ pathclean() {
     local var=$1
     local prev_val="$(env-val $var):"
     local new_val
-    while read -d ':' dir; do
+    echo ${prev_val} | while read -d ':' dir; do
         if [[ ":${new_val}:" != *":${dir}:"* ]] && [[ -d ${dir} ]]; then
             new_val="${new_val:+"$new_val:"}${dir}"
         fi
-    done <<< ${prev_val}
+    done
     export ${var}="${new_val}"
 }
-
-# ------------
-# Kill ML jobs
-# ------------
 
 killml() {
     local tensorboard_port=9249
@@ -1069,3 +1067,40 @@ killml() {
         echo ${runml_pids} | xargs kill -9 2> /dev/null
     fi
 }
+
+shell-str() {
+    echo $SHELL | awk -F/ '{print $NF}'
+}
+
+load-conda() {
+    unalias conda 2> /dev/null
+
+    # If Conda is unavailable, show a warning and return.
+    if [[ ! -d ${CONDA_DIR} ]]; then
+        warn-with-red-background "Conda not installed to \$CONDA_DIR"
+        return 0
+    fi
+
+    local conda_setup=$("${CONDA_DIR}/bin/conda" "shell.$(shell-str)" 'hook')
+    eval $conda_setup
+}
+
+alias conda='load-conda && \conda'
+
+load-mamba() {
+    unalias mamba 2> /dev/null
+
+    # If Mamba is unavailable, load Conda instead.
+    if [[ ! -d ${MAMBA_INSTALL_DIR} ]]; then
+        warn-with-red-background "Mamba not installed to \$MAMBA_INSTALL_DIR"
+        load-conda
+        return 0
+    fi
+
+    pathadd PATH ${MAMBA_INSTALL_DIR}/bin
+    local mamba_setup=$("${MAMBA_INSTALL_DIR}/bin/micromamba" 'shell' 'hook' '--shell' $(shell-str) '--root-prefix' "$MAMBA_ROOT_PREFIX")
+    eval $mamba_setup
+    alias mamba="micromamba"
+}
+
+alias mamba='load-mamba && \micromamba'

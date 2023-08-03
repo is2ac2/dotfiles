@@ -4,15 +4,15 @@
 
 cn-env() {
     load-conda
-    conda activate $@
+    mamba activate $@
 }
 
 cn-rm() {
     load-conda
     if [ $CONDA_DEFAULT_ENV = $1 ]; then
-        conda deactivate
+        mamba deactivate
     fi
-    conda remove --all --name $@
+    mamba remove --all --name $@
 }
 
 _conda_complete() {

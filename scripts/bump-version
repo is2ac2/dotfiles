@@ -19,13 +19,13 @@ echo " ↪ Found __init__.py with __version__ in $init_file"
 
 # Extract the version number from the file and bumps it.
 version=$(grep __version__ $init_file | cut -d\" -f2)
-echo " ↪ Current version is $version"
+echo " ↪ Current version is \033[1;31m$version\033[0m"
 major=$(echo $version | cut -d. -f1)
 minor=$(echo $version | cut -d. -f2)
 patch=$(echo $version | cut -d. -f3)
 patch=$((patch + 1))
 new_version="$major.$minor.$patch"
-echo " ↪ New version is $new_version"
+echo " ↪ New version is \033[1;32m$new_version\033[0m"
 
 # Replace the version number in the file.
 tmp_file=$(mktemp)

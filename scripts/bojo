@@ -72,7 +72,9 @@ def get_state_choices_str() -> str:
     return "\n".join([f" ↪ {k}: {colorize(v, STATE_TO_COLOR[v])}" for k, v in SHORTHAND_TO_STATE.items()])
 
 
-def get_state(s: str) -> State:
+def get_state(s: str | None) -> State:
+    if s is None:
+        return "incomplete"
     if s in SHORTHAND_TO_STATE:
         return SHORTHAND_TO_STATE[cast(StateShorthand, s)]
     if s in get_args(State):
@@ -228,6 +230,36 @@ def get_task_signifier(task_id: int) -> str:
     cursor.execute("SELECT signifier FROM tasks WHERE id=?", (task_id,))
     return cursor.fetchone()[0]
 
+def get_task_id_interface() -> int:
+    while True:
+        task_id_str = input("Task ID: ")
+        try:
+            task_id = int(task_id_str)
+            assert task_id > 0
+            assert is_valid_task(task_id)
+            return task_id
+        except ValueError:
+            print(f"Invalid task ID: '{task_id_str}'")
+        except AssertionError:
+            print(f"Task '{task_id_str}' is invalid; use `bojo list` to see valid tasks")
+
+def get_state_interface(default: State | None = None) -> State | None:
+    while True:
+        state_str = input("State: " if default is None else f"State [{default}]: ")
+        if state_str == "":
+            return default
+        try:
+            state = get_state(state_str)
+            return state
+        except ValueError:
+            print(f"Invalid state: '{state_str}'. Valid choices are:\n\n{get_state_choices_str()}\n")
+
+def get_signifier_interface() -> str | None:
+    signifier_str = input("Signifier: ")
+    if signifier_str == "":
+        return None
+    return signifier_str
+
 
 def add_subcommand(rest: list[str]) -> None:
     parser = argparse.ArgumentParser(description="Add a task to the journal")
@@ -237,8 +269,8 @@ def add_subcommand(rest: list[str]) -> None:
     args = parser.parse_args(rest)
 
     description = input("Description: ") if args.description is None else args.description
-    state = get_state(input("State [x]: ") if args.state is None else args.state)
-    signifier = input("Signifier ['']: ") if args.signifier is None else args.signifier
+    state = get_state(get_state_interface("incomplete") if args.state is None else args.state)
+    signifier = get_signifier_interface() if args.signifier is None else args.signifier
 
     add_task(description, state, signifier)
 
@@ -277,43 +309,13 @@ def move_subcommand(rest: list[str]) -> None:
     parser.add_argument("state_or_signifier", help="State or signifier of the task", nargs="?")
     args = parser.parse_args(rest)
 
-    def get_task_id() -> int:
-        while True:
-            task_id_str = input("Task ID: ")
-            try:
-                task_id = int(task_id_str)
-                assert task_id > 0
-                assert is_valid_task(task_id)
-                return task_id
-            except ValueError:
-                print(f"Invalid task ID: '{task_id_str}'")
-            except AssertionError:
-                print(f"Task '{task_id_str}' is invalid; use `bojo list` to see valid tasks")
-
-    def get_move_state() -> State | None:
-        while True:
-            state_str = input("State: ")
-            if state_str == "":
-                return None
-            try:
-                state = get_state(state_str)
-                return state
-            except ValueError:
-                print(f"Invalid state: '{state_str}'. Valid choices are:\n\n{get_state_choices_str()}\n")
-
-    def get_move_signifier() -> str | None:
-        signifier_str = input("Signifier: ")
-        if signifier_str == "":
-            return None
-        return signifier_str
-
-    task_id = int(get_task_id() if args.task_id is None else args.task_id)
+    task_id = int(get_task_id_interface() if args.task_id is None else args.task_id)
     state_or_signifier = args.state_or_signifier
     state: State | None = None
     signifier: str | None = None
     if state_or_signifier is None:
-        state = get_move_state()
-        signifier = get_move_signifier()
+        state = get_state_interface()
+        signifier = get_signifier_interface()
     else:
         state, signifier = get_state_or_signifier(state_or_signifier)
 

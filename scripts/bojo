@@ -1,5 +1,17 @@
 #!/usr/bin/env python
-"""Command-line bullet journal tool."""
+"""Command-line bullet journal tool.
+
+Bullet journaling is the practice of writing simple bullet points to
+track tasks, events, and notes. This tool uses the following states:
+
+    - incomplete (x): Task has not been completed
+    - complete (c, o): Task has been completed
+    - migrated (m, >): Task has been migrated to a new signifier
+    - scheduled (s, <): Task has been scheduled for a future date
+    - irrelevant (-, i): Task is irrelevant and should be ignored
+    - note (+, n): Task is a note
+    - event (*, e): Task is an event
+"""
 
 import argparse
 import datetime
@@ -153,7 +165,12 @@ class Task:
         )
 
 
-def query_tasks(state: State | None, signifier: str | None, limit: int | None) -> list[Task]:
+def query_tasks(
+    state: State | None,
+    signifier: str | None,
+    limit: int | None,
+    include_complete: bool = False,
+) -> list[Task]:
     db = sqlite3.connect(bojo_root() / "bojo.db")
     cursor = db.cursor()
     clauses: list[tuple[str, Any]] = []
@@ -162,6 +179,8 @@ def query_tasks(state: State | None, signifier: str | None, limit: int | None) -
         clauses.append(("state=?", state))
     if signifier is not None:
         clauses.append(("signifier=?", signifier))
+    if not include_complete:
+        clauses.append(("state!=?", "complete"))
     command = "SELECT * FROM tasks"
     if clauses:
         clauses_str = " AND ".join([f"{k}" for k, _ in clauses])
@@ -290,6 +309,7 @@ def list_subcommand(rest: list[str]) -> None:
     parser.add_argument("state_or_signifier", help="State or signifier of the task", nargs="?")
     parser.add_argument("-n", "--num-items", help="Number of items to show", type=int, default=50)
     parser.add_argument("-r", "--header", help="Show a header", action="store_true")
+    parser.add_argument("-c", "--complete", help="Show completed tasks", action="store_true")
     args = parser.parse_args(rest)
 
     if args.header:
@@ -297,7 +317,7 @@ def list_subcommand(rest: list[str]) -> None:
 
     state_or_signifier = args.state_or_signifier
     state, signifier = (None, None) if state_or_signifier is None else get_state_or_signifier(state_or_signifier)
-    tasks = query_tasks(state, signifier, args.num_items)
+    tasks = query_tasks(state, signifier, args.num_items, args.complete)
 
     for task in tasks:
         print(f" ↪ {task}")

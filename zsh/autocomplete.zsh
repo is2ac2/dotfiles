@@ -8,13 +8,13 @@ _conda_complete() {
     compadd ${=opts}
 }
 cn-env() {
-    mamba activate $@
+    micromamba activate $@
 }
 cn-rm() {
     if [[ "$CONDA_DEFAULT_ENV" -eq "$1" ]]; then
-        conda deactivate
+        micromamba deactivate
     fi
-    conda remove --all --name $1
+    micromamba remove --all --name $1
 }
 if [[ -f ~/.conda/environments.txt ]]; then
     compdef _conda_complete cn-env

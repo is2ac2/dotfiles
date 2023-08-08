@@ -355,9 +355,6 @@ tbd() {
 # pwd without symlinks
 alias pwd='pwd -P'
 
-# conda
-alias cdenv='mamba deactivate'
-
 # tmux
 tmuxn() {
     if [[ $# -ne 1 ]]; then
@@ -817,8 +814,8 @@ cn-vars() {
     [[ $EDIT_DEACTIVATE == 1 ]] && $EDITOR $DEACTIVATE
 
     echo "Done editing environment variables for $CONDA_PREFIX; reloading..."
-    mamba deactivate
-    mamba activate $CONDA_ENV_NAME
+    micromamba deactivate
+    micromamba activate $CONDA_ENV_NAME
     return 0
 }
 
@@ -832,9 +829,9 @@ cn-new() {
         return 1
     fi
     local ENV_NAME=$1
-    mamba create -n $ENV_NAME python=$CONDA_DEFAULT_PYTHON_VERSION
-    mamba deactivate
-    mamba activate $ENV_NAME
+    micromamba create -n $ENV_NAME python=$CONDA_DEFAULT_PYTHON_VERSION
+    micromamba deactivate
+    micromamba activate $ENV_NAME
 }
 
 # ---------------

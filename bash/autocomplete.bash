@@ -10,9 +10,9 @@ cn-env() {
 cn-rm() {
     load-conda
     if [ $CONDA_DEFAULT_ENV = $1 ]; then
-        micromamba deactivate
+        conda deactivate
     fi
-    micromamba remove --all --name $@
+    conda remove --all --name $@
 }
 
 _conda_complete() {

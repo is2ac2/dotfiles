@@ -12,9 +12,9 @@ cn-env() {
 }
 cn-rm() {
     if [[ "$CONDA_DEFAULT_ENV" -eq "$1" ]]; then
-        micromamba deactivate
+        conda deactivate
     fi
-    micromamba remove --all --name $1
+    conda remove --all --name $1
 }
 if [[ -f ~/.conda/environments.txt ]]; then
     compdef _conda_complete cn-env

@@ -814,8 +814,8 @@ cn-vars() {
     [[ $EDIT_DEACTIVATE == 1 ]] && $EDITOR $DEACTIVATE
 
     echo "Done editing environment variables for $CONDA_PREFIX; reloading..."
-    micromamba deactivate
-    micromamba activate $CONDA_ENV_NAME
+    conda deactivate
+    conda activate $CONDA_ENV_NAME
     return 0
 }
 
@@ -829,9 +829,10 @@ cn-new() {
         return 1
     fi
     local ENV_NAME=$1
-    micromamba create -n $ENV_NAME python=$CONDA_DEFAULT_PYTHON_VERSION
-    micromamba deactivate
-    micromamba activate $ENV_NAME
+    load-conda
+    conda create -n $ENV_NAME python=$CONDA_DEFAULT_PYTHON_VERSION
+    conda deactivate
+    conda activate $ENV_NAME
 }
 
 # ---------------
@@ -1086,6 +1087,7 @@ alias conda='load-conda && \conda'
 
 load-mamba() {
     unalias mamba 2> /dev/null
+    unalias micromamba 2> /dev/null
 
     # If Mamba is unavailable, load Conda instead.
     if [[ ! -d ${MAMBA_INSTALL_DIR} ]]; then
@@ -1101,3 +1103,4 @@ load-mamba() {
 }
 
 alias mamba='load-mamba && \micromamba'
+alias micromamba='load-mamba && \micromamba'

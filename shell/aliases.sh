@@ -310,6 +310,11 @@ export JUPYTER_NOTEBOOK_PORT=${JUPYTER_NOTEBOOK_PORT:-44638}
 # scikit-learn
 export SCIKIT_LEARN_DATA=${DATA_DIR}/scikit-learn
 
+# EC2 options
+export ML_EC2_IMAGE_ID=ami-0d8efac6374295c8a
+export ML_EC2_INSTANCE_TYPE=g4dn.xlarge
+export ML_EC2_SECURITY_GROUP=model-training
+
 clear-jpn() {
     local dir
     if [[ $# -eq 0 ]]; then

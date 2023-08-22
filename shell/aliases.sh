@@ -1044,8 +1044,8 @@ pathclean() {
         if [[ ":${new_val}:" != *":${dir}:"* ]] && [[ -d ${dir} ]]; then
             new_val="${new_val:+"$new_val:"}${dir}"
         fi
+        export ${var}="${new_val}"
     done
-    export ${var}="${new_val}"
 }
 
 killml() {

@@ -4,7 +4,7 @@
 
 cn-env() {
     load-conda
-    micromamba activate $@
+    conda activate $@
 }
 
 cn-rm() {

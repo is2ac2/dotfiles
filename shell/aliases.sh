@@ -636,8 +636,6 @@ alias brew='load-brew && \brew'
 
 # Conda
 export CONDA_DIR="${HOME}/.miniconda3"
-export MAMBA_INSTALL_DIR="${HOME}/.micromamba"  # Where Micromamba binaries live
-export MAMBA_ROOT_PREFIX="${HOME}/.micromamba"  # Where installed packages live
 export CONDA_DEFAULT_PYTHON_VERSION=3.10
 
 # History search
@@ -1090,22 +1088,3 @@ load-conda() {
 
 alias conda='load-conda && \conda'
 
-load-mamba() {
-    unalias mamba 2> /dev/null
-    unalias micromamba 2> /dev/null
-
-    # If Mamba is unavailable, load Conda instead.
-    if [[ ! -d ${MAMBA_INSTALL_DIR} ]]; then
-        warn-with-red-background "Mamba not installed to \$MAMBA_INSTALL_DIR"
-        load-conda
-        return 0
-    fi
-
-    pathadd PATH ${MAMBA_INSTALL_DIR}/bin
-    local mamba_setup=$("${MAMBA_INSTALL_DIR}/bin/micromamba" 'shell' 'hook' '--shell' $(shell-str) '--root-prefix' "$MAMBA_ROOT_PREFIX")
-    eval $mamba_setup
-    alias mamba="micromamba"
-}
-
-alias mamba='load-mamba && \micromamba'
-alias micromamba='load-mamba && \micromamba'

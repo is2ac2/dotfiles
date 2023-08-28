@@ -8,7 +8,7 @@ _conda_complete() {
     compadd ${=opts}
 }
 cn-env() {
-    micromamba activate $@
+    conda activate $@
 }
 cn-rm() {
     if [[ "$CONDA_DEFAULT_ENV" -eq "$1" ]]; then

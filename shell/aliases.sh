@@ -1088,3 +1088,76 @@ load-conda() {
 
 alias conda='load-conda && \conda'
 
+relink-directories() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: relink-directories <dataset-dir> <checkpoints-dir>"
+        return 1
+    fi
+
+    local dataset_dir=$1
+    if [[ ! -d ${dataset_dir} ]]; then
+        echo "Directory ${dataset_dir} does not exist"
+        return 1
+    fi
+
+    local checkpoints_dir=$2
+    if [[ ! -d ${checkpoints_dir} ]]; then
+        echo "Directory ${checkpoints_dir} does not exist"
+        return 1
+    fi
+
+    mkdir -p \
+        ${dataset_dir}/data \
+        ${dataset_dir}/cache
+
+    mkdir -p \
+        ${checkpoints_dir}/slurm \
+        ${checkpoints_dir}/logs \
+        ${checkpoints_dir}/evaluation \
+        ${checkpoints_dir}/models \
+        ${checkpoints_dir}/staging
+
+    if [[ ! -d ${DATA_DIR} ]] || [[ ! -L ${DATA_DIR} ]]; then
+        echo "Linking ${DATA_DIR} to ${dataset_dir}/cache"
+        [[ -d ${DATA_DIR} ]] && rm -r ${DATA_DIR}
+        ln -s ${dataset_dir}/data ${DATA_DIR}
+    fi
+
+    if [[ ! -d ${DATA_CACHE_DIR} ]] || [[ ! -L ${DATA_CACHE_DIR} ]]; then
+        echo "Linking ${DATA_CACHE_DIR} to ${dataset_dir}/cache"
+        [[ -d ${DATA_CACHE_DIR} ]] && rm -r ${DATA_CACHE_DIR}
+        ln -s ${dataset_dir}/cache ${DATA_CACHE_DIR}
+    fi
+
+    if [[ ! -d ${SLURM_LOG_DIR} ]] || [[ ! -L ${SLURM_LOG_DIR} ]]; then
+        echo "Linking ${SLURM_LOG_DIR} to ${checkpoints_dir}/slurm"
+        [[ -d ${SLURM_LOG_DIR} ]] && rm -r ${SLURM_LOG_DIR}
+        ln -s ${checkpoints_dir}/slurm ${SLURM_LOG_DIR}
+    fi
+
+    if [[ ! -d ${LOG_DIR} ]] || [[ ! -L ${LOG_DIR} ]]; then
+        echo "Linking ${LOG_DIR} to ${checkpoints_dir}/logs"
+        [[ -d ${LOG_DIR} ]] && rm -r ${LOG_DIR}
+        ln -s ${checkpoints_dir}/logs ${LOG_DIR}
+    fi
+
+    if [[ ! -d ${EVAL_DIR} ]] || [[ ! -L ${EVAL_DIR} ]]; then
+        echo "Linking ${EVAL_DIR} to ${checkpoints_dir}/evaluation"
+        [[ -d ${EVAL_DIR} ]] && rm -r ${EVAL_DIR}
+        ln -s ${checkpoints_dir}/evaluation ${EVAL_DIR}
+    fi
+
+    if [[ ! -d ${MODEL_DIR} ]] || [[ ! -L ${MODEL_DIR} ]]; then
+        echo "Linking ${MODEL_DIR} to ${checkpoints_dir}/models"
+        [[ -d ${MODEL_DIR} ]] && rm -r ${MODEL_DIR}
+        ln -s ${checkpoints_dir}/models ${MODEL_DIR}
+    fi
+
+    if [[ ! -d ${STAGE_DIR} ]] || [[ ! -L ${STAGE_DIR} ]]; then
+        echo "Linking ${STAGE_DIR} to ${checkpoints_dir}/staging"
+        [[ -d ${STAGE_DIR} ]] && rm -r ${STAGE_DIR}
+        ln -s ${checkpoints_dir}/staging ${STAGE_DIR}
+    fi
+
+    return 0
+}

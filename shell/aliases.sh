@@ -114,7 +114,7 @@ alias cl='clear'
 alias reload='exec $SHELL'
 
 # nvidia
-alias smi='while true; do nvidia-smi && sleep 1; done'
+alias smi='nvidia-smi -lms'
 
 # time
 alias today='date +"%Y-%m-%d'

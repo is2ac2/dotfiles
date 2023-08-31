@@ -1046,13 +1046,22 @@ pathclean() {
     done
 }
 
-killml() {
-    local tensorboard_port=9249
-    local tensorboard_pid=$(lsof -i :${tensorboard_port} | grep LISTEN | awk '{print $2}')
-    if [[ -n ${tensorboard_pid} ]]; then
-        echo "Killing tensorboard port process ${tensorboard_pid}"
-        kill -9 ${tensorboard_pid} 2> /dev/null
+killport() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: killport <port>"
+        return 1
     fi
+    local port=$1
+    local pid=$(lsof -i :${port} | grep LISTEN | awk '{print $2}')
+    if [[ -n ${pid} ]]; then
+        echo "Killing process ${pid} on port ${port}"
+        kill -9 ${pid}
+    fi
+}
+
+killml() {
+    killport 9249
+    killport 29500
 
     local tensorboard_procs=$(pgrep -f "tensorboard")
     if [[ -n ${tensorboard_pids} ]]; then

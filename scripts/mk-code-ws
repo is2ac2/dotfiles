@@ -124,9 +124,9 @@ def main():
         # Adds Python exeuctable path.
         cmake_configure_settings["PYTHON_EXECUTABLE"] = str(conda_prefix / "bin" / "python")
 
-    # Adds CMake path, if CMake is installed.
-    if (cmake_path := shutil.which("cmake")) is not None and cmake_path.startswith(str(conda_prefix)):
-        settings["cmake.cmakePath"] = cmake_path
+        # Adds CMake path, if CMake is installed.
+        if (cmake_path := shutil.which("cmake")) is not None and cmake_path.startswith(str(conda_prefix)):
+            settings["cmake.cmakePath"] = cmake_path
 
     # Adds NVCC path if available.
     if (nvcc_path := shutil.which("nvcc")) is not None:

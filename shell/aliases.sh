@@ -1170,3 +1170,14 @@ relink-directories() {
 
     return 0
 }
+
+waitport() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: waitport <port>"
+        return 1
+    fi
+    local port=$1
+    while [[ ! -z $(lsof -i :${port}) ]]; do
+        sleep 1
+    done
+}

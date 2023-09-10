@@ -1073,11 +1073,24 @@ killproc() {
     fi
 }
 
+killgpu() {
+    if [[ ! -x $(command -v nvidia-smi) ]]; then
+        return 0
+    fi
+    local gpu_procs=$(nvidia-smi --query-compute-apps=pid --format=csv,noheader | awk '{print $1}')
+    if [[ -n ${gpu_procs} ]]; then
+        local gpu_procs_str=$(echo ${gpu_procs} | tr '\n' ' ')
+        echo "Killing GPU processes ${gpu_procs_str}"
+        echo ${gpu_procs} | xargs kill -9
+    fi
+}
+
 killml() {
     killport 9249
     killport 29500
     killproc tensorboard
     killproc runml
+    killgpu
 }
 
 shell-str() {

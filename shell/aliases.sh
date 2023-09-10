@@ -1059,23 +1059,25 @@ killport() {
     fi
 }
 
+killproc() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: killproc <name>"
+        return 1
+    fi
+    local name=$1
+    local pids=$(pgrep -f ${name})
+    if [[ -n ${pids} ]]; then
+        local pids_str=$(echo ${pids} | tr '\n' ' ')
+        echo "Killing '${name}' processes ${pids_str}"
+        echo ${pids} | xargs kill -9
+    fi
+}
+
 killml() {
     killport 9249
     killport 29500
-
-    local tensorboard_procs=$(pgrep -f "tensorboard")
-    if [[ -n ${tensorboard_pids} ]]; then
-        local num_procs=$(echo ${tensorboard_pids} | wc -w)
-        echo "Killing ${num_procs} tensorboard processes"
-        echo ${tensorboard_pids} | xargs kill -9 2> /dev/null
-    fi
-
-    local runml_procs=$(pgrep -f "runml")
-    if [[ -n ${runml_pids} ]]; then
-        local num_procs=$(echo ${runml_pids} | wc -w)
-        echo "Killing ${num_procs} runml processes"
-        echo ${runml_pids} | xargs kill -9 2> /dev/null
-    fi
+    killproc tensorboard
+    killproc runml
 }
 
 shell-str() {

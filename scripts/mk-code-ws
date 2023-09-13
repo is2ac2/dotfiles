@@ -142,8 +142,8 @@ def main():
             major_ver, minor_ver = torch.cuda.get_device_capability()
             cmake_configure_settings["TORCH_CUDA_ARCH_LIST"] = f"'{major_ver}.{minor_ver}'"
 
-        except AssertionError:
-            pass
+        except Exception as e:
+            print(f"Failed to get CUDA architecture list: {e}")
 
     except ModuleNotFoundError:
         print("PyTorch not found, skipping")

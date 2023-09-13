@@ -842,27 +842,17 @@ cn-new() {
 # Tools for Slurm
 # ---------------
 
-slurm-allocate() {
-    if [ $# -ne 0 ]; then
-        echo "Usage: allocate"
-        echo "  Allocates an empty cluster in SLURM"
-        return 1
-    fi
+# The user should override this in their local file.
+export SLURM_GPUNODE_PARTITION=missing
 
-    sbatch \
-        --gres=gpu:volta:8 \
-        --wrap "sleep 259200" \
-        --constraint volta32gb \
-        --time 1440 \
-        --exclusive \
-        --partition dev \
-        --mem 480G \
-        --output /tmp/slurm-%j.out \
-        --error /tmp/slurm-%j.err
-    return 0
+gpunode() {
+    srun \
+        --pty $SHELL \
+        --interactive \
+        --job-name=gpunode \
+        --time 8:00:00 \
+        --partition=$SLURM_GPUNODE_PARTITION
 }
-
-alias allocate=slurm-allocate
 
 # ----------------
 # Tools for `make`

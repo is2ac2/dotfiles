@@ -846,6 +846,20 @@ cn-new() {
 export SLURM_GPUNODE_PARTITION=missing
 
 gpunode() {
+    # First, queries Slurm to see if there is an active job.
+    # If so, attach to that job ID instead of creating a new job.
+    # Query is based on the job name "gpunode".
+    local job_id=$(squeue -u $USER -h -t R -o %i -n gpunode)
+    if [[ -n $job_id ]]; then
+        echo "Attaching to job ID $job_id"
+        srun \
+            --jobid=$job_id \
+            --partition=$SLURM_GPUNODE_PARTITION \
+            --pty $SHELL
+        return 0
+    fi
+
+    echo "Creating new job"
     srun \
         --partition=$SLURM_GPUNODE_PARTITION \
         --interactive \

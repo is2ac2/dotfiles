@@ -847,11 +847,11 @@ export SLURM_GPUNODE_PARTITION=missing
 
 gpunode() {
     srun \
-        --pty $SHELL \
+        --partition=$SLURM_GPUNODE_PARTITION \
         --interactive \
         --job-name=gpunode \
         --time 8:00:00 \
-        --partition=$SLURM_GPUNODE_PARTITION
+        --pty $SHELL
 }
 
 # ----------------

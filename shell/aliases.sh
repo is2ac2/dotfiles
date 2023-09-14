@@ -864,7 +864,6 @@ gpunode() {
         --partition=$SLURM_GPUNODE_PARTITION \
         --interactive \
         --job-name=gpunode \
-        --time 8:00:00 \
         --pty $SHELL
 }
 

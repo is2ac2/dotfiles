@@ -114,7 +114,7 @@ alias cl='clear'
 alias reload='exec $SHELL'
 
 # nvidia
-alias smi='nvidia-smi --query-gpu=index,name,utilization.gpu,utilization.memory --format=csv -l 1'
+alias smi='nvidia-smi --query-gpu=index,name,utilization.gpu,utilization.memory,memory.total,memory.used --format=csv -l 1'
 
 # time
 alias today='date +"%Y-%m-%d'

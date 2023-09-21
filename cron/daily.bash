@@ -4,11 +4,11 @@
 source ~/.shell/aliases.sh
 
 # Updates old dates.
-$SHELL ~/.cron/manage_date_folders.zsh
+/usr/bin/env ~/.cron/manage_date_folders.bash
 
 # Runs local cron script, if found.
 if [[ -f ~/.cron-local/daily.bash ]]; then
-    $SHELL ~/.cron-local/daily.bash
+    /usr/bin/env ~/.cron-local/daily.bash
 fi
 
 # Computes storage space (put this last because it might be slow).

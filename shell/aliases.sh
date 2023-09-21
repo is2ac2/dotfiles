@@ -1107,6 +1107,8 @@ shell-str() {
 load-conda() {
     unalias conda 2> /dev/null
 
+    pathadd PATH $CONDA_DIR/bin/
+
     # If Conda is unavailable, show a warning and return.
     if [[ ! -d ${CONDA_DIR} ]]; then
         warn-with-red-background "Conda not installed to \$CONDA_DIR"

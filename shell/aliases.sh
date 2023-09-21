@@ -1107,7 +1107,12 @@ shell-str() {
 load-conda() {
     unalias conda 2> /dev/null
 
-    pathadd PATH $CONDA_DIR/bin/
+    conda_sh=${CONDA_DIR}/etc/profile.d/conda.sh
+    if [ -f "${conda_sh}" ]; then
+        . "${conda_sh}"
+    else
+        pathadd PATH $CONDA_DIR/bin/
+    fi
 
     # If Conda is unavailable, show a warning and return.
     if [[ ! -d ${CONDA_DIR} ]]; then

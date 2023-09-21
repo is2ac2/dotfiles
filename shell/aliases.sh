@@ -84,7 +84,11 @@ ddate() {
     fi
     local delta=$1
     shift
-    date --date "${delta} days ago" $@
+    if [[ $OSTYPE == "darwin"* ]]; then
+        date -v -${delta}d $@
+    else
+        date --date "${delta} days ago" $@
+    fi
     return 0
 }
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Sources bashrc to make sure Python is set correctly.
 source ${HOME}/.shell/aliases.sh

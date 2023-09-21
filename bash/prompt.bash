@@ -27,5 +27,5 @@ ps1_update() {
 PROMPT_COMMAND='ps1_update'
 
 PROMPT_DIRTRIM=3
-PS1="${COLOR_BLUE}#${COLOR_DEFAULT} [${COLOR_YELLOW}\w${COLOR_DEFAULT}]\${CONDA_BASH_PROMPT} 🖥 [${COLOR_MAGENTA}$(machine_name)${COLOR_DEFAULT}]\n\$(if [ \$? -ne 0 ]; then echo \"${COLOR_RED}!${COLOR_DEFAULT} \"; fi)${COLOR_BLUE}>${COLOR_DEFAULT} "
-PS2="${COLOR_BLUE}>${COLOR_DEFAULT} "
+PS1="${COLOR_BLUE}#${COLOR_DEFAULT} [${COLOR_YELLOW}\w${COLOR_DEFAULT}]\${CONDA_BASH_PROMPT} 🖥 [${COLOR_MAGENTA}$(machine_name)${COLOR_DEFAULT}]\n\$(if [ \$? -ne 0 ]; then echo \"${COLOR_RED}!${COLOR_DEFAULT} \"; fi)\$ "
+PS2="\$"

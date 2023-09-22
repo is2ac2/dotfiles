@@ -64,8 +64,8 @@
   - time: 0 6 * * *
     command: 'mkdir -p ${HOME}/.cron-local && /usr/bin/env > ${HOME}/.cron-local/cron-env'
   - time: 30 * * * *
-    command: '/usr/bin/env bash ${HOME}/.cron/hourly.bash'
+    command: '${HOME}/.cron/hourly.bash'
   - time: 0 6 * * *
-    command: '/usr/bin/env bash ${HOME}/.cron/daily.bash'
+    command: '${HOME}/.cron/daily.bash'
   - time: 0 7 * * 3
-    command: '/usr/bin/env bash ${HOME}/.cron/weekly.bash'
+    command: '${HOME}/.cron/weekly.bash'

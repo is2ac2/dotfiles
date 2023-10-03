@@ -1,0 +1,15 @@
+#!/usr/bin/env zsh
+
+# For Python
+source ~/.shell/aliases.sh
+source ~/.zsh/aliases.zsh
+
+load-brew
+
+# Cleans up old folders.
+~/.cron/cleanup.bash
+
+# Runs local cron script, if found.
+if [ -f ~/.cron-local/weekly.zsh ]; then
+    . ~/.cron-local/weekly.zsh
+fi

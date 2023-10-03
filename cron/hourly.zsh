@@ -1,8 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # For Python
 source ~/.shell/aliases.sh
-source ~/.bash/aliases.bash
+source ~/.zsh/aliases.zsh
 
 load-brew
 
@@ -12,13 +12,13 @@ load-brew
 [ -d ~/.tmp-scripts ] && chmod -R 744 ~/.tmp-scripts
 
 # Sweeps dates files.
-/bin/bash ~/.cron/sweep_dates.bash
+~/.cron/sweep_dates.zsh
 
 # Caches running slurm jobs.
 python3 ~/.scripts/slurm-parse-comment
 
 # Runs local cron script, if found.
-if [ -f ~/.cron-local/hourly.bash ]; then
-    /bin/bash ~/.cron-local/hourly.bash
+if [ -f ~/.cron-local/hourly.zsh ]; then
+    ~/.cron-local/hourly.zsh
 fi
 

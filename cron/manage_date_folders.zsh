@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # ddate (Delta Date) is defined in shell/aliases.sh.
 source ~/.shell/aliases.sh

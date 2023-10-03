@@ -1,14 +1,14 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # For "get-storage"
 source ~/.shell/aliases.sh
 
 # Updates old dates.
-/usr/bin/env ~/.cron/manage_date_folders.bash
+~/.cron/manage_date_folders.zsh
 
 # Runs local cron script, if found.
-if [[ -f ~/.cron-local/daily.bash ]]; then
-    /usr/bin/env ~/.cron-local/daily.bash
+if [[ -f ~/.cron-local/daily.zsh ]]; then
+    ~/.cron-local/daily.zsh
 fi
 
 # Computes storage space (put this last because it might be slow).

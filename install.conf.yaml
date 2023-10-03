@@ -58,7 +58,7 @@
 
 - crontab:
   - key: SHELL
-    value: /usr/bin/env zsh
+    value: /bin/zsh
   - key: RANDOM_DELAY
     value: 10
   - time: 0 6 * * *

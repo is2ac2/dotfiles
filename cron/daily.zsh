@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/bin/zsh
 
 # For "get-storage"
 source ~/.shell/aliases.sh

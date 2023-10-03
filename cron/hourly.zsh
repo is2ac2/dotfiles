@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/bin/zsh
 
 # For Python
 source ~/.shell/aliases.sh
@@ -21,4 +21,3 @@ python3 ~/.scripts/slurm-parse-comment
 if [ -f ~/.cron-local/hourly.zsh ]; then
     ~/.cron-local/hourly.zsh
 fi
-

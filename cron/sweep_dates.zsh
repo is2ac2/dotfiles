@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/bin/zsh
 
 # Sources aliases to make sure Python is set correctly.
 source ~/.shell/aliases.sh

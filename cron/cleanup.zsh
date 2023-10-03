@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/bin/zsh
 
 # Gets project-specific aliases.
 source ~/.shell/aliases.sh

@@ -6,6 +6,8 @@ import urllib.request
 from pathlib import Path
 from typing import Iterable, List
 
+WORDS_URL = "https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-usa.txt"
+
 
 def iter_sample_fast(iterable: Iterable[str], samplesize: int) -> List[str]:
     results = []
@@ -23,70 +25,88 @@ def iter_sample_fast(iterable: Iterable[str], samplesize: int) -> List[str]:
     return results
 
 
-def get_word_password(
-    num_words: int,
-    min_length: int,
-    max_length: int,
-) -> str:
+def get_word_password(num_words: int, min_length: int, max_length: int, no_space: bool) -> str:
     dfile = Path("~/.cache/most-common-words.txt").expanduser()
 
     # Downloads list of 10000 most common English words.
     if not dfile.exists():
         dfile.parent.mkdir(exist_ok=True)
-        url = ("https://raw.githubusercontent.com/first20hours/"
-               "google-10000-english/master/google-10000-english-usa.txt")
-        urllib.request.urlretrieve(url, str(dfile))
+        urllib.request.urlretrieve(WORDS_URL, str(dfile))
         if not dfile.exists():
-            raise RuntimeError(f"Failed to download {url} to {dfile}")
+            raise RuntimeError(f"Failed to download {WORDS_URL} to {dfile}")
 
     with open(dfile, "r") as f:
+
         def _iter() -> str:
             for line in f:
                 r = line.strip().lower()
-                if len(r) < 5:
+                if len(r) < min_length:
                     continue
                 if len(r) > max_length:
                     continue
-                if not all(ord('a') <= ord(i) <= ord('z') for i in r):
+                if not all(ord("a") <= ord(i) <= ord("z") for i in r):
                     continue
                 yield r
+
         words = iter_sample_fast(_iter(), num_words)
-    return " ".join(words)
+    return "".join(words) if no_space else " ".join(words)
 
 
 def get_yubikey_password(length: int) -> str:
     options = [chr(i) for i in range(48, 58)]  # Numbers
     options += [chr(i) for i in range(65, 91)]  # Upper case
     options += [chr(i) for i in range(97, 123)]  # Lower case
-    return "".join([
-        options[random.randint(0, len(options) - 1)]
-        for _ in range(length)
-    ])
+    return "".join([options[random.randint(0, len(options) - 1)] for _ in range(length)])
 
 
 def main():
     parser = argparse.ArgumentParser(description="Generates unique passwords")
-    parser.add_argument("-n", "--num-words", type=int, default=4,
-                        help="Number of words to include in password")
-    parser.add_argument("--min-word-length", type=int, default=5,
-                        help="Minimum word length to include")
-    parser.add_argument("-w", "--max-word-length", type=int, default=10,
-                        help="Maximum word length to include")
-    parser.add_argument("-y", "--yubikey-mode", default=False,
-                        action="store_true",
-                        help="If set, generate a password Yubikey-style")
-    parser.add_argument("-l", "--yubikey-length", type=int, default=20,
-                        help="Number of characters in Yubikey-style password")
+    parser.add_argument(
+        "-n",
+        "--num-words",
+        type=int,
+        default=4,
+        help="Number of words to include in password",
+    )
+    parser.add_argument(
+        "--min-word-length",
+        type=int,
+        default=5,
+        help="Minimum word length to include",
+    )
+    parser.add_argument(
+        "-w",
+        "--max-word-length",
+        type=int,
+        default=10,
+        help="Maximum word length to include",
+    )
+    parser.add_argument(
+        "-y",
+        "--yubikey-mode",
+        default=False,
+        action="store_true",
+        help="If set, generate a password Yubikey-style",
+    )
+    parser.add_argument(
+        "-l",
+        "--yubikey-length",
+        type=int,
+        default=20,
+        help="Number of characters in Yubikey-style password",
+    )
+    parser.add_argument(
+        "--no-space",
+        default=False,
+        action="store_true",
+        help="If set, do not include spaces in password",
+    )
     args = parser.parse_args()
 
     if args.yubikey_mode:
         password = get_yubikey_password(args.yubikey_length)
     else:
-        password = get_word_password(
-            args.num_words,
-            args.min_word_length,
-            args.max_word_length,
-        )
+        password = get_word_password(args.num_words, args.min_word_length, args.max_word_length, args.no_space)
 
     print("Password:", password)
 

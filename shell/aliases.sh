@@ -1010,6 +1010,13 @@ gless() {
     sed -s '$a\\n[ ---------- ]\n' $@ | less
 }
 
+# ---------------
+# Docker commands
+# ---------------
+
+alias docker-kill='docker ps -aq | xargs docker stop | xargs docker rm'
+alias docker-clean='docker-kill && docker image prune -a -f && docker volume prune -f'
+
 # ---------------------------------
 # Manage path environment variables
 # ---------------------------------

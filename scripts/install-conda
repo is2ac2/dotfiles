@@ -1,0 +1,41 @@
+#!/bin/sh
+# Installs MiniConda3
+
+install_dir=${CONDA_DIR:-"$HOME/.miniconda3"}
+
+# Gets the URL to download.
+get_url() {
+    if [ "$(uname)" == "Darwin" ]; then
+        if [ "$(uname -m)" == "arm64" ]; then
+            echo "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh"
+        else
+            echo "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
+        fi
+    elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+        if [ "$(uname -m)" == "aarch64" ]; then
+            echo "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh"
+        else
+            echo "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+        fi
+    else
+        echo "Unsupported OS"
+        exit 1
+    fi
+}
+
+# Downloads and installs MiniConda3.
+install() {
+    url=$(get_url)
+    echo "Downloading $url"
+    tmp_dir=$(mktemp -d)
+    curl -o ${tmp_dir}/miniconda.sh -L $url
+    bash ${tmp_dir}/miniconda.sh -b -p $install_dir
+    rm ${tmp_dir}/miniconda.sh
+}
+
+# Install if not already installed.
+if [ -d "$install_dir" ]; then
+    echo "MiniConda3 is already installed to ${install_dir}"
+else
+    install
+fi

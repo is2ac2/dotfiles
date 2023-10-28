@@ -26,3 +26,6 @@
 [submodule "zsh/plugins/zcomet"]
 	path = zsh/plugins/zcomet
 	url = git@github.com:agkozak/zcomet.git
+[submodule "third-party/diff-so-fancy"]
+	path = third-party/diff-so-fancy
+	url = git@github.com:so-fancy/diff-so-fancy.git

@@ -42,6 +42,7 @@
     ~/.imwheelrc:
     ~/.inputrc:
     ~/.Xmodmap:
+    ~/.third-party:
     ~/.matplotlib/matplotlibrc: matplotlib/matplotlibrc
     ~/.python/extras: python/extras
     ~/.python/startup.py: python/startup.py

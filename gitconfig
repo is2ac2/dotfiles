@@ -79,6 +79,7 @@
 [core]
     excludesfile = ~/.gitignore_global
     attributesfile = ~/.gitattributes
+    pager = diff-so-fancy | less --tabs=4 -R
 
 [pull]
     rebase = true
@@ -107,8 +108,29 @@
 [filter "strip-notebook-output"]
     clean = "jupyter nbconvert --clear-output --to notebook --stdin --stdout --log-level=ERROR"
 
+[interactive]
+    diffFilter = diff-so-fancy --patch
+
+[color]
+    ui = true
+
 [color "status"]
     branch = bold cyan
     added = green
     changed = yellow
     untracked = red
+
+[color "diff-highlight"]
+    oldNormal = red bold
+    oldHighlight = red bold 52
+    newNormal = green bold
+    newHighlight = green bold 22
+
+[color "diff"]
+    meta = 11
+    frag = magenta bold
+    func = 146 bold
+    commit = yellow bold
+    old = red bold
+    new = green bold
+    whitespace = red reverse

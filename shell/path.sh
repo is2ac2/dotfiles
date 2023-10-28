@@ -4,6 +4,9 @@
 pathadd PATH ${HOME}/.scripts
 pathadd PATH ${HOME}/.scripts-local > /dev/null
 
+# Adds additional scripts.
+pathadd PATH ${HOME}/.third-party/bin
+
 # Golang
 export GOPATH=${HOME}/.go
 

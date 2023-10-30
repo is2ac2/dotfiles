@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Installs MiniConda3
 
 install_dir=${CONDA_DIR:-"$HOME/.miniconda3"}

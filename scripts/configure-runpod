@@ -2,7 +2,7 @@
 # Script to configure RunPod.
 
 # Install packages.
-apt install vim cron ffmpeg tmux zsh
+apt install vim cron ffmpeg tmux zsh less
 
 # Removes some initial scripts.
 rm -r ~/.bashrc ~/.profile

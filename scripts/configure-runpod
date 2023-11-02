@@ -11,6 +11,17 @@ rm -r ~/.bashrc ~/.profile
 script_dir="$(dirname "$(readlink -f "$0")")"
 ${script_dir}/install-conda
 
+# Adds config files.
+mkdir -p ~/.config/ml/
+echo "
+launcher:
+  name: mp
+
+logger:
+  - name: stdout
+  - name: tensorboard
+" > ~/.config/ml/conf.yaml
+
 # Configures data directory.
 echo "Remember to run 'relink-directories <dataset-dir> <checkpoints-dir>'"
 

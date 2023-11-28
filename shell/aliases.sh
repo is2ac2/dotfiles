@@ -1102,6 +1102,7 @@ killml() {
     killport 29500
     killproc tensorboard
     killproc runml
+    killproc mlfab
     killgpu
 }
 

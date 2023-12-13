@@ -847,6 +847,7 @@ cn-new() {
 # The user should override this in their local file.
 export SLURM_GPUNODE_PARTITION=missing
 export SLURM_GPUNODE_SHELL=$SHELL
+export SLURM_GPUNODE_NUM_GPUS=1
 
 gpunode() {
     # First, queries Slurm to see if there is an active job.
@@ -858,6 +859,7 @@ gpunode() {
         srun \
             --jobid=$job_id \
             --partition=$SLURM_GPUNODE_PARTITION \
+            --gpus=$SLURM_GPUNODE_NUM_GPUS \
             --pty $SLURM_GPUNODE_SHELL
         return 0
     fi
@@ -865,6 +867,7 @@ gpunode() {
     echo "Creating new job"
     srun \
         --partition=$SLURM_GPUNODE_PARTITION \
+        --gpus=$SLURM_GPUNODE_NUM_GPUS \
         --interactive \
         --job-name=gpunode \
         --pty $SLURM_GPUNODE_SHELL

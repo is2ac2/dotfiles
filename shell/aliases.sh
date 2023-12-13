@@ -846,6 +846,7 @@ cn-new() {
 
 # The user should override this in their local file.
 export SLURM_GPUNODE_PARTITION=missing
+export SLURM_GPUNODE_SHELL=$SHELL
 
 gpunode() {
     # First, queries Slurm to see if there is an active job.
@@ -857,7 +858,7 @@ gpunode() {
         srun \
             --jobid=$job_id \
             --partition=$SLURM_GPUNODE_PARTITION \
-            --pty $SHELL
+            --pty $SLURM_GPUNODE_SHELL
         return 0
     fi
 
@@ -866,7 +867,7 @@ gpunode() {
         --partition=$SLURM_GPUNODE_PARTITION \
         --interactive \
         --job-name=gpunode \
-        --pty $SHELL
+        --pty $SLURM_GPUNODE_SHELL
 }
 
 # ----------------

@@ -329,11 +329,14 @@ clear-jpn() {
     find . -type f -name "*.ipynb" -exec jupyter nbconvert --clear-output {} \;
 }
 
-# cuda
+# CUDA
 export TORCH_CUDA_ARCH_LIST="6.0;6.1;6.2;7.0;7.5;8.0"
 
-# fixing vimrc colors inside tmux
+# Fixing vimrc colors inside tmux
 export TERM=screen-256color
+
+# Tensorboard flags.
+export TENSORBOARD_BIND_ALL=1
 
 # tensorboard
 tbd() {
@@ -342,7 +345,7 @@ tbd() {
 
     if [[ -n $TENSORBOARD_PORT ]] && [[ $# -ne 2 ]]; then
         extra="--port ${TENSORBOARD_PORT}"
-    else
+    elif [[ $TENSORBOARD_BIND_ALL -eq 1 ]]; then
         extra="--bind_all"
     fi
 
@@ -848,6 +851,7 @@ cn-new() {
 export SLURM_GPUNODE_PARTITION=missing
 export SLURM_GPUNODE_SHELL=$SHELL
 export SLURM_GPUNODE_NUM_GPUS=1
+export SLURM_GPUNODE_CPUS_PER_GPU=8
 
 gpunode() {
     # First, queries Slurm to see if there is an active job.
@@ -860,6 +864,7 @@ gpunode() {
             --jobid=$job_id \
             --partition=$SLURM_GPUNODE_PARTITION \
             --gpus=$SLURM_GPUNODE_NUM_GPUS \
+            --cpus-per-gpu=$SLURM_GPUNODE_CPUS_PER_GPU \
             --pty $SLURM_GPUNODE_SHELL
         return 0
     fi
@@ -868,6 +873,7 @@ gpunode() {
     srun \
         --partition=$SLURM_GPUNODE_PARTITION \
         --gpus=$SLURM_GPUNODE_NUM_GPUS \
+        --cpus-per-gpu=$SLURM_GPUNODE_CPUS_PER_GPU \
         --interactive \
         --job-name=gpunode \
         --pty $SLURM_GPUNODE_SHELL

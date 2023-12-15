@@ -193,7 +193,7 @@ slog() {
         return 1
     fi
     local job_id=$1; shift
-    echo $(slurm-parse-comment $job_id -p 'Log directory: ')
+    echo $(slurm-get-job-path $job_id --silent)
 }
 
 sl() {
@@ -227,12 +227,10 @@ stbd() {
     local has_dir=0
     for job_id in "$@"; do
         local log_dir=$(slog $job_id)
-        local tbd_root=${log_dir}/logs/tensorboard/
-        local last_tbd_dir=$(\ls -1 ${tbd_root} | sort | tail -n 1)
-        if [[ -n $last_tbd_dir ]]; then
-            local tbd_full_dir=${tbd_root}${last_tbd_dir}
-            echo "-> ${tbd_full_dir}"
-            ln -s ${tbd_full_dir} ${tmp_tbd_dir}/${job_id}
+        local tbd_root=${log_dir}/tensorboard/
+        if [[ -d $tbd_root ]]; then
+            echo "-> ${tbd_root}"
+            ln -s ${tbd_root} ${tmp_tbd_dir}/${job_id}
             has_dir=1
         else
             echo "Failed to get log directory for job ID $job_id"
@@ -247,7 +245,8 @@ stbd() {
     local cmd="tensorboard serve --logdir ${tmp_tbd_dir}"
     if [[ -n $TENSORBOARD_PORT ]]; then
         cmd="${cmd} --port ${TENSORBOARD_PORT}"
-    else
+    fi
+    if [[ $TENSORBOARD_BIND_ALL -eq 1 ]]; then
         cmd="${cmd} --bind_all"
     fi
 
@@ -345,7 +344,8 @@ tbd() {
 
     if [[ -n $TENSORBOARD_PORT ]] && [[ $# -ne 2 ]]; then
         extra="--port ${TENSORBOARD_PORT}"
-    elif [[ $TENSORBOARD_BIND_ALL -eq 1 ]]; then
+    fi
+    if [[ $TENSORBOARD_BIND_ALL -eq 1 ]]; then
         extra="--bind_all"
     fi
 

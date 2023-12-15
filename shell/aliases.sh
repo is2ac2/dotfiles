@@ -233,7 +233,7 @@ stbd() {
             ln -s ${tbd_root} ${tmp_tbd_dir}/${job_id}
             has_dir=1
         else
-            echo "Failed to get log directory for job ID $job_id"
+            echo "Failed to get tensorboard directory for job ID $job_id"
         fi
     done
 

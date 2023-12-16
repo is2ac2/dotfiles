@@ -32,10 +32,8 @@ def get_jobs_no_cache(just_today: bool) -> dict[str, tuple[str, datetime.datetim
                 slurm_info = json.load(f)
             for slurm_info_section in slurm_info:
                 job_ids = slurm_info_section["job_ids"]
-                exp_dir = slurm_info_file.parent
-                launch_time = datetime.datetime.fromisoformat(
-                    slurm_info_section["launch_time"]
-                )
+                exp_dir = slurm_info_file.parent.resolve()
+                launch_time = datetime.datetime.fromisoformat(slurm_info_section["launch_time"])
                 for job_id in job_ids:
                     jobs[job_id] = (str(exp_dir), launch_time)
         except Exception:

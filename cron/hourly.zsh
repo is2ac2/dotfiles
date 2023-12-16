@@ -14,9 +14,6 @@ load-brew
 # Sweeps dates files.
 ~/.cron/sweep_dates.zsh
 
-# Caches running slurm jobs.
-python3 ~/.scripts/slurm-parse-comment
-
 # Runs local cron script, if found.
 if [ -f ~/.cron-local/hourly.zsh ]; then
     ~/.cron-local/hourly.zsh

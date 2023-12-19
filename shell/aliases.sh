@@ -199,7 +199,7 @@ slog() {
 sl() {
     local log_dir=$(slog $@)
     if [[ -n $log_dir ]]; then
-        less ${log_dir}/slurm.out
+        less +F ${log_dir}/slurm.out
     else
         echo "Failed to get log directory for job ID $1"
         return 1
@@ -209,7 +209,7 @@ sl() {
 sle() {
     local log_dir=$(slog $@)
     if [[ -n $log_dir ]]; then
-        less ${log_dir}/slurm.err
+        less +F ${log_dir}/slurm.err
     else
         echo "Failed to get log directory for job ID $1"
         return 1

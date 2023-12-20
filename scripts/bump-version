@@ -4,6 +4,18 @@
 # the format '__version__ = "1.2.3"'. This script finds the file with the
 # version number, increments the last digit.
 
+# Allows users to specify bumping major, minor or patch version.
+# Defaults to patch.
+if [[ $# -eq 0 ]]; then
+    bump=patch
+else
+    bump=$1
+    if [[ $bump != major && $bump != minor && $bump != patch ]]; then
+        echo "!!! Invalid bump type: $bump !!!"
+        exit 1
+    fi
+fi
+
 package=$(basename $(pwd))
 echo " ↪ Bumping version for package $package"
 
@@ -20,10 +32,24 @@ echo " ↪ Found __init__.py with __version__ in $init_file"
 # Extract the version number from the file and bumps it.
 version=$(grep __version__ $init_file | cut -d\" -f2)
 echo " ↪ Current version is \033[1;31m$version\033[0m"
+
+# Checks that version number is in the format x.y.z.
+if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "!!! Invalid version number: $version !!!"
+    exit 1
+fi
+
+# Bumps the version number.
 major=$(echo $version | cut -d. -f1)
 minor=$(echo $version | cut -d. -f2)
 patch=$(echo $version | cut -d. -f3)
-patch=$((patch + 1))
+if [[ $bump == major ]]; then
+    major=$((major + 1))
+elif [[ $bump == minor ]]; then
+    minor=$((minor + 1))
+else
+    patch=$((patch + 1))
+fi
 new_version="$major.$minor.$patch"
 echo " ↪ New version is \033[1;32m$new_version\033[0m"
 

@@ -21,6 +21,7 @@
     bD = branch -D
     bl = branch --list
     ci = commit
+    comit = commit
     a = add .
     cm = commit -m
     amend = commit --amend --no-edit

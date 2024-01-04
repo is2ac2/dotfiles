@@ -884,7 +884,7 @@ cpunode() {
     echo "Creating new job"
     srun \
         --partition=$SLURM_CPUNODE_PARTITION \
-        --cpus=$SLURM_CPUNODE_NUM_CPUS \
+        --cpus-per-task=$SLURM_CPUNODE_NUM_CPUS \
         --interactive \
         --job-name=cpunode \
         --pty $SLURM_XPUNODE_SHELL

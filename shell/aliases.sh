@@ -217,14 +217,18 @@ sle() {
 }
 
 stbd() {
+    local job_ids=()
     if [[ $# -eq 0 ]]; then
-        echo "Usage: stbd <job-id> (<job_id>...)"
-        return 1
+        while IFS= read -r line; do
+            job_ids+=("$line")
+        done < <(squeue -u "$USER" -h -t R -o %i)
+    else
+        job_ids=("$@")
     fi
 
     local tmp_tbd_dir=$(mktemp -d -t tbd-XXXXXXXX)
     local has_dir=0
-    for job_id in "$@"; do
+    for job_id in ${job_ids[@]}; do
         local log_dir=$(slog $job_id)
         local tbd_root=${log_dir}/tensorboard/
         if [[ -d $tbd_root ]]; then

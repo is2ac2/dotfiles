@@ -23,6 +23,12 @@ function conda_prompt_info {
     fi
 }
 
+function venv_prompt_info {
+    if [[ -n $VIRTUAL_ENV ]]; then
+        echo " [%{$fg_bold[green]%}$(basename $VIRTUAL_ENV)%{$reset_color%}]"
+    fi
+}
+
 function hostname_prompt_info {
     if [[ -n "$HOST" ]]; then
         echo " 🖥  [%{$fg[cyan]%}${HOST}%{$reset_color%}]"
@@ -49,14 +55,11 @@ function tmux_prompt_info {
     fi
 }
 
-export PROMPT='[%{$fg[yellow]%}%~%{$reset_color%}]$(git_prompt_info)$(virtualenv_prompt_info)$(conda_prompt_info)$(tmux_prompt_info)$(ruby_prompt_info_impl) ⌚ [%{$fg[red]%}%*%{$reset_color%}]$(hostname_prompt_info)
+export PROMPT='[%{$fg[yellow]%}%~%{$reset_color%}]$(git_prompt_info)$(venv_prompt_info)$(conda_prompt_info)$(tmux_prompt_info)$(ruby_prompt_info_impl) ⌚ [%{$fg[red]%}%*%{$reset_color%}]$(hostname_prompt_info)
 $ '
 
+# We're already handling the virtual environment prompt.
 export VIRTUAL_ENV_DISABLE_PROMPT=0
-export ZSH_THEME_VIRTUAL_ENV_PROMPT_PREFIX=" [%{$fg[green]%}"
-export ZSH_THEME_VIRTUAL_ENV_PROMPT_SUFFIX="%{$reset_color%}]"
-export ZSH_THEME_VIRTUALENV_PREFIX=$ZSH_THEME_VIRTUAL_ENV_PROMPT_PREFIX
-export ZSH_THEME_VIRTUALENV_SUFFIX=$ZSH_THEME_VIRTUAL_ENV_PROMPT_SUFFIX
 
 export CASE_SENSITIVE=true
 export DISABLE_UPDATE_PROMPT=true

@@ -95,6 +95,9 @@ def main():
     print("└─" + "─" * len(str(workspace_file)) + "─┘")
 
     settings = {}
+    cmake_configure_settings = {}
+    cmake_environment = {}
+    cmake_prefix_paths = []
 
     # Adds Ruff path if it is available.
     if (ruff_path := shutil.which("ruff")) is not None:
@@ -108,29 +111,24 @@ def main():
     if (clang_format_path := shutil.which("clang-format")) is not None:
         settings["clang-format.executable"] = clang_format_path
 
-    cmake_configure_settings = {}
-    cmake_environment = {}
-    cmake_prefix_paths = []
+    # Adds python path if available.
+    if (python_path := shutil.which("python")) is not None:
+        settings["python.defaultInterpreterPath"] = python_path
+        cmake_configure_settings["PYTHON_EXECUTABLE"] = python_path
+
+    # Adds CMake path, if CMake is installed.
+    if (cmake_path := shutil.which("cmake")) is not None:
+        settings["cmake.cmakePath"] = cmake_path
+
+    # Adds NVCC path if available.
+    if (nvcc_path := shutil.which("nvcc")) is not None:
+        cmake_configure_settings["CMAKE_CUDA_COMPILER"] = str(Path(nvcc_path).resolve())
 
     if "CONDA_PREFIX" in os.environ:
         conda_prefix = Path(os.environ["CONDA_PREFIX"]).resolve()
 
         # Adds conda prefix to environment.
         cmake_environment["CONDA_PREFIX"] = str(conda_prefix)
-
-        # Adds Python interpretter if currently inside a Conda environment.
-        settings["python.defaultInterpreterPath"] = str(conda_prefix / "bin" / "python")
-
-        # Adds Python exeuctable path.
-        cmake_configure_settings["PYTHON_EXECUTABLE"] = str(conda_prefix / "bin" / "python")
-
-        # Adds CMake path, if CMake is installed.
-        if (cmake_path := shutil.which("cmake")) is not None and cmake_path.startswith(str(conda_prefix)):
-            settings["cmake.cmakePath"] = cmake_path
-
-    # Adds NVCC path if available.
-    if (nvcc_path := shutil.which("nvcc")) is not None:
-        cmake_configure_settings["CMAKE_CUDA_COMPILER"] = str(Path(nvcc_path).resolve())
 
     # Gets PyTorch settings.
     try:

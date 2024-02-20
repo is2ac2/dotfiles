@@ -1241,3 +1241,10 @@ waitport() {
         sleep 1
     done
 }
+
+# ------------------------ #
+# Machine Learning aliases #
+# ------------------------ #
+
+export HF_HOME=${MODEL_DIR}/huggingface
+

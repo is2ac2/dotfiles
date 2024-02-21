@@ -1248,3 +1248,30 @@ waitport() {
 
 export HF_HOME=${MODEL_DIR}/huggingface
 
+# ----------- #
+# Git aliases #
+# ----------- #
+
+remove-git-submodule() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: remove-git-submodule <submodule-path>"
+        return 1
+    fi
+    local submodule_path=$1
+
+    # Checks that the path is a submodule.
+    if [[ ! -f .gitmodules ]]; then
+        echo "No .gitmodules file found"
+        return 1
+    fi
+    if [[ -z $(grep -E "\[submodule \"${submodule_path}\"\]" .gitmodules) ]]; then
+        echo "No submodule found at path ${submodule_path}"
+        return 1
+    fi
+
+    git submodule deinit -f -- $submodule_path
+    rm -rf $submodule_path
+    git rm -f $submodule_path
+    git config -f .gitmodules --remove-section submodule.$submodule_path
+    git add .gitmodules
+}

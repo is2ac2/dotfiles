@@ -1,7 +1,7 @@
 # Makefile
 
 define HELP_MESSAGE
-                    [[PROJECT NAME]]
+[[PROJECT NAME]]
 
 # Installing
 
@@ -25,10 +25,6 @@ all:
 # ------------------------ #
 #          Build           #
 # ------------------------ #
-
-install-torch-nightly:
-	@pip install --pre torch --index-url https://download.pytorch.org/whl/nightly
-.PHONY: install-torch-nightly
 
 install:
 	@pip install --verbose -e .

@@ -42,10 +42,9 @@ jobs:
             python-requirements-${{ env.pythonLocation }}
             python-requirements-
 
-      # Uncomment this if you are using PyTorch in your project.
-      # - name: Install package
-      #   run: |
-      #     pip install --upgrade --upgrade-strategy eager --extra-index-url https://download.pytorch.org/whl/cpu -e '.[dev]'
+      - name: Install package
+        run: |
+          pip install --upgrade --upgrade-strategy eager --extra-index-url https://download.pytorch.org/whl/cpu -e '.[dev]'
 
       - name: Run static checks
         run: |

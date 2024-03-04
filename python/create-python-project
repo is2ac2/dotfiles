@@ -4,11 +4,11 @@
 import argparse
 from pathlib import Path
 
-import git
-
 
 def get_default_author() -> str:
     try:
+        import git
+
         return git.config.GitConfigParser().get_value("user", "name")  # type: ignore[return-value]
     except Exception:
         raise ValueError("Could not get configured Git author; please manually specify the --author argument")
@@ -16,6 +16,8 @@ def get_default_author() -> str:
 
 def get_default_email() -> str:
     try:
+        import git
+
         return git.config.GitConfigParser().get_value("user", "email")  # type: ignore[return-value]
     except Exception:
         raise ValueError("Could not get configured Git email; please manually specify the --email argument")
@@ -30,6 +32,8 @@ def cleanup_url(s: str) -> str:
 
 def get_default_url() -> str:
     try:
+        import git
+
         repo = git.Repo(search_parent_directories=True)
         return cleanup_url(repo.remote().url)
     except Exception:

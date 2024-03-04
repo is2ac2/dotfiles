@@ -868,6 +868,10 @@ uv-new() {
     source $ENV_PATH/bin/activate
 }
 
+# Use UV instead of regular PIP.
+alias pip='uv pip'
+alias pip3='uv pip'
+
 # ---------------
 # Tools for Slurm
 # ---------------

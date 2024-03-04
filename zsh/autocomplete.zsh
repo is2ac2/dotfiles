@@ -35,22 +35,24 @@ compdef _conda_vars cn-vars
 
 _uv_complete() {
     local opts
-    opts=$(ls -1 ${UV_ENV_ROOT} | tr '\n' ' ')
+    opts=$(ls -1 ${HOME}/.virtualenvs/ | tr '\n' ' ')
     compadd ${=opts}
 }
 
 uv-env() {
-    source ${UV_ENV_ROOT}/$1/bin/activate
+    source ${HOME}/.virtualenvs/$1/bin/activate
 }
 
 uv-rm() {
-    if [[ "$UV_DEFAULT_ENV" -eq "$1" ]]; then
-        deactivate
+    if [[ "$#" -ne "1" ]]; then
+        echo "Usage: uv-rm <name>"
+        return
     fi
-    rm -rf ${UV_ENV_ROOT}/$1
+    rm -rf ${HOME}/.virtualenvs/$1
+    echo "Removed environment '$1'"
 }
 
-if [[ -d ${UV_ENV_ROOT} ]]; then
+if [[ -d ${HOME}/.virtualenvs ]]; then
     compdef _uv_complete uv-env
     compdef _uv_complete uv-rm
 fi

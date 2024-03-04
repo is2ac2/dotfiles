@@ -644,7 +644,7 @@ alias brew='load-brew && \brew'
 
 # Conda
 export CONDA_DIR="${HOME}/.miniconda3"
-export CONDA_DEFAULT_PYTHON_VERSION=3.11
+export DEFAULT_PYTHON_VERSION=3.11
 
 # History search
 alias hgr='history | grep'
@@ -841,7 +841,7 @@ cn-new() {
     fi
     local ENV_NAME=$1
     load-conda
-    conda create -n $ENV_NAME python=$CONDA_DEFAULT_PYTHON_VERSION
+    conda create -n $ENV_NAME python=$DEFAULT_PYTHON_VERSION
     conda deactivate
     conda activate $ENV_NAME
 }
@@ -850,21 +850,19 @@ cn-new() {
 # Create a new UV environment
 # ---------------------------
 
-export UV_ENV_ROOT=${HOME}/.virtualenvs
-
 uv-new() {
     if [[ $# -ne 1 ]]; then
         echo "Usage: uv-new <env-name>"
         return 1
     fi
     load-uv
-    mkdir $UV_ENV_ROOT
-    local ENV_PATH=$UV_ENV_ROOT/$1
+    mkdir -p ${HOME}/.virtualenvs
+    local ENV_PATH=${HOME}/.virtualenvs/$1
     if [[ -d $ENV_PATH ]]; then
         echo "Environment already exists: $ENV_PATH"
         return 1
     fi
-    uv venv $ENV_PATH
+    uv venv $ENV_PATH --python $DEFAULT_PYTHON_VERSION
     source $ENV_PATH/bin/activate
 }
 

@@ -44,26 +44,27 @@ complete -F _cn_vars_complete 'cn-vars'
 # --
 
 uv-env() {
-    source ${UV_ENV_ROOT}/$1/bin/activate
+    source ${HOME}/.virtualenvs/$1/bin/activate
 }
 
 uv-rm() {
-    if [[ "$UV_DEFAULT_ENV" -eq "$1" ]]; then
-        deactivate
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: uv-env <name>"
+        return 1
     fi
-    rm -rf ${UV_ENV_ROOT}/$1
+    rm -rf ${HOME}/.virtualenvs/$1
 }
 
 _uv_complete() {
     local cur opts
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
-    opts="$(ls -1 ${UV_ENV_ROOT} | paste -sd ' ')"
+    opts="$(ls -1 ${HOME}/.virtualenvs | paste -sd ' ')"
     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
     return 0
 }
 
-if [[ -d ${UV_ENV_ROOT} ]]; then
+if [[ -d ${HOME}/.virtualenvs ]]; then
     complete -F _uv_complete 'uv-env'
     complete -F _uv_complete 'uv-rm'
 fi

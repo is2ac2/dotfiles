@@ -846,6 +846,28 @@ cn-new() {
     conda activate $ENV_NAME
 }
 
+# ---------------------------
+# Create a new UV environment
+# ---------------------------
+
+export UV_ENV_ROOT=${HOME}/.virtualenvs
+
+uv-new() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: uv-new <env-name>"
+        return 1
+    fi
+    load-uv
+    mkdir $UV_ENV_ROOT
+    local ENV_PATH=$UV_ENV_ROOT/$1
+    if [[ -d $ENV_PATH ]]; then
+        echo "Environment already exists: $ENV_PATH"
+        return 1
+    fi
+    uv venv $ENV_PATH
+    source $ENV_PATH/bin/activate
+}
+
 # ---------------
 # Tools for Slurm
 # ---------------
@@ -1156,6 +1178,24 @@ load-conda() {
 }
 
 alias conda='load-conda && \conda'
+
+load-cargo() {
+    unalias cargo 2> /dev/null
+    pathadd PATH ${HOME}/.cargo/bin/
+}
+
+alias cargo='load-cargo && \cargo'
+
+load-uv() {
+    pathadd PATH ${HOME}/.cargo/bin/
+    if ! command -v uv &> /dev/null; then
+        echo "Installing UV"
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+    fi
+
+}
+
+alias uv='load-uv && \uv'
 
 relink-directories() {
     if [[ $# -ne 2 ]]; then

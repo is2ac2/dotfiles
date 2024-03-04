@@ -7,15 +7,18 @@ _conda_complete() {
     opts=$(cat ~/.conda/environments.txt | xargs -L1 basename | tr '\n' ' ')
     compadd ${=opts}
 }
+
 cn-env() {
     conda activate $@
 }
+
 cn-rm() {
     if [[ "$CONDA_DEFAULT_ENV" -eq "$1" ]]; then
         conda deactivate
     fi
     conda remove --all --name $1
 }
+
 if [[ -f ~/.conda/environments.txt ]]; then
     compdef _conda_complete cn-env
     compdef _conda_complete cn-rm
@@ -25,6 +28,32 @@ _conda_vars() {
     compadd rm rm-activate rm-deactivate activate deactivate
 }
 compdef _conda_vars cn-vars
+
+# --
+# uv
+# --
+
+_uv_complete() {
+    local opts
+    opts=$(ls -1 ${UV_ENV_ROOT} | tr '\n' ' ')
+    compadd ${=opts}
+}
+
+uv-env() {
+    source ${UV_ENV_ROOT}/$1/bin/activate
+}
+
+uv-rm() {
+    if [[ "$UV_DEFAULT_ENV" -eq "$1" ]]; then
+        deactivate
+    fi
+    rm -rf ${UV_ENV_ROOT}/$1
+}
+
+if [[ -d ${UV_ENV_ROOT} ]]; then
+    compdef _uv_complete uv-env
+    compdef _uv_complete uv-rm
+fi
 
 # ----
 # tmux

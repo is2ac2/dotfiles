@@ -1189,12 +1189,12 @@ load-cargo() {
 alias cargo='load-cargo && \cargo'
 
 load-uv() {
-    pathadd PATH ${HOME}/.cargo/bin/
+    unalias uv 2> /dev/null
     if ! command -v uv &> /dev/null; then
         echo "Installing UV"
         curl -LsSf https://astral.sh/uv/install.sh | sh
     fi
-
+    pathadd PATH ${HOME}/.cargo/bin/
 }
 
 alias uv='load-uv && \uv'

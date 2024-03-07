@@ -1320,3 +1320,14 @@ remove-git-submodule() {
     git config -f .gitmodules --remove-section submodule.$submodule_path
     git add .gitmodules
 }
+
+# -------------------
+# Python installation
+# -------------------
+
+install-python3.11() {
+    sudo add-apt-repository ppa:deadsnakes/ppa
+    sudo apt update -y
+    sudo apt upgrade -y
+    sudo apt install python3.11 -y
+}

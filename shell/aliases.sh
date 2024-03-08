@@ -376,6 +376,7 @@ tmuxn() {
     fi
 
     tmux new-session -d -s $1
+    tmux -CC attach -t $1
     echo "Created session $1"
     return 0
 }

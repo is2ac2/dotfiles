@@ -1114,10 +1114,10 @@ killport() {
         return 1
     fi
     local port=$1
-    local pid=$(lsof -i :${port} | grep LISTEN | awk '{print $2}')
+    local pids=$(lsof -i :${port} | grep LISTEN | awk '{print $2}' | sort -u | tr '\n' ' ')
     if [[ -n ${pid} ]]; then
-        echo "Killing process ${pid} on port ${port}"
-        kill -9 ${pid}
+        echo "Killing process(es) '${pids}' on port ${port}"
+        echo ${pids} | xargs kill -9
     fi
 }
 

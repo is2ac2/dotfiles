@@ -1326,9 +1326,30 @@ remove-git-submodule() {
 # Python installation
 # -------------------
 
-install-python3.11() {
+install-python-version() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: install-python-version <version>"
+        return 1
+    fi
+    local version=$1
     sudo add-apt-repository ppa:deadsnakes/ppa
     sudo apt update -y
     sudo apt upgrade -y
-    sudo apt install python3.11 -y
+    sudo apt install python${version} python${version}-venv python${version}-dev -y
+}
+
+install-python3.11() {
+    install-python-version 3.11
+}
+
+install-python3.10() {
+    install-python-version 3.10
+}
+
+install-python3.9() {
+    install-python-version 3.9
+}
+
+install-python3.8() {
+    install-python-version 3.8
 }

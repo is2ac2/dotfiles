@@ -645,7 +645,7 @@ alias brew='load-brew && \brew'
 
 # Conda
 export CONDA_DIR="${HOME}/.miniconda3"
-export DEFAULT_PYTHON_VERSION=3.11
+export DEFAULT_PYTHON_VERSION=3.12
 
 # History search
 alias hgr='history | grep'
@@ -1336,6 +1336,10 @@ install-python-version() {
     sudo apt update -y
     sudo apt upgrade -y
     sudo apt install python${version} python${version}-venv python${version}-dev -y
+}
+
+install-python3.12() {
+    install-python-version 3.12
 }
 
 install-python3.11() {

@@ -645,7 +645,7 @@ alias brew='load-brew && \brew'
 
 # Conda
 export CONDA_DIR="${HOME}/.miniconda3"
-export DEFAULT_PYTHON_VERSION=3.12
+export DEFAULT_PYTHON_VERSION=3.11
 
 # History search
 alias hgr='history | grep'

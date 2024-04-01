@@ -19,6 +19,7 @@ slurm_snapshot_code
 # Python
 *.py[co]
 __pycache__
+*.egg-info
 .mypy_cache/
 
 # Jupyter

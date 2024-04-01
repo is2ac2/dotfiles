@@ -852,19 +852,20 @@ cn-new() {
 # ---------------------------
 
 uv-new() {
-    if [[ $# -ne 1 ]]; then
-        echo "Usage: uv-new <env-name>"
+    if [[ $# -ne 1 ]] && [[ $# -ne 2 ]]; then
+        echo "Usage: uv-new <env-name> (<version>)"
         return 1
     fi
     load-uv
     mkdir -p ${HOME}/.virtualenvs
     local ENV_PATH=${HOME}/.virtualenvs/$1
-    if [[ -d $ENV_PATH ]]; then
-        echo "Environment already exists: $ENV_PATH"
+    if [[ -d ${ENV_PATH} ]]; then
+        echo "Environment already exists: ${ENV_PATH}"
         return 1
     fi
-    uv venv $ENV_PATH --python $DEFAULT_PYTHON_VERSION
-    source $ENV_PATH/bin/activate
+    local python_version=${2:-$DEFAULT_PYTHON_VERSION}
+    uv venv ${ENV_PATH} --python ${python_version}
+    source ${ENV_PATH}/bin/activate
 }
 
 # Use UV instead of regular PIP.

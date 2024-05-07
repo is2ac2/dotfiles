@@ -123,7 +123,7 @@ alias today='date +"%Y-%m-%d'
 alias now='date +"%T"'
 
 # slurm
-alias qm='squeue --format="%.8i %.12P %30j %.10T %.12M %18N" --me'
+alias qm='squeue --format="%.8i %.12P %30j %.10T %.12M %26N" --me'
 
 # paths
 alias rp='realpath'

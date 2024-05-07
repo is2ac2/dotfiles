@@ -236,31 +236,43 @@ scomments() {
     sjsons '[.[-1].job_ids[0], .[-1].task_key, .[-1].comment] | @json' $@
 }
 
-scommentsmarkdown() {
-    echo '| Job ID | Task | Comment |'
-    echo '|--------|------|---------|'
-    while IFS= read -r line; do
-        local job_id=$(echo $line | jq -r '.[0]')
-        local comment=$(echo $line | jq -r '.[1]')
-        echo "| $job_id | $comment |"
-    done < <(scomments $@)
-}
-
 scommentsmediawiki() {
+    if [[ $# -ne 0 ]] && [[ $# -ne 1 ]]; then
+        echo "Usage: scommentsmediawiki (<trg-task>)"
+        return 1
+    fi
+    local trg_task=$1; shift
     echo "{| class="wikitable""
     echo "! Job ID"
-    echo "! Task"
+    if [[ -z "$trg_task" ]]; then
+        echo "! Task"
+    fi
     echo "! Comment"
+    job_ids=()
     while IFS= read -r line; do
         local job_id=$(echo $line | jq -r '.[0]')
         local task=$(echo $line | jq -r '.[1]')
         local comment=$(echo $line | jq -r '.[2]')
-        echo "|-"
-        echo "| $job_id"
-        echo "| $task"
-        echo "| $comment"
+        if [[ "$trg_task" == "" ]]; then
+            echo "|-"
+            echo "| $job_id"
+            echo "| $task"
+            echo "| $comment"
+            job_ids+=("$job_id")
+        elif [[ "$trg_task" == "$task" ]]; then
+            echo "|-"
+            echo "| $job_id"
+            echo "| $comment"
+            job_ids+=("$job_id")
+        fi
     done < <(scomments $@)
     echo "|}"
+    echo ""
+    echo "Job IDs"
+    echo ""
+    echo '<syntaxhighlight lang="text">'
+    echo "stbd ${job_ids[@]}"
+    echo '</syntaxhighlight>'
 }
 
 sl() {

@@ -268,8 +268,6 @@ scommentsmediawiki() {
     done < <(scomments $@)
     echo "|}"
     echo ""
-    echo "Job IDs"
-    echo ""
     echo '<syntaxhighlight lang="text">'
     echo "stbd ${job_ids[@]}"
     echo '</syntaxhighlight>'

@@ -189,11 +189,78 @@ shist() {
 
 slog() {
     if [[ $# -ne 1 ]]; then
-        echo "Usage: sl <job-id>"
+        echo "Usage: slog <job-id>"
         return 1
     fi
     local job_id=$1; shift
     echo $(slurm-get-job-path $job_id --silent)
+}
+
+sjson() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: sjson <job-id> <json-field>"
+        return 1
+    fi
+    local log_dir=$(slog $1)
+    local json_field=$2
+    if [[ -n $log_dir ]]; then
+        jq -r $json_field ${log_dir}/slurm_info.json
+    else
+        echo "Failed to get log directory for job ID $1"
+        return 1
+    fi
+}
+
+sjsons() {
+    if [[ $# -lt 1 ]]; then
+        echo "Usage: sjsons <json-field> (<job-id> ...)"
+        return 1
+    fi
+    local json_field=$1; shift
+
+    local job_ids=()
+    if [[ $# -eq 0 ]]; then
+        while IFS= read -r line; do
+            job_ids+=("$line")
+        done < <(squeue -u "$USER" -h -t R -o %i)
+    else
+        job_ids=("$@")
+    fi
+
+    for job_id in ${job_ids[@]}; do
+        sjson $job_id $json_field
+    done
+}
+
+scomments() {
+    sjsons '[.[-1].job_ids[0], .[-1].task_key, .[-1].comment] | @json' $@
+}
+
+scommentsmarkdown() {
+    echo '| Job ID | Task | Comment |'
+    echo '|--------|------|---------|'
+    while IFS= read -r line; do
+        local job_id=$(echo $line | jq -r '.[0]')
+        local comment=$(echo $line | jq -r '.[1]')
+        echo "| $job_id | $comment |"
+    done < <(scomments $@)
+}
+
+scommentsmediawiki() {
+    echo "{| class="wikitable""
+    echo "! Job ID"
+    echo "! Task"
+    echo "! Comment"
+    while IFS= read -r line; do
+        local job_id=$(echo $line | jq -r '.[0]')
+        local task=$(echo $line | jq -r '.[1]')
+        local comment=$(echo $line | jq -r '.[2]')
+        echo "|-"
+        echo "| $job_id"
+        echo "| $task"
+        echo "| $comment"
+    done < <(scomments $@)
+    echo "|}"
 }
 
 sl() {

@@ -122,10 +122,6 @@ alias smi='nvidia-smi --query-gpu=index,name,utilization.gpu,utilization.memory,
 alias today='date +"%Y-%m-%d'
 alias now='date +"%T"'
 
-# slurm
-alias qm='squeue --format="%.8i %.12P %30j %.10T %.12M %26N" --me'
-alias qq='squeue --format="%.8i %.12P %30j %.10T %.12M %26N"'
-
 # paths
 alias rp='realpath'
 
@@ -140,6 +136,19 @@ alias killall-py='killall -u ${USER} -n python'
 
 # show a warning if startup takes longer than this
 export SLOW_STARTUP_WARNING_MS=1000
+
+qq() {
+    local strings=$(
+        squeue --format="%.8i %.12P %30j %.10T %.12M %100N" $@ \
+        | awk '{$6=substr($6, length($6)-35)}1' \
+        | rev \
+        | awk '{$1=substr($1, length($1)-35)}1' \
+        | rev
+    )
+    echo "$strings" | column -t
+}
+
+alias qm='qq --me'
 
 spartme() {
     if [[ $# -ne 1 ]]; then

@@ -73,8 +73,6 @@ fi
 # tmux
 # ----
 
-alias tmuxc='tmux -CC a -t'
-alias tmuxa='tmux a -dt'
 _tmux_complete(){
     local cur opts
     COMPREPLY=()
@@ -83,10 +81,7 @@ _tmux_complete(){
     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
     return 0
 }
-complete -F _tmux_complete tmuxc
-complete -F _tmux_complete tmuxn
-complete -F _tmux_complete tmuxa
-complete -F _tmux_complete tmuxd
+complete -F _tmux_complete tm
 
 # -----------
 # tmp-scripts

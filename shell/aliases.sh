@@ -456,26 +456,21 @@ tbd() {
 alias pwd='pwd -P'
 
 # tmux
-tmuxn() {
+export TMUX_ATTACH_ARGS="-CC"
+
+tm() {
     if [[ $# -ne 1 ]]; then
-        echo "Usage: tmuxn <new-session-name>"
+        echo "Usage: tm <session-name>"
         return 1
     fi
 
-    tmux new-session -d -s $1
-    tmux -CC attach -t $1
-    echo "Created session $1"
-    return 0
-}
-
-tmuxd() {
-    if [[ $# -ne 1 ]]; then
-        echo "Usage: tmuxd <session-to-close>"
-        return 1
+    local session_name=$1
+    local session_exists=$(tmux list-sessions | grep -c $session_name)
+    if [[ $session_exists -eq 0 ]]; then
+        tmux new-session -d -s $session_name
+        echo "Created session $session_name"
     fi
-
-    tmux kill-session -t $1
-    echo "Closed session $1"
+    tmux ${TMUX_ATTACH_ARGS} attach -t $session_name
     return 0
 }
 

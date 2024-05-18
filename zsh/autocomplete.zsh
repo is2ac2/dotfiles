@@ -61,21 +61,12 @@ fi
 # tmux
 # ----
 
-tmuxc() {
-    tmux -CC a -t $@
-}
-tmuxa() {
-    tmux a -dt $@
-}
 _tmux() {
     local opts
     opts="$(tmux list-sessions -F '#S' | tr '\n' ' ')"
     compadd ${=opts}
 }
-compdef _tmux tmuxc
-compdef _tmux tmuxn
-compdef _tmux tmuxa
-compdef _tmux tmuxd
+compdef _tmux tm
 
 # -----------
 # tmp-scripts

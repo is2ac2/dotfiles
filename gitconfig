@@ -1,6 +1,6 @@
 [user]
-    name = Benjamin Bolte
-    email = ben@bolte.cc
+    name = Isaac Light
+    email = wlight@emory.edu
 
 [include]
     path = ~/.gitconfig_local
